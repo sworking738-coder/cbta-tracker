@@ -1180,7 +1180,12 @@ async function applySession(session){
 }
 let lastUid;
 loadBrand();
-$("#btnOut").onclick=async()=>{if(!sb)return;$("#btnOut").disabled=true;await sb.auth.signOut();$("#btnOut").disabled=false;location.hash=""};
+/* Sign out must always work, even on a slow or dropped phone connection: try the server, fall back to clearing this device, then reload. */
+$("#btnOut").onclick=async()=>{if(!sb)return;const b=$("#btnOut");b.disabled=true;b.textContent="Keluar…";
+  const wait=(p,ms)=>Promise.race([p.catch(e=>({error:e})),new Promise(r=>setTimeout(()=>r({error:"timeout"}),ms))]);
+  const r=await wait(sb.auth.signOut(),4000);if(r&&r.error)await wait(sb.auth.signOut({scope:"local"}),2000);
+  try{Object.keys(localStorage).filter(k=>/^sb-.*-auth-token/.test(k)).forEach(k=>localStorage.removeItem(k))}catch(e){}
+  location.replace(location.pathname)};
 if(sb){
   sb.auth.onAuthStateChange((ev,session)=>{
     if(ev==="PASSWORD_RECOVERY"){RECOVERY=true;lastUid=session?.user?.id;setTimeout(render,0);return}
