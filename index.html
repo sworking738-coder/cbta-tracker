@@ -248,7 +248,7 @@ details.behlist ul{margin:4px 0 0;padding-left:18px}
 
 .tabs a{position:relative;white-space:nowrap}
 .tabs .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--warn);vertical-align:2px}
-@media (max-width:640px){header.top .in{flex-wrap:wrap;row-gap:8px}#navTabs{order:3;width:100%;overflow-x:auto}#navTabs a{flex:1;text-align:center}}
+header.top .in{flex-wrap:wrap;row-gap:8px}#navTabs{order:3;width:100%;overflow-x:auto}#navTabs a{flex:1;text-align:center}
 a.userchip{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--fg);padding:4px 8px 4px 4px;border-radius:99px;border:1px solid transparent;text-align:left}
 a.userchip:hover,a.userchip.on{border-color:var(--line);background:var(--surface-2)}
 .ucav{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:var(--accent-fg);font-family:var(--display);font-weight:700;font-size:14px;flex:none}
@@ -318,10 +318,42 @@ body.hasbg::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:no
 .filebtn{position:relative;overflow:hidden}
 .filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
 .refs{display:flex;flex-direction:column;gap:6px}
-.refrow{display:flex;gap:6px;align-items:center}
+.refrow{display:flex;flex-direction:row;gap:6px;align-items:center}
 .refrow input{flex:1;min-width:0}
 .refrow button{min-height:40px;padding:6px 10px;flex:none}
 .addref{align-self:flex-start;padding-left:0;color:var(--accent)}
+/* round 4: milestones, references, user admin */
+.mtrack{position:relative}
+.mtick{position:absolute;top:-4px;width:3px;height:18px;margin-left:-1.5px;border-radius:2px;background:var(--hud-gold);box-shadow:0 0 0 2px var(--hud-bg)}
+.mtick.got{background:var(--hud-accent)}
+.mstones{display:flex;gap:8px;flex-wrap:wrap;position:relative;z-index:1}
+.ms{flex:1 1 170px;min-width:0;border:1px solid var(--hud-grid);border-radius:10px;padding:8px 10px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:0 10px;align-items:center}
+.msp{grid-row:span 2;font-family:var(--display);font-weight:700;font-size:24px;line-height:1;color:var(--hud-gold)}
+.msl{font-size:13px;font-weight:600;color:var(--hud-fg);line-height:1.25}
+.mss{font-size:11.5px;color:var(--hud-muted)}
+.ms.got{border-color:var(--hud-accent);background:rgba(181,211,106,.1)}
+.ms.got .msp,.ms.got .mss{color:var(--hud-accent)}
+.msgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.msbox{border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.msh{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.msh b{font-family:var(--display);font-size:24px;line-height:1}
+.mslist{display:flex;flex-wrap:wrap;gap:6px}
+.mslist a{font-size:13px;padding:3px 9px;border-radius:99px;background:var(--surface-2);color:var(--fg);text-decoration:none}
+.refbox{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:12px}
+.refchips{display:flex;flex-wrap:wrap;gap:6px}
+.refchip{display:inline-flex;align-items:center;gap:2px;border:1px solid var(--line);background:var(--surface-2);border-radius:99px;padding:2px 4px 2px 10px;font-size:13px}
+.refchip button{min-height:28px;padding:2px 8px;font-size:12px}
+.refchip:not(:has(button)){padding-right:10px}
+.rtask{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-top:1px solid var(--line)}
+.rtask:first-of-type{border-top:0}
+.rth{display:flex;gap:8px;justify-content:space-between;align-items:baseline;flex-wrap:wrap}
+.rtools{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.rtools input[type=search]{flex:1 1 220px;min-width:0}
+.hb.wide{grid-template-columns:minmax(0,1fr) minmax(0,40%) 74px}
+.hb.wide .nm{white-space:normal}
+.uedit{grid-column:1/-1;display:flex;flex-direction:column;gap:10px;background:var(--surface-2);border-radius:10px;padding:12px}
+.uact{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.task .rc{font-size:12px;color:var(--muted)}
 </style>
 </head><body>
 <header class="top"><div class="in">
@@ -370,7 +402,7 @@ const TASKS=[];const TASK={};
 SECTIONS.forEach(([sid,sname,list])=>list.forEach((name,i)=>{const id=sid+"-"+(i+1);const t={id,sid,sname,name};TASKS.push(t);TASK[id]=t;}));
 const TOTAL=TASKS.length;
 
-const S={db:null,ready:false,offline:false,trainees:[],signoffs:[],writable:true};
+const S={db:null,ready:false,offline:false,trainees:[],signoffs:[],refs:[],writable:true};
 const ROLES={admin:"Admin",assessor:"Assessor",pembina:"Pembina",pending:"Menunggu persetujuan",mekanik:"Mekanik",rejected:"Ditolak"};
 let ROLE="anon";               /* anon | pending | rejected | mekanik | assessor | pembina | admin */
 const ME={id:null,name:"",email:"",profile:null};
@@ -428,10 +460,11 @@ function route(){const h=location.hash.slice(1);
   if(ROLE==="pending"||ROLE==="rejected")return{view:"pending"};
   if(h==="profil"||ROLE==="mekanik")return{view:"profile"};
   if(h==="pengguna"&&ROLE==="admin")return{view:"users"};
+  if(h==="referensi"&&isStaff())return{view:"refs"};
   if(h.startsWith("t-"))return{view:"trainee",id:h.slice(2)};if(h==="baru"&&isAssessor())return{view:"new"};if(h==="mekanik")return{view:"home"};return{view:"dash"}}
 window.addEventListener("hashchange",()=>{render();window.scrollTo(0,0)});
 const NAVS={mekanik:[["profile","#profil","Profil saya"],["settings","#pengaturan","Pengaturan"]],
-  staff:[["dash","#dashboard","Dashboard"],["home","#mekanik","Mekanik"],["settings","#pengaturan","Pengaturan"]]};
+  staff:[["dash","#dashboard","Dashboard"],["home","#mekanik","Mekanik"],["refs","#referensi","Referensi"],["settings","#pengaturan","Pengaturan"]]};
 function render(){
   const app=$("#app");const r=route();
   let nav=ROLE==="mekanik"?NAVS.mekanik:isStaff()?NAVS.staff.slice():[];
@@ -448,7 +481,9 @@ function render(){
   if(!S.ready){return}
   let banner=S.offline?`<div class="notice">Data belum bisa dijangkau. Periksa koneksi internet; data yang tampil mungkin belum terbaru.</div>`:"";
   if(r.view==="settings"){app.innerHTML=banner+settingsView();bindSettings();return}
-  if(r.view==="profile"){app.innerHTML=banner+profileView();bindDash();return}
+  if(r.view==="profile"){app.innerHTML=banner+profileView();bindDash();
+    if(ROLE==="mekanik"){const t=S.trainees.find(x=>x.id===ME.profile?.trainee_id);if(t)document.querySelectorAll("[data-task]").forEach(b=>b.onclick=()=>openTask(t,b.dataset.task))}return}
+  if(r.view==="refs"){app.innerHTML=banner+refsView();bindRefs();return}
   if(r.view==="users"){app.innerHTML=banner+usersView();bindUsers();return}
   if(r.view==="trainee"){const t=S.trainees.find(x=>x.id===r.id);if(t){app.innerHTML=banner+traineeView(t);bindTrainee(t);return}}
   if(r.view==="new"){app.innerHTML=banner+traineeForm();bindTraineeForm(null);return}
@@ -568,6 +603,7 @@ function drawSheet(){
   $("#sheetRoot").innerHTML=`<div class="overlay" id="ov"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="shT">
     <div class="hd"><div><div class="label">${esc(task.sname)}</div><h2 id="shT">${esc(task.name)}</h2><div style="margin-top:6px"><span class="pill ${cls}" id="shPill">${lab}</span> <span class="muted" style="font-size:13px">${esc(t.name)}</span></div></div><button type="button" class="ghost" id="shX" aria-label="Tutup">✕</button></div>
     <div class="timeline" id="shHist">${hist}</div>
+    <div id="shRefs"></div><datalist id="refSug">${refSuggest(taskId).map(r=>`<option value="${esc(r)}">`).join("")}</datalist>
     ${!isAssessor()?`<div class="actions"><button type="button" id="eCancel">Tutup</button></div>`:`<form id="fEntry"><h3>Catat penilaian baru</h3>
       <div class="fields">
         <label class="f">Tanggal<input id="eDate" type="date" required value="${today()}"></label>
@@ -586,10 +622,10 @@ function drawSheet(){
     </form>`}</div></div>`;
   $("#shX").onclick=closeSheet;$("#eCancel").onclick=closeSheet;
   $("#ov").addEventListener("click",e=>{if(e.target.id==="ov")closeSheet()});
-  bindHist();
+  bindHist();drawRefs();
   if(!$("#fEntry"))return;
   const addRef=(focus)=>{const box=$("#eRefs");const n=box.children.length;if(n>=10)return;const row=document.createElement("div");row.className="refrow";
-    row.innerHTML=`<input class="eRefI" maxlength="120" placeholder="${n?"Referensi tambahan":"mis. AMM 20-11-00"}" aria-label="Referensi ${n+1}">${n?'<button type="button" class="ghost" aria-label="Hapus referensi ini">✕</button>':""}`;
+    row.innerHTML=`<input class="eRefI" maxlength="120" list="refSug" autocomplete="off" placeholder="${n?"Referensi tambahan":"mis. AMM 20-11-00"}" aria-label="Referensi ${n+1}">${n?'<button type="button" class="ghost" aria-label="Hapus referensi ini">✕</button>':""}`;
     const del=row.querySelector("button");if(del)del.onclick=()=>{row.remove();$("#eRefAdd").hidden=false};
     box.appendChild(row);$("#eRefAdd").hidden=box.children.length>=10;if(focus)row.querySelector("input").focus()};
   addRef(false);$("#eRefAdd").onclick=()=>addRef(true);
@@ -609,7 +645,7 @@ function histHtml(es){return es.length?es.map(e=>`<div style="display:flex;gap:8
 function bindHist(){document.querySelectorAll("[data-del]").forEach(b=>armDelete(b,"Yakin hapus?",async()=>{try{const {error}=await sb.from("signoffs").delete().eq("id",b.dataset.del);if(error)throw error;S.signoffs=S.signoffs.filter(x=>x.id!==b.dataset.del);toast("Catatan dihapus");render();refreshSheet()}catch(err){writeError(err)}}))}
 /* refresh only the history of an open sheet, so a half-filled form is never wiped by someone else's save */
 function refreshSheet(){if(!sheetCtx||!$("#shHist"))return;const {t,taskId}=sheetCtx;const st=statsFor(t.id);const [cls,lab]=taskStatus(st,taskId);
-  $("#shHist").innerHTML=histHtml(st.byTask[taskId]||[]);const p=$("#shPill");p.className="pill "+cls;p.textContent=lab;bindHist()}
+  $("#shHist").innerHTML=histHtml(st.byTask[taskId]||[]);const p=$("#shPill");p.className="pill "+cls;p.textContent=lab;bindHist();if(!($("#rNew")&&$("#rNew").value))drawRefs()}
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&sheetCtx)closeSheet()});
 
 function writeError(err){
@@ -619,6 +655,70 @@ function writeError(err){
   toast("Gagal menyimpan. Coba lagi sebentar.");
 }
 
+
+/* ---------- manual references ---------- */
+const fromRef=r=>({id:r.id,traineeId:r.trainee_id,taskId:r.task_id,ref:r.ref,createdAt:r.created_at});
+const refKey=v=>String(v||"").toUpperCase().replace(/[‐-―]/g,"-").replace(/\s*-\s*/g,"-").replace(/\s+/g," ").replace(/[.,;:]+$/,"").trim();
+const splitRefs=v=>String(v||"").split(/\s*;\s*/).map(x=>x.trim()).filter(Boolean);
+/* every reference use: from assessor entries and from mechanics' own list; same spelling (case, spaces, dashes) = one reference */
+function refTrends(){
+  const by={};const add=(taskId,traineeId,ref,date)=>{const k=refKey(ref);if(!k||!TASK[taskId])return;const t=(by[taskId]=by[taskId]||{});
+    const e=(t[k]=t[k]||{key:k,spell:{},mechs:new Set(),uses:0,last:""});e.spell[ref]=(e.spell[ref]||0)+1;e.mechs.add(traineeId);e.uses++;if((date||"")>e.last)e.last=date||""};
+  S.signoffs.forEach(x=>splitRefs(x.reference).forEach(r=>add(x.taskId,x.traineeId,r,x.date)));
+  S.refs.forEach(x=>add(x.taskId,x.traineeId,x.ref,(x.createdAt||"").slice(0,10)));
+  const res={};Object.entries(by).forEach(([tid,m])=>{res[tid]=Object.values(m).map(e=>({...e,label:Object.entries(e.spell).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]))[0][0]}))
+    .sort((a,b)=>b.mechs.size-a.mechs.size||b.uses-a.uses||a.label.localeCompare(b.label))});
+  return res}
+function refSuggest(taskId){const tr=refTrends();const own=(tr[taskId]||[]).map(e=>e.label);const seen=new Set(own.map(refKey));
+  const other=Object.values(tr).flat().filter(e=>!seen.has(e.key)&&seen.add(e.key)).map(e=>e.label);return own.concat(other).slice(0,60)}
+function refsBlock(t,taskId){
+  const mine=S.refs.filter(r=>r.traineeId===t.id&&r.taskId===taskId);
+  const own=ROLE==="mekanik"&&ME.profile?.trainee_id===t.id;const canDel=own||ROLE==="admin";
+  return `<div class="refbox"><h3>${own?"Referensi manual saya":"Referensi manual dari mekanik"}</h3>
+    ${mine.length?`<div class="refchips">${mine.map(r=>`<span class="refchip"><span class="mono">${esc(r.ref)}</span>${canDel?`<button type="button" class="ghost" data-rdel="${esc(r.id)}" aria-label="Hapus ${esc(r.ref)}">✕</button>`:""}</span>`).join("")}</div>`
+      :`<p class="muted" style="margin:0;font-size:13px">${own?"Belum ada. Tambahkan manual yang Anda pakai untuk tugas ini, mis. AMM, TSM, IPC, atau SRM.":"Mekanik belum menambahkan referensi untuk tugas ini."}</p>`}
+    ${own?`<form id="fRef" class="refrow"><input id="rNew" maxlength="120" placeholder="mis. AMM 12-13-11" list="refSug" aria-label="Referensi baru" autocomplete="off" required><button type="submit" class="primary">Tambah</button></form>`:""}
+  </div>`}
+function drawRefs(){const box=$("#shRefs");if(!box||!sheetCtx)return;const {t,taskId}=sheetCtx;box.innerHTML=refsBlock(t,taskId);
+  box.querySelectorAll("[data-rdel]").forEach(b=>b.onclick=async()=>{b.disabled=true;const {error}=await sb.from("task_refs").delete().eq("id",b.dataset.rdel);
+    if(error){b.disabled=false;toast("Gagal menghapus referensi.");return}S.refs=S.refs.filter(r=>r.id!==b.dataset.rdel);drawRefs();toast("Referensi dihapus")});
+  const f=$("#fRef");if(f)f.onsubmit=async e=>{e.preventDefault();const inp=$("#rNew");const ref=inp.value.trim().replace(/\s+/g," ");if(!ref)return;
+    if(S.refs.some(r=>r.traineeId===t.id&&r.taskId===taskId&&refKey(r.ref)===refKey(ref))){toast("Referensi ini sudah ada.");return}
+    const btn=f.querySelector("button");btn.disabled=true;
+    const {data,error}=await sb.from("task_refs").insert({trainee_id:t.id,task_id:taskId,ref}).select().single();btn.disabled=false;
+    if(error){toast(error.code==="23505"?"Referensi ini sudah ada.":error.code==="42P01"||/task_refs/.test(error.message||"")?"Fitur referensi belum aktif. Hubungi admin.":"Gagal menyimpan referensi.");return}
+    S.refs.push(fromRef(data));drawRefs();toast("Referensi ditambahkan");const ni=$("#rNew");if(ni)ni.focus()}}
+
+/* ---------- reference trends (staff) ---------- */
+let REFQ="",REFALL=false;
+function refsView(){
+  const tr=refTrends();const glob={};
+  Object.entries(tr).forEach(([tid,list])=>list.forEach(e=>{const g=(glob[e.key]=glob[e.key]||{label:e.label,mechs:new Set(),tasks:new Set(),uses:0});e.mechs.forEach(m=>g.mechs.add(m));g.tasks.add(tid);g.uses+=e.uses}));
+  const gl=Object.values(glob).sort((a,b)=>b.mechs.size-a.mechs.size||b.uses-a.uses||a.label.localeCompare(b.label));
+  const gmax=Math.max(1,...gl.map(g=>g.mechs.size));
+  const top=gl.slice(0,10).map(g=>`<div class="hb wide" data-tip="${esc(`${g.label}: ${g.mechs.size} mekanik, ${g.tasks.size} tugas, ${g.uses}× dipakai`)}"><span class="nm mono">${esc(g.label)}</span><span class="track"><span class="fill" style="width:${g.mechs.size/gmax*100}%"></span></span><span class="val">${g.mechs.size} mek</span></div>`).join("");
+  return `<div><div class="label">Analisis</div><h1>Tren referensi manual</h1></div>
+  <div class="kpis">
+    <div class="kpi"><div class="v">${gl.length}</div><div class="k">referensi unik</div></div>
+    <div class="kpi"><div class="v">${Object.keys(tr).length}/${TOTAL}</div><div class="k">tugas punya referensi</div></div>
+    <div class="kpi"><div class="v">${S.refs.length}</div><div class="k">ditambahkan mekanik</div></div>
+    <div class="kpi"><div class="v">${S.signoffs.filter(x=>splitRefs(x.reference).length).length}</div><div class="k">catatan assessor dengan referensi</div></div>
+  </div>
+  <div class="panel"><h2>Paling sering dipakai</h2><p class="muted" style="margin:0;font-size:13px">Jumlah mekanik yang memakai tiap referensi, di semua tugas.</p>${top?`<div class="hbars">${top}</div>`:`<p class="muted" style="margin:0">Belum ada referensi yang tercatat.</p>`}</div>
+  <div class="panel"><h2>Per tugas</h2>
+    <p class="muted" style="margin:0;font-size:13px">Gabungan referensi dari catatan assessor dan dari daftar mekanik. Penulisan yang sama (huruf besar-kecil, spasi, tanda hubung) dihitung satu kali, jadi tidak ada referensi ganda. Bar menunjukkan jumlah mekanik yang memakainya.</p>
+    <div class="rtools"><input type="search" id="refQ" placeholder="Cari tugas atau referensi, mis. AMM 12" value="${esc(REFQ)}" aria-label="Cari"><label class="check" style="margin:0"><input type="checkbox" id="refAll" ${REFALL?"checked":""}><span>Tampilkan tugas tanpa referensi</span></label></div>
+    <div id="refList">${refsList(tr)}</div></div>`}
+function refsList(tr){
+  tr=tr||refTrends();const q=refKey(REFQ);let shown=0;
+  const secs=SECTIONS.map(([sid,sname,list])=>{const rows=list.map((_,i)=>sid+"-"+(i+1)).map(id=>{
+      let l=tr[id]||[];const nameHit=!q||refKey(TASK[id].name).includes(q);if(q&&!nameHit)l=l.filter(e=>e.key.includes(q));
+      if(!l.length&&(q&&!nameHit||!REFALL))return "";shown++;const max=Math.max(1,...l.map(e=>e.mechs.size));
+      return `<div class="rtask"><div class="rth"><b>${esc(TASK[id].name)}</b><span class="muted mono" style="font-size:12px">${l.length} referensi</span></div>${l.length?`<div class="hbars">${l.map(e=>`<div class="hb wide" data-tip="${esc(`${e.label}: ${e.mechs.size} mekanik, ${e.uses}× dipakai, terakhir ${fmtDate(e.last)}`)}"><span class="nm mono">${esc(e.label)}</span><span class="track"><span class="fill" style="width:${e.mechs.size/max*100}%"></span></span><span class="val">${e.mechs.size} mek</span></div>`).join("")}</div>`:`<p class="muted" style="margin:0;font-size:13px">Belum ada referensi.</p>`}</div>`}).join("");
+    return rows?`<details class="group" open><summary><h3 style="flex:1">${esc(sname)}</h3></summary><div>${rows}</div></details>`:""}).join("");
+  return shown?secs:`<p class="muted" style="margin:12px 0 0">${q?"Tidak ada yang cocok dengan pencarian.":"Belum ada referensi yang tercatat. Referensi muncul di sini setelah assessor mengisinya di form penilaian atau mekanik menambahkannya di tugas mereka."}</p>`}
+function bindRefs(){const q=$("#refQ");q.oninput=()=>{REFQ=q.value;$("#refList").innerHTML=refsList()};
+  $("#refAll").onchange=e=>{REFALL=e.target.checked;$("#refList").innerHTML=refsList()}}
 
 /* ---------- dashboard ---------- */
 let STALE_DAYS=30;
@@ -664,6 +764,9 @@ function dashView(){
     <div class="kpi"><div class="v">${doneAll}</div><div class="k">total tugas sign-off</div></div>
     <div class="kpi"><div class="v">${last30}</div><div class="k">catatan 30 hari terakhir</div></div>
   </div>
+  ${MILESTONES.length?`<div class="panel"><h2>Milestone</h2><p class="muted" style="margin:0;font-size:13px">Mekanik yang sudah mencapai tiap milestone. Batasnya diatur admin di Pengaturan.</p><div class="msgrid">${MILESTONES.map(m=>{const need=tasksFor(m.pct);
+      const who=per.filter(p=>p.st.done.size>=need).sort((a,b)=>(a.t.name||"").localeCompare(b.t.name||""));const near=per.filter(p=>p.st.done.size<need&&need-p.st.done.size<=5).length;
+      return `<div class="msbox"><div class="msh"><b>${m.pct}%</b><span style="flex:1;min-width:0;font-weight:600">${esc(m.label)}</span><span class="pill ${who.length?"done":"none"}">${who.length} mekanik</span></div>${who.length?`<div class="mslist">${who.map(p=>`<a href="#t-${esc(p.t.id)}">${esc(p.t.name)}</a>`).join("")}</div>`:`<span class="muted" style="font-size:13px">Belum ada yang mencapai ${need} tugas.</span>`}${near?`<span class="muted" style="font-size:12.5px">${near} mekanik tinggal ≤5 tugas lagi.</span>`:""}</div>`}).join("")}</div></div>`:""}
   ${staleN?`<div class="notice">⚠ ${staleN} mekanik belum dinilai lebih dari ${STALE_DAYS} hari. Mereka ditandai di grafik progres.</div>`:""}
   <div class="dgrid">
     <div class="panel"><h2>Progres per mekanik</h2><p class="muted" style="margin:0;font-size:13px">Diurutkan dari yang paling tertinggal. Ketuk nama untuk membuka detail.</p><div class="hbars">${pbars}</div></div>
@@ -694,6 +797,12 @@ function bindDash(){document.querySelectorAll("[data-open]").forEach(b=>b.onclic
 const RANKS=[[0,"Rookie"],[10,"Apprentice"],[25,"Technician"],[45,"Specialist"],[60,"Senior Specialist"],[68,"CBTA Certified"]];
 const BADGES={gse:["Ground Crew","GSE"],svc:["Servicer","SVC"],mov:["Ramp Operator","RMP"],haz:["Safety Sentinel","SAF"],doc:["Paper Trail","DOC"],tool:["Tool Master","TLS"],env:["All-Weather","ENV"],sp:["Standard Bearer","STD"]};
 let STAT_MAX=10; /* observasi untuk stat penuh (100), diatur admin */
+/* ---------- milestones (admin can change) ---------- */
+let MILESTONES=[{pct:85,label:"Dapat diajukan rating"},{pct:95,label:"Dapat diajukan test AMEL"}];
+function cleanMilestones(v){if(!Array.isArray(v))return null;const seen=new Set();
+  return v.map(m=>({pct:Math.round(+m.pct),label:String(m.label||"").trim().slice(0,80)})).filter(m=>m.pct>=1&&m.pct<=100&&m.label&&!seen.has(m.pct)&&seen.add(m.pct)).sort((a,b)=>a.pct-b.pct).slice(0,8)}
+function tasksFor(pct){return Math.ceil(pct/100*TOTAL)}
+function milestoneState(done){return MILESTONES.map(m=>({...m,need:tasksFor(m.pct),got:done>=tasksFor(m.pct)}))}
 function gameFor(t){
   const st=statsFor(t.id);const done=st.done.size;
   const obs=Object.values(st.comp).reduce((a,b)=>a+b,0);const behN=st.entries.reduce((a,e)=>a+(e.beh||[]).length,0);
@@ -716,7 +825,7 @@ function radar(stats){
   return `<svg viewBox="0 0 320 306" class="radar" role="img" aria-label="Radar 11 kompetensi">${rings}${spokes}<polygon points="${poly}" fill="var(--hud-accent)" fill-opacity=".28" stroke="var(--hud-accent)" stroke-width="2" stroke-linejoin="round"/>${dots}${labels}</svg>`;
 }
 function statusCard(t){
-  const g=gameFor(t);const pct=Math.round(g.done/TOTAL*100);
+  const g=gameFor(t);const pct=Math.round(g.done/TOTAL*100);const ms=milestoneState(g.done);
   const nextTxt=g.next?`${g.next[0]-g.done} tugas lagi menuju <b>${g.next[1]}</b>`:"Semua tugas Fundamental selesai";
   const initials=(t.name||"?").split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join("").toUpperCase();
   const badges=g.badges.map(b=>`<div class="badge ${b.got?"got":""}" data-tip="${esc(`${b.name} · ${b.sname}: ${b.d}/${b.n} tugas`)}"><svg viewBox="0 0 40 44" aria-hidden="true"><polygon points="20,2 38,12 38,32 20,42 2,32 2,12" class="hx"/><text x="20" y="25" text-anchor="middle" class="ht">${b.tag}</text></svg><span class="bn">${esc(b.name)}</span><span class="bp">${b.got?"Terbuka":b.d+"/"+b.n}</span></div>`).join("");
@@ -727,9 +836,10 @@ function statusCard(t){
         <div class="rank"><span class="rk">${esc(g.rank)}</span><span class="hud-muted">${nextTxt}</span></div></div>
     </div>
     <div class="meters">
-      <div class="meter"><div class="mh"><span>Progres tugas</span><span class="mono">${g.done}/${TOTAL} · ${pct}%</span></div><div class="mbar"><span style="width:${pct}%"></span></div></div>
+      <div class="meter"><div class="mh"><span>Progres tugas</span><span class="mono">${g.done}/${TOTAL} · ${pct}%</span></div><div class="mtrack"><div class="mbar"><span style="width:${pct}%"></span></div>${ms.map(m=>`<i class="mtick ${m.got?"got":""}" style="left:${m.pct}%" data-tip="${esc(`Milestone ${m.pct}% (${m.need} tugas): ${m.label}`)}"></i>`).join("")}</div></div>
       <div class="meter"><div class="mh"><span>XP level ${g.lvl}</span><span class="mono">${g.into}/400 · total ${g.xp} XP</span></div><div class="mbar xp"><span style="width:${g.into/4}%"></span></div></div>
     </div>
+    ${ms.length?`<div class="mstones" aria-label="Milestone">${ms.map(m=>`<div class="ms ${m.got?"got":""}"><span class="msp">${m.pct}%</span><span class="msl">${esc(m.label)}</span><span class="mss">${m.got?"✓ Tercapai":`${m.need-g.done} tugas lagi (target ${m.need}/${TOTAL})`}</span></div>`).join("")}</div>`:""}
     <div class="hud-body">
       <div class="radarbox">${radar(g.stats)}<div class="hud-muted" style="font-size:11.5px;text-align:center">Stat = jumlah observasi kompetensi · ${STAT_MAX}× = 100</div></div>
       <div class="hud-side">
@@ -795,12 +905,13 @@ function mechProfile(){
   if(!t)return idCard()+`<div class="notice">Akun Anda belum terhubung ke data trainee. Hubungi admin CBTA.</div>`;
   const st=statsFor(t.id);
   const secs=SECTIONS.map(([sid,sname,list])=>{const ids=list.map((_,i)=>sid+"-"+(i+1));const d=ids.filter(i=>st.done.has(i)).length;
-    const rows=ids.map(i=>{const [cls,lab]=taskStatus(st,i);return `<div class="task" style="cursor:default"><span class="t">${esc(TASK[i].name)}</span><span class="pill ${cls}">${lab}</span></div>`}).join("");
+    const rows=ids.map(i=>{const [cls,lab]=taskStatus(st,i);const rc=S.refs.filter(r=>r.traineeId===t.id&&r.taskId===i).length;const ec=(st.byTask[i]||[]).length;
+      return `<button type="button" class="task" data-task="${i}"><span class="t">${esc(TASK[i].name)}</span><span class="pill ${cls}">${lab}</span><span class="s">${[ec?ec+" catatan":"",rc?rc+" referensi":""].filter(Boolean).join(" · ")||"Ketuk untuk menambah referensi"}</span></button>`}).join("");
     return `<details class="group"><summary><h3 style="flex:1">${esc(sname)}</h3><span class="mono muted">${d}/${ids.length}</span></summary><div class="tasks">${rows}</div></details>`}).join("");
   const recent=[...st.entries].sort((a,b)=>(b.date||"").localeCompare(a.date||"")||(b.createdAt||0)-(a.createdAt||0)).slice(0,5);
   return `${statusCard(t)}
     <div class="panel"><h2>Penilaian terakhir</h2><div class="timeline">${recent.length?recent.map(entryHtml).join(""):`<p class="muted" style="margin:0">Belum ada penilaian. Minta assessor Anda mencatat tugas OJT pertama.</p>`}</div></div>
-    <div class="panel" style="gap:0"><h2 style="margin-bottom:8px">Tugas OJT saya</h2>${secs}</div>
+    <div class="panel" style="gap:0"><h2>Tugas OJT saya</h2><p class="muted" style="margin:4px 0 8px;font-size:13px">Ketuk tugas untuk melihat catatan assessor dan menambahkan referensi manual yang Anda pakai.</p>${secs}</div>
     ${idCard()}`;
 }
 
@@ -848,6 +959,11 @@ function settingsView(){
       <label class="f">Observasi untuk stat kompetensi penuh<input id="aStat" type="number" min="1" max="100" required value="${STAT_MAX}"></label>
     </div><div class="actions"><button type="submit">Simpan pengaturan aplikasi</button></div></form>
     <p class="muted" style="margin:0;font-size:13px">Persetujuan akun baru ada di tab <a href="#pengguna">Pengguna</a>.</p></section>
+  <section class="panel"><h2>Milestone progres (admin)</h2>
+    <p class="muted" style="margin:0;font-size:13.5px">Ditampilkan di kartu status setiap mekanik dan di Dashboard. Persen dihitung dari ${TOTAL} tugas, mis. 85% = ${tasksFor(85)} tugas selesai.</p>
+    <form id="fMs"><div id="msRows" style="display:flex;flex-direction:column;gap:6px">${MILESTONES.map(msRow).join("")}</div>
+      <button type="button" class="ghost addref" id="msAdd">+ Tambah milestone</button>
+      <div class="actions"><button type="submit">Simpan milestone</button></div></form></section>
   <section class="panel"><h2>Ikon & latar aplikasi (admin)</h2>
     <p class="muted" style="margin:0;font-size:13.5px">Berlaku untuk semua akun, termasuk halaman Masuk. Pengguna lain melihat perubahan saat membuka atau memuat ulang aplikasi.</p>
     <div class="brandset">
@@ -862,6 +978,7 @@ function settingsView(){
     </div></section>`:""}
   </div>`;
 }
+function msRow(m){return `<div class="refrow msrow"><input type="number" class="msPct" min="1" max="100" step="1" required value="${m?m.pct:""}" aria-label="Persen progres" style="max-width:84px"><span class="muted">%</span><input class="msLab" maxlength="80" required value="${esc(m?.label||"")}" placeholder="mis. Dapat diajukan rating" aria-label="Keterangan milestone"><button type="button" class="ghost" data-msdel aria-label="Hapus milestone">✕</button></div>`}
 function bindSettings(){
   $("#fProf").onsubmit=async e=>{e.preventDefault();const upd={full_name:$("#pName").value.trim(),unit:$("#pUnit").value.trim(),phone:$("#pPhone").value.trim()};
     if(ROLE!=="mekanik")upd.emp_no=$("#pEmp").value.trim();const a=$("#pAuth");if(a)upd.auth_no=a.value.trim();
@@ -883,6 +1000,13 @@ function bindSettings(){
     const {error}=await q;if(error){toast("Gagal menyimpan. Coba gambar yang lebih kecil.");return}
     const rows=[];if(BRAND.icon)rows.push({key:"brand_icon",value:{src:BRAND.icon}});if(BRAND.bg)rows.push({key:"brand_bg",value:BRAND.bg});
     const next=rows.filter(r=>r.key!==key);if(value!==null)next.push({key,value});setBrand(next);toast(msg);render()};
+  const fm=$("#fMs");if(fm){const rows=$("#msRows");
+    rows.onclick=e=>{const b=e.target.closest("[data-msdel]");if(b)b.closest(".msrow").remove()};
+    $("#msAdd").onclick=()=>{if(rows.children.length>=8){toast("Maksimal 8 milestone.");return}rows.insertAdjacentHTML("beforeend",msRow(null));rows.lastElementChild.querySelector("input").focus()};
+    fm.onsubmit=async e=>{e.preventDefault();const raw=[...rows.querySelectorAll(".msrow")].map(r=>({pct:+r.querySelector(".msPct").value,label:r.querySelector(".msLab").value}));
+      const pcts=raw.map(m=>Math.round(m.pct));if(new Set(pcts).size!==pcts.length){toast("Ada dua milestone dengan persen yang sama.");return}
+      const ms=cleanMilestones(raw);const {error}=await sb.from("app_settings").upsert({key:"milestones",value:ms,updated_at:new Date().toISOString()});
+      if(error){toast("Gagal menyimpan milestone.");return}MILESTONES=ms;toast("Milestone disimpan");render()}}
   const bi=$("#bIcon");if(bi)bi.onchange=async()=>{const f=bi.files[0];if(!f)return;try{const src=await shrinkImage(f,256,"image/png");await saveBrand("brand_icon",{src},"Ikon diperbarui")}catch(e){toast("File ini bukan gambar yang bisa dibaca.")}};
   const bid=$("#bIconDel");if(bid)bid.onclick=()=>saveBrand("brand_icon",null,"Ikon dihapus");
   const bb=$("#bBgImg");if(bb)bb.onchange=async()=>{const f=bb.files[0];if(!f)return;try{const src=await shrinkImage(f,1600,"image/jpeg",0.78);await saveBrand("brand_bg",{type:"image",src},"Latar diperbarui")}catch(e){toast("File ini bukan gambar yang bisa dibaca.")}};
@@ -984,35 +1108,62 @@ function usersView(){
   const rest=USERS.filter(u=>u.role!=="pending").sort((a,b)=>(a.role||"").localeCompare(b.role||"")||(a.full_name||"").localeCompare(b.full_name||""));
   const meta=u=>[u.email,u.emp_no&&"No. pegawai "+u.emp_no,u.auth_no&&"Otorisasi "+u.auth_no,u.unit,u.phone].filter(Boolean).map(esc).join(" · ");
   const pendRows=pend.map(u=>`<div class="req"><div style="min-width:0"><b>${esc(u.full_name||"(tanpa nama)")}</b> <span class="rolebadge r-${esc(u.requested_role)}">ingin jadi ${esc(ROLE_DESC[u.requested_role])}</span><div class="muted" style="font-size:13px;overflow-wrap:anywhere">${meta(u)}</div><div class="muted" style="font-size:12px">Diajukan ${fmtDate(u.created_at.slice(0,10))}</div></div>
-    <div class="reqact"><button type="button" class="primary" data-ap="${esc(u.id)}" data-role="${esc(u.requested_role)}">Setujui</button><button type="button" class="danger" data-ap="${esc(u.id)}" data-role="rejected">Tolak</button></div></div>`).join("");
+    <div class="reqact"><button type="button" class="primary" data-ap="${esc(u.id)}" data-role="${esc(u.requested_role)}">Setujui</button><button type="button" class="danger" data-ap="${esc(u.id)}" data-role="rejected">Tolak</button><button type="button" class="ghost" data-edit="${esc(u.id)}">Ubah</button></div>${EDITUID===u.id?userEditForm(u):""}</div>`).join("");
   const counts={};USERS.forEach(u=>counts[u.role]=(counts[u.role]||0)+1);
   const restRows=rest.map(u=>`<div class="urow"><div style="min-width:0"><b>${esc(u.full_name||"(tanpa nama)")}</b><div class="muted" style="font-size:13px;overflow-wrap:anywhere">${meta(u)}</div></div>
-    ${u.id===ME.id?`<span class="rolebadge r-admin">Admin (Anda)</span>`:`<select data-uid="${esc(u.id)}" aria-label="Peran ${esc(u.full_name)}">${["mekanik","assessor","pembina","admin","rejected"].map(r=>`<option value="${r}" ${u.role===r?"selected":""}>${ROLE_DESC[r]}</option>`).join("")}</select>`}</div>`).join("");
+    <div class="uact"><span class="rolebadge r-${esc(u.role)}">${esc(u.id===ME.id?"Admin (Anda)":ROLE_DESC[u.role]||u.role)}</span><button type="button" class="ghost" data-edit="${esc(u.id)}" ${EDITUID===u.id?"hidden":""}>Ubah</button></div>${EDITUID===u.id?userEditForm(u):""}</div>`).join("");
   return `<div><div class="label">Admin</div><h1>Pengguna</h1></div>
   <div class="kpis">${[["assessor","assessor"],["pembina","pembina"],["mekanik","mekanik"],["pending","menunggu"]].map(([k,l])=>`<div class="kpi"><div class="v">${counts[k]||0}</div><div class="k">${l}</div></div>`).join("")}</div>
   <div class="panel"><h2>Pengajuan baru ${pend.length?`<span class="pill prog">${pend.length}</span>`:""}</h2>${pendRows||`<p class="muted" style="margin:0">Tidak ada pengajuan yang menunggu.</p>`}</div>
-  <div class="panel"><h2>Pengguna aktif</h2><p class="muted" style="margin:0;font-size:13.5px">Ubah peran bila perlu. Mekanik terhubung ke data trainee lewat no. pegawai.</p><div class="ulist">${restRows||'<p class="muted">Belum ada pengguna lain.</p>'}</div></div>`;
+  <div class="panel"><h2>Pengguna aktif</h2><p class="muted" style="margin:0;font-size:13.5px">Ketuk Ubah untuk mengedit data, mengganti peran, atau menghapus akun. Mekanik terhubung ke data trainee lewat no. pegawai.</p><div class="ulist">${restRows||'<p class="muted">Belum ada pengguna lain.</p>'}</div></div>`;
 }
 const APPROVE_MSG={ok:"Disimpan",no_emp:"Mekanik ini belum mengisi no. pegawai.",taken:"No. pegawai ini sudah dipakai akun mekanik lain.",self:"Anda tidak bisa menurunkan peran sendiri.",forbidden:"Hanya admin yang bisa melakukan ini."};
 async function setRole(uid,role,el){el.disabled=true;const {data,error}=await sb.rpc("approve_user",{p_user:uid,p_role:role});el.disabled=false;
   if(error||data!=="ok"){toast(error?(error.code==="23505"?"No. pegawai akun ini sudah dipakai akun lain.":"Gagal menyimpan."):(APPROVE_MSG[data]||"Gagal: "+data));return}
   toast(role==="rejected"?"Pengajuan ditolak":"Peran diperbarui");await loadUsers();if(role==="mekanik")await loadAll();render()}
+let EDITUID=null;
+function userEditForm(u){const self=u.id===ME.id;
+  return `<form id="fUser" class="uedit" data-fuid="${esc(u.id)}"><div class="label">Ubah data pengguna</div><div class="fields">
+    <label class="f full">Nama lengkap<input id="uName" required maxlength="120" value="${esc(u.full_name)}"></label>
+    <label class="f">No. pegawai<input id="uEmp" maxlength="40" value="${esc(u.emp_no)}"></label>
+    <label class="f">No. otorisasi<input id="uAuth" maxlength="60" value="${esc(u.auth_no)}"></label>
+    <label class="f">Unit / lokasi<input id="uUnit" maxlength="120" value="${esc(u.unit)}"></label>
+    <label class="f">Telepon<input id="uPhone" type="tel" maxlength="40" value="${esc(u.phone)}"></label>
+    ${self?"":`<label class="f full">Peran<select id="uRole">${["pending","mekanik","assessor","pembina","admin","rejected"].map(r=>`<option value="${r}" ${u.role===r?"selected":""}>${ROLE_DESC[r]}</option>`).join("")}</select></label>`}
+  </div>
+  <div class="actions" style="justify-content:space-between;flex-wrap:wrap">${self?"<span></span>":`<button type="button" class="danger" id="uDel">Hapus akun</button>`}<span style="display:flex;gap:8px"><button type="button" id="uCancel">Batal</button><button class="primary" type="submit">Simpan</button></span></div>
+  ${self?"":`<p class="muted" style="margin:0;font-size:12.5px">Menghapus akun tidak menghapus catatan penilaian.${u.role==="mekanik"?" Data trainee dan progresnya tetap ada di daftar Mekanik.":""} Orang ini bisa mendaftar lagi dengan no. pegawai yang sama.</p>`}</form>`}
 function bindUsers(){
   document.querySelectorAll("[data-ap]").forEach(b=>b.onclick=()=>setRole(b.dataset.ap,b.dataset.role,b));
-  document.querySelectorAll("[data-uid]").forEach(sel=>sel.onchange=()=>setRole(sel.dataset.uid,sel.value,sel));
+  document.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>{EDITUID=b.dataset.edit;render();const n=$("#uName");if(n)n.focus()});
+  const f=$("#fUser");if(!f)return;const u=USERS.find(x=>x.id===f.dataset.fuid);if(!u){EDITUID=null;return}
+  $("#uCancel").onclick=()=>{EDITUID=null;render()};
+  armDelete($("#uDel"),"Yakin hapus akun ini?",async()=>{const {data,error}=await sb.rpc("admin_delete_user",{p_user:u.id});
+    if(error||data!=="ok"){const b=$("#uDel");if(b)b.disabled=false;toast(error?"Gagal menghapus. Pastikan pembaruan database terbaru sudah dijalankan.":data==="self"?"Anda tidak bisa menghapus akun sendiri.":"Gagal: "+data);return}
+    EDITUID=null;toast("Akun dihapus");await loadUsers();render()});
+  f.onsubmit=async e=>{e.preventDefault();const btn=f.querySelector("[type=submit]");btn.disabled=true;
+    const upd={full_name:$("#uName").value.trim(),emp_no:$("#uEmp").value.trim(),auth_no:$("#uAuth").value.trim(),unit:$("#uUnit").value.trim(),phone:$("#uPhone").value.trim()};
+    const {error}=await sb.from("profiles").update(upd).eq("id",u.id);
+    if(error){btn.disabled=false;toast(error.code==="23505"?"No. pegawai ini sudah dipakai akun lain.":"Gagal menyimpan.");return}
+    const nr=$("#uRole")?$("#uRole").value:u.role;const empChanged=upd.emp_no.toLowerCase()!==String(u.emp_no||"").trim().toLowerCase();
+    if(nr!==u.role||(nr==="mekanik"&&empChanged)){const {data,error:e2}=await sb.rpc("approve_user",{p_user:u.id,p_role:nr});
+      if(e2||data!=="ok"){btn.disabled=false;toast(e2?(e2.code==="23505"?"No. pegawai ini sudah dipakai akun lain.":"Data disimpan, tetapi peran gagal diubah."):(APPROVE_MSG[data]||"Gagal: "+data));await loadUsers();return}}
+    if(u.id===ME.id){Object.assign(ME.profile,upd);ME.name=upd.full_name}
+    EDITUID=null;toast("Data pengguna disimpan");await loadUsers();if(nr==="mekanik")await loadAll();render()};
 }
 
 /* ---------- data ---------- */
 async function fetchAll(table,map){const out=[];for(let from=0;;from+=1000){const {data,error}=await sb.from(table).select("*").order("created_at").range(from,from+999);if(error)throw error;out.push(...data.map(map));if(data.length<1000)break}return out}
 async function loadAll(){
   try{const [t,s2,cfg]=await Promise.all([fetchAll("trainees",fromTrainee),fetchAll("signoffs",fromSignoff),sb.from("app_settings").select("key,value")]);S.trainees=t;S.signoffs=s2;S.offline=false;
-    (cfg.data||[]).forEach(r=>{if(r.key==="stale_days"&&+r.value>0)STALE_DAYS=+r.value;if(r.key==="stat_max"&&+r.value>0)STAT_MAX=+r.value});setBrand((cfg.data||[]).filter(r=>r.key.startsWith("brand_")))}
+    (cfg.data||[]).forEach(r=>{if(r.key==="milestones"){const m=cleanMilestones(r.value);if(m)MILESTONES=m}if(r.key==="stale_days"&&+r.value>0)STALE_DAYS=+r.value;if(r.key==="stat_max"&&+r.value>0)STAT_MAX=+r.value});setBrand((cfg.data||[]).filter(r=>r.key.startsWith("brand_")))}
   catch(e){S.offline=true}
+  try{S.refs=await fetchAll("task_refs",fromRef)}catch(e){S.refs=[]} /* table appears after migration 004 */
   if(ROLE==="admin")await loadUsers();
 }
 let reloadTimer=null,channel=null;
 function scheduleReload(){clearTimeout(reloadTimer);reloadTimer=setTimeout(async()=>{await loadAll();
-  if(document.querySelector("#fTrainee,#fProf,#fApp"))return; /* don't wipe a form being typed */
+  if(document.querySelector("#fTrainee,#fProf,#fApp,#fUser,#fMs")||($("#rNew")&&$("#rNew").value)||document.activeElement?.id==="refQ")return; /* don't wipe a form being typed */
   render();refreshSheet()},800)}
 async function applySession(session){
   if(channel){sb.removeChannel(channel);channel=null}
@@ -1023,7 +1174,7 @@ async function applySession(session){
   if(prof?.prefs?.trainer&&!lsGet("cbta.trainer"))lsSet("cbta.trainer",prof.prefs.trainer);
   if(prof?.prefs?.aircraft&&!lsGet("cbta.aircraft"))lsSet("cbta.aircraft",prof.prefs.aircraft);
   if(isStaff()||ROLE==="mekanik"){S.ready=false;$("#app").innerHTML=`<div class="panel"><p class="muted" style="margin:0">Memuat data…</p></div>`;await loadAll();
-    channel=sb.channel("cbta").on("postgres_changes",{event:"*",schema:"public",table:"signoffs"},scheduleReload).on("postgres_changes",{event:"*",schema:"public",table:"trainees"},scheduleReload).subscribe();
+    channel=sb.channel("cbta").on("postgres_changes",{event:"*",schema:"public",table:"signoffs"},scheduleReload).on("postgres_changes",{event:"*",schema:"public",table:"trainees"},scheduleReload).on("postgres_changes",{event:"*",schema:"public",table:"task_refs"},scheduleReload).subscribe();
     if(ROLE==="admin"&&USERS.some(u=>u.role==="pending"))setTimeout(()=>toast("Ada pengajuan akun baru di tab Pengguna."),600);}
   S.ready=true;render();
 }
