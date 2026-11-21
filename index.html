@@ -2,6 +2,7 @@
 <html lang="id"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>CBTA Progress Tracker</title>
+<link rel="icon" id="favicon" href="data:,">
 <meta name="theme-color" content="#0f1820">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -301,13 +302,35 @@ fieldset.rolepick legend{margin-bottom:6px}
 .rolepick input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* branding: admin icon + background for every account */
+.blogo{width:36px;height:36px;border-radius:8px;object-fit:contain;flex:none}
+.authlogo{width:64px;height:64px;border-radius:14px;object-fit:contain;background:rgba(255,255,255,.08);padding:6px;position:relative}
+body.hasbg::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(color-mix(in srgb,var(--bg) 72%,transparent),color-mix(in srgb,var(--bg) 72%,transparent)),var(--brand-bg) center/cover no-repeat}
+.hdout{font-size:13.5px;min-height:36px;padding:6px 10px;flex:none}
+@media (max-width:640px){.hdout{padding:6px 8px}}
+.brandset{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.brandset>div{display:flex;flex-direction:column;gap:8px;min-width:0}
+.bprev{height:96px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2) center/cover no-repeat;display:grid;place-items:center;color:var(--muted);font-size:13px}
+.bprev img{max-width:72px;max-height:72px;object-fit:contain}
+.brow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.brow input[type=color]{width:48px;height:40px;padding:2px;border-radius:8px;border:1px solid var(--line);background:var(--surface)}
+.filebtn{position:relative;overflow:hidden}
+.filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.refs{display:flex;flex-direction:column;gap:6px}
+.refrow{display:flex;gap:6px;align-items:center}
+.refrow input{flex:1;min-width:0}
+.refrow button{min-height:40px;padding:6px 10px;flex:none}
+.addref{align-self:flex-start;padding-left:0;color:var(--accent)}
 </style>
 </head><body>
 <header class="top"><div class="in">
+  <img class="blogo" id="brandIcon" alt="" hidden>
   <div class="brand">CBTA Tracker<small>BT-RRF-079/R0 · Fundamental OJT Task List</small></div>
   <div class="spacer"></div>
   <nav class="tabs" aria-label="Halaman" id="navTabs" hidden></nav>
   <a class="userchip" id="userChip" href="#profil" hidden><span class="ucav" id="ucAv"></span><span class="uctx"><b id="ucName"></b><span class="label" id="ucRole"></span></span></a>
+  <button type="button" class="hdout" id="btnOut" hidden>Keluar</button>
 </div></header>
 <main class="wrap" id="app"><div class="panel"><p class="muted" style="margin:0">Memuat…</p></div></main>
 <div id="sheetRoot"></div>
@@ -358,6 +381,27 @@ const fromTrainee=r=>({id:r.id,name:r.name,empNo:r.emp_no,company:r.company,loca
 const fromSignoff=r=>({id:r.id,traineeId:r.trainee_id,taskId:r.task_id,date:r.date,mode:r.mode,aircraft:r.aircraft,reference:r.reference,trainer:r.trainer,comps:r.comps||[],beh:r.beh||[],notes:r.notes,complete:r.complete,assessorId:r.assessor_id,createdAt:Date.parse(r.created_at)||0});
 const $=s=>document.querySelector(s);
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+/* ---------- branding (admin sets icon + background for every account) ---------- */
+const BRAND={icon:"",bg:null};
+function applyBrand(){
+  const ic=$("#brandIcon");if(ic){ic.hidden=!BRAND.icon;if(BRAND.icon)ic.src=BRAND.icon;else ic.removeAttribute("src")}
+  const fav=$("#favicon");if(fav)fav.href=BRAND.icon||"data:,";
+  const b=BRAND.bg;const val=b&&b.type==="image"&&b.src?`url("${b.src}")`:b&&b.type==="color"&&/^#[0-9a-f]{6}$/i.test(b.value||"")?b.value:"";
+  document.body.classList.toggle("hasbg",!!val);if(val)document.body.style.setProperty("--brand-bg",val);else document.body.style.removeProperty("--brand-bg");
+}
+function setBrand(rows){BRAND.icon="";BRAND.bg=null;(rows||[]).forEach(r=>{const v=r.value||{};if(r.key==="brand_icon"&&typeof v.src==="string"&&v.src.startsWith("data:image/"))BRAND.icon=v.src;
+  if(r.key==="brand_bg"&&(v.type==="color"||(v.type==="image"&&typeof v.src==="string"&&v.src.startsWith("data:image/"))))BRAND.bg=v});
+  try{localStorage.setItem("cbta.brand",JSON.stringify(BRAND))}catch(e){}applyBrand()}
+async function loadBrand(){if(!sb)return;const {data,error}=await sb.from("app_settings").select("key,value").in("key",["brand_icon","brand_bg"]);
+  if(!error){const had=JSON.stringify(BRAND);setBrand(data);if(had!==JSON.stringify(BRAND)&&ROLE==="anon"&&typeof render==="function")render()}}
+try{const c=JSON.parse(localStorage.getItem("cbta.brand")||"null");if(c){BRAND.icon=c.icon||"";BRAND.bg=c.bg||null}}catch(e){}
+applyBrand();
+/* shrink an uploaded picture in the browser so it fits in the settings table */
+function shrinkImage(file,max,type,q){return new Promise((res,rej)=>{if(!file||!/^image\//.test(file.type)){rej(new Error("type"));return}
+  const url=URL.createObjectURL(file);const im=new Image();im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height));const c=document.createElement("canvas");
+    c.width=Math.max(1,Math.round(im.width*k));c.height=Math.max(1,Math.round(im.height*k));const g=c.getContext("2d");
+    if(type==="image/jpeg"){g.fillStyle="#ffffff";g.fillRect(0,0,c.width,c.height)}g.drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(url);res(c.toDataURL(type,q))};
+  im.onerror=()=>{URL.revokeObjectURL(url);rej(new Error("decode"))};im.src=url})}
 const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
 const fmtDate=s=>{if(!s)return"–";const [y,m,d]=s.split("-");const M=["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];return `${+d} ${M[+m-1]} ${y}`};
 const MEM={};
@@ -396,7 +440,7 @@ function render(){
   $("#navTabs").innerHTML=nav.map(([v,h,l])=>`<a href="${h}" class="${cur===v?"on":""}">${l}${v==="users"&&USERS.some(u=>u.role==="pending")?' <span class="dot" aria-label="ada pengajuan"></span>':""}</a>`).join("");
   $("#navTabs").hidden=!nav.length;
   $("#userChip").hidden=ROLE==="anon";$("#ucName").textContent=ME.name||ME.email;$("#ucRole").textContent=ROLES[ROLE]||"";$("#ucAv").textContent=initialsOf(ME.name||ME.email);
-  $("#userChip").classList.toggle("on",r.view==="profile");
+  $("#userChip").classList.toggle("on",r.view==="profile");$("#btnOut").hidden=ROLE==="anon";
   document.documentElement.dataset.role=ROLE;
   if(!sb){app.innerHTML=`<div class="panel"><h2>Aplikasi gagal dimuat</h2><p class="muted" style="margin:0">Periksa koneksi internet lalu muat ulang halaman.</p></div>`;return}
   if(["login","signup","forgot","setpass"].includes(r.view)){app.innerHTML=r.view==="login"?loginView():r.view==="signup"?signupView():r.view==="forgot"?forgotView():setPassView();bindAuth(r.view);return}
@@ -529,7 +573,7 @@ function drawSheet(){
         <label class="f">Tanggal<input id="eDate" type="date" required value="${today()}"></label>
         <label class="f">Perform / Demonstrate<select id="eMode"><option value="P">P – Perform</option><option value="D" ${ME.profile?.prefs?.mode==="D"?"selected":""}>D – Demonstrate</option></select></label>
         <label class="f">Airplane ID &amp; Type<input id="eAc" placeholder="mis. PK-LKS B737-900ER" value="${esc(lastAc)}"></label>
-        <label class="f">Reference<input id="eRef" placeholder="mis. AMM 20-11-00"></label>
+        <div class="f full" style="display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:500"><span id="eRefL">Reference</span><div class="refs" id="eRefs" role="group" aria-labelledby="eRefL"></div><button type="button" class="ghost addref" id="eRefAdd">+ Tambah referensi</button></div>
         <label class="f full">Trainer / Assessor<input id="eTr" value="${esc(trainer)}" placeholder="Nama dan no. otorisasi"></label>
       </div>
       <div class="f" style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:500">Kompetensi & perilaku yang teramati</span>
@@ -544,13 +588,18 @@ function drawSheet(){
   $("#ov").addEventListener("click",e=>{if(e.target.id==="ov")closeSheet()});
   bindHist();
   if(!$("#fEntry"))return;
+  const addRef=(focus)=>{const box=$("#eRefs");const n=box.children.length;if(n>=10)return;const row=document.createElement("div");row.className="refrow";
+    row.innerHTML=`<input class="eRefI" maxlength="120" placeholder="${n?"Referensi tambahan":"mis. AMM 20-11-00"}" aria-label="Referensi ${n+1}">${n?'<button type="button" class="ghost" aria-label="Hapus referensi ini">✕</button>':""}`;
+    const del=row.querySelector("button");if(del)del.onclick=()=>{row.remove();$("#eRefAdd").hidden=false};
+    box.appendChild(row);$("#eRefAdd").hidden=box.children.length>=10;if(focus)row.querySelector("input").focus()};
+  addRef(false);$("#eRefAdd").onclick=()=>addRef(true);
   document.querySelectorAll(".bc").forEach(bc=>{const c=bc.dataset.c;const cchk=bc.querySelector(".cchk"),bt=bc.querySelector(".bt"),bl=bc.querySelector(".bl"),bk=bc.querySelector(".bk");
     const upd=()=>{const n=bl.querySelectorAll(".bchk:checked").length;bk.textContent=n?n+"/"+BEH[c].length:"";bc.classList.toggle("on",cchk.checked)};
     bt.onclick=()=>{bl.hidden=!bl.hidden;bt.setAttribute("aria-expanded",String(!bl.hidden));bc.classList.toggle("open",!bl.hidden)};
     bl.querySelectorAll(".bchk").forEach(x=>x.onchange=()=>{if(x.checked)cchk.checked=true;upd()});
     cchk.onchange=()=>{if(!cchk.checked)bl.querySelectorAll(".bchk").forEach(x=>x.checked=false);upd()};});
   $("#fEntry").onsubmit=async e=>{e.preventDefault();const btn=e.submitter||e.target.querySelector("[type=submit]");btn.disabled=true;
-    const body={trainee_id:t.id,task_id:taskId,date:$("#eDate").value,mode:$("#eMode").value,aircraft:$("#eAc").value.trim(),reference:$("#eRef").value.trim(),trainer:$("#eTr").value.trim(),assessor_id:ME.id,
+    const body={trainee_id:t.id,task_id:taskId,date:$("#eDate").value,mode:$("#eMode").value,aircraft:$("#eAc").value.trim(),reference:[...document.querySelectorAll(".eRefI")].map(i=>i.value.trim()).filter(Boolean).join("; "),trainer:$("#eTr").value.trim(),assessor_id:ME.id,
       comps:[...document.querySelectorAll(".cchk:checked")].map(i=>i.value),beh:[...document.querySelectorAll(".bchk:checked")].map(i=>i.value),notes:$("#eNotes").value.trim(),complete:$("#eDone").checked};
     lsSet("cbta.aircraft",body.aircraft);lsSet("cbta.trainer",body.trainer);
     try{const {data,error}=await sb.from("signoffs").insert(body).select().single();if(error)throw error;if(!S.signoffs.some(x=>x.id===data.id))S.signoffs.push(fromSignoff(data));toast(body.complete?"Tugas ditandai selesai":"Catatan disimpan");closeSheet();render();}catch(err){btn.disabled=false;writeError(err)}
@@ -777,7 +826,6 @@ function settingsView(){
       <label class="f">Kata sandi baru<input id="np1" type="password" minlength="8" required autocomplete="new-password"></label>
       <label class="f">Ulangi kata sandi baru<input id="np2" type="password" minlength="8" required autocomplete="new-password"></label>
     </div><div class="actions"><button type="submit">Ganti kata sandi</button></div></form>
-    <div class="actions" style="justify-content:flex-start"><button type="button" class="danger" id="sOut">Keluar dari akun</button></div>
   </section>
   <section class="panel"><h2>Tampilan</h2>
     <div class="seg" role="radiogroup" aria-label="Tema">${[["system","Ikuti perangkat"],["light","Terang"],["dark","Gelap"]].map(([v,l])=>`<label><input type="radio" name="theme" value="${v}" ${th===v?"checked":""}><span>${l}</span></label>`).join("")}</div>
@@ -799,18 +847,29 @@ function settingsView(){
       <label class="f">Tandai mekanik tidak aktif setelah (hari)<input id="aStale" type="number" min="7" max="365" required value="${STALE_DAYS}"></label>
       <label class="f">Observasi untuk stat kompetensi penuh<input id="aStat" type="number" min="1" max="100" required value="${STAT_MAX}"></label>
     </div><div class="actions"><button type="submit">Simpan pengaturan aplikasi</button></div></form>
-    <p class="muted" style="margin:0;font-size:13px">Persetujuan akun baru ada di tab <a href="#pengguna">Pengguna</a>.</p></section>`:""}
+    <p class="muted" style="margin:0;font-size:13px">Persetujuan akun baru ada di tab <a href="#pengguna">Pengguna</a>.</p></section>
+  <section class="panel"><h2>Ikon & latar aplikasi (admin)</h2>
+    <p class="muted" style="margin:0;font-size:13.5px">Berlaku untuk semua akun, termasuk halaman Masuk. Pengguna lain melihat perubahan saat membuka atau memuat ulang aplikasi.</p>
+    <div class="brandset">
+      <div><b>Ikon / logo</b><div class="bprev">${BRAND.icon?`<img src="${esc(BRAND.icon)}" alt="Ikon saat ini">`:"Belum ada ikon"}</div>
+        <div class="brow"><span class="btn filebtn">Pilih gambar<input type="file" id="bIcon" accept="image/png,image/jpeg,image/webp,image/svg+xml" aria-label="Pilih gambar ikon"></span>${BRAND.icon?`<button type="button" class="ghost danger" id="bIconDel">Hapus ikon</button>`:""}</div>
+        <span class="muted" style="font-size:12.5px">PNG dengan latar transparan paling bagus. Ditampilkan di header, halaman Masuk, dan tab browser.</span></div>
+      <div><b>Latar belakang</b><div class="bprev" id="bBgPrev" style="${BRAND.bg?.type==="image"?`background-image:url('${esc(BRAND.bg.src)}')`:BRAND.bg?.type==="color"?`background:${esc(BRAND.bg.value)}`:""}">${BRAND.bg?"":"Latar bawaan"}</div>
+        <div class="brow"><span class="btn filebtn">Pilih foto<input type="file" id="bBgImg" accept="image/png,image/jpeg,image/webp" aria-label="Pilih foto latar"></span>
+          <input type="color" id="bBgCol" value="${esc(BRAND.bg?.type==="color"?BRAND.bg.value:"#5f7a1f")}" aria-label="Warna latar"><button type="button" id="bBgColSave">Pakai warna</button>
+          ${BRAND.bg?`<button type="button" class="ghost danger" id="bBgDel">Kembalikan bawaan</button>`:""}</div>
+        <span class="muted" style="font-size:12.5px">Latar dibuat sedikit pudar supaya tulisan tetap mudah dibaca di tema terang maupun gelap.</span></div>
+    </div></section>`:""}
   </div>`;
 }
 function bindSettings(){
   $("#fProf").onsubmit=async e=>{e.preventDefault();const upd={full_name:$("#pName").value.trim(),unit:$("#pUnit").value.trim(),phone:$("#pPhone").value.trim()};
     if(ROLE!=="mekanik")upd.emp_no=$("#pEmp").value.trim();const a=$("#pAuth");if(a)upd.auth_no=a.value.trim();
-    const {error}=await sb.from("profiles").update(upd).eq("id",ME.id);if(error){toast("Profil gagal disimpan.");return}
+    const {error}=await sb.from("profiles").update(upd).eq("id",ME.id);if(error){toast(error.code==="23505"?"No. pegawai ini sudah dipakai akun lain.":"Profil gagal disimpan.");return}
     Object.assign(ME.profile,upd);ME.name=upd.full_name;toast("Profil disimpan");render()};
   $("#fPass").onsubmit=async e=>{e.preventDefault();const a=$("#np1").value,b=$("#np2").value;if(a!==b){toast("Kedua kata sandi tidak sama.");return}
     const {error}=await sb.auth.updateUser({password:a});if(error){toast(/different/i.test(error.message)?"Kata sandi baru harus berbeda dari yang lama.":"Gagal mengganti kata sandi.");return}
     e.target.reset();toast("Kata sandi diganti")};
-  $("#sOut").onclick=async()=>{await sb.auth.signOut();location.hash=""};
   document.querySelectorAll('input[name="theme"]').forEach(r=>r.onchange=()=>{lsSet("cbta.theme",r.value==="system"?"":r.value);applyTheme()});
   const fp=$("#fPrefs");if(fp)fp.onsubmit=async e=>{e.preventDefault();const prefs={...(ME.profile.prefs||{}),trainer:$("#dTr").value.trim(),aircraft:$("#dAc").value.trim(),mode:$("#dMode").value};
     const {error}=await sb.from("profiles").update({prefs}).eq("id",ME.id);if(error){toast("Gagal menyimpan.");return}ME.profile.prefs=prefs;lsSet("cbta.trainer",prefs.trainer);lsSet("cbta.aircraft",prefs.aircraft);toast("Default disimpan")};
@@ -820,6 +879,15 @@ function bindSettings(){
   const fa=$("#fApp");if(fa)fa.onsubmit=async e=>{e.preventDefault();const sd=Math.round(+$("#aStale").value),sm=Math.round(+$("#aStat").value);
     const {error}=await sb.from("app_settings").upsert([{key:"stale_days",value:sd,updated_at:new Date().toISOString()},{key:"stat_max",value:sm,updated_at:new Date().toISOString()}]);
     if(error){toast("Gagal menyimpan pengaturan aplikasi.");return}STALE_DAYS=sd;STAT_MAX=sm;toast("Pengaturan aplikasi disimpan")};
+  const saveBrand=async(key,value,msg)=>{const q=value===null?sb.from("app_settings").delete().eq("key",key):sb.from("app_settings").upsert({key,value,updated_at:new Date().toISOString()});
+    const {error}=await q;if(error){toast("Gagal menyimpan. Coba gambar yang lebih kecil.");return}
+    const rows=[];if(BRAND.icon)rows.push({key:"brand_icon",value:{src:BRAND.icon}});if(BRAND.bg)rows.push({key:"brand_bg",value:BRAND.bg});
+    const next=rows.filter(r=>r.key!==key);if(value!==null)next.push({key,value});setBrand(next);toast(msg);render()};
+  const bi=$("#bIcon");if(bi)bi.onchange=async()=>{const f=bi.files[0];if(!f)return;try{const src=await shrinkImage(f,256,"image/png");await saveBrand("brand_icon",{src},"Ikon diperbarui")}catch(e){toast("File ini bukan gambar yang bisa dibaca.")}};
+  const bid=$("#bIconDel");if(bid)bid.onclick=()=>saveBrand("brand_icon",null,"Ikon dihapus");
+  const bb=$("#bBgImg");if(bb)bb.onchange=async()=>{const f=bb.files[0];if(!f)return;try{const src=await shrinkImage(f,1600,"image/jpeg",0.78);await saveBrand("brand_bg",{type:"image",src},"Latar diperbarui")}catch(e){toast("File ini bukan gambar yang bisa dibaca.")}};
+  const bc=$("#bBgColSave");if(bc)bc.onclick=()=>saveBrand("brand_bg",{type:"color",value:$("#bBgCol").value},"Warna latar diperbarui");
+  const bd=$("#bBgDel");if(bd)bd.onclick=()=>saveBrand("brand_bg",null,"Latar dikembalikan ke bawaan");
 }
 
 /* ---------- export ---------- */
@@ -843,7 +911,7 @@ function exportSummary(){
 
 /* ---------- auth screens ---------- */
 let RECOVERY=false;
-function authShell(title,eyebrow,body){return `<div class="authwrap"><div class="authside"><div class="label" style="color:var(--hud-muted)">BT-RRF-079/R0</div><div class="authbrand">CBTA<br>Tracker</div><p>Progres Fundamental OJT: 68 tugas, 11 kompetensi, satu kartu status untuk setiap mekanik.</p></div>
+function authShell(title,eyebrow,body){return `<div class="authwrap"><div class="authside">${BRAND.icon?`<img class="authlogo" src="${esc(BRAND.icon)}" alt="">`:""}<div class="label" style="color:var(--hud-muted)">BT-RRF-079/R0</div><div class="authbrand">CBTA<br>Tracker</div><p>Progres Fundamental OJT: 68 tugas, 11 kompetensi, satu kartu status untuk setiap mekanik.</p></div>
   <div class="panel authcard"><div><div class="label">${esc(eyebrow)}</div><h1>${esc(title)}</h1></div>${body}</div></div>`}
 function loginView(){return authShell("Masuk","Selamat datang",`
   <form id="fLogin">
@@ -878,7 +946,8 @@ function setPassView(){return authShell("Buat kata sandi baru","Atur ulang",`
   <form id="fSet"><label class="f">Kata sandi baru<input id="rp1" type="password" minlength="8" required autocomplete="new-password"></label>
     <label class="f">Ulangi kata sandi baru<input id="rp2" type="password" minlength="8" required autocomplete="new-password"></label>
     <div class="actions"><button class="primary" type="submit">Simpan kata sandi</button></div></form>`)}
-function authErr(m){m=String(m||"");return /Invalid login/i.test(m)?"Email atau kata sandi salah.":/not confirmed|confirm/i.test(m)?"Email belum dikonfirmasi. Cek kotak masuk Anda.":/registered|exists/i.test(m)?"Email ini sudah terdaftar. Silakan masuk.":/rate limit|security purposes/i.test(m)?"Terlalu banyak percobaan. Coba lagi beberapa menit lagi.":/weak|at least/i.test(m)?"Kata sandi terlalu lemah. Gunakan minimal 8 karakter.":"Gagal: "+m}
+const EMP_TAKEN="No. pegawai ini sudah terdaftar. Satu no. pegawai hanya untuk satu akun. Hubungi admin bila ini keliru.";
+function authErr(m){m=String(m||"");return /Database error saving new user|duplicate key/i.test(m)?EMP_TAKEN:/Invalid login/i.test(m)?"Email atau kata sandi salah.":/not confirmed|confirm/i.test(m)?"Email belum dikonfirmasi. Cek kotak masuk Anda.":/registered|exists/i.test(m)?"Email ini sudah terdaftar. Silakan masuk.":/rate limit|security purposes/i.test(m)?"Terlalu banyak percobaan. Coba lagi beberapa menit lagi.":/weak|at least/i.test(m)?"Kata sandi terlalu lemah. Gunakan minimal 8 karakter.":"Gagal: "+m}
 function bindAuth(view){
   const busy=(f,on)=>{const b=f.querySelector("[type=submit]");if(b)b.disabled=on};
   if(view==="login"){const pwt=$(".pwt");pwt.onclick=()=>{const i=$("#aPass");i.type=i.type==="password"?"text":"password";pwt.textContent=i.type==="password"?"Lihat":"Sembunyikan"};
@@ -886,6 +955,9 @@ function bindAuth(view){
   if(view==="signup"){const sync=()=>{const v=document.querySelector('input[name="rr"]:checked').value;$("#authWrap").hidden=v!=="assessor"};document.querySelectorAll('input[name="rr"]').forEach(r=>r.onchange=sync);sync();
     $("#fSign").onsubmit=async e=>{e.preventDefault();if($("#sPass").value!==$("#sPass2").value){toast("Kedua kata sandi tidak sama.");return}busy(e.target,true);
       const rr=document.querySelector('input[name="rr"]:checked').value;
+      const emp=$("#sEmp").value.trim();
+      const chk=await sb.rpc("emp_no_available",{p_emp_no:emp});
+      if(!chk.error&&chk.data===false){busy(e.target,false);toast(EMP_TAKEN);$("#sEmp").focus();return}
       const {data,error}=await sb.auth.signUp({email:$("#sEmail").value.trim(),password:$("#sPass").value,options:{emailRedirectTo:location.origin+location.pathname,data:{full_name:$("#sName").value.trim(),requested_role:rr,emp_no:$("#sEmp").value.trim(),auth_no:rr==="assessor"?$("#sAuth").value.trim():"",unit:$("#sUnit").value.trim(),phone:$("#sPhone").value.trim()}}});
       busy(e.target,false);if(error){toast(authErr(error.message));return}
       if(data.user&&Array.isArray(data.user.identities)&&data.user.identities.length===0){toast("Email ini sudah terdaftar. Silakan masuk.");return}
@@ -923,7 +995,7 @@ function usersView(){
 }
 const APPROVE_MSG={ok:"Disimpan",no_emp:"Mekanik ini belum mengisi no. pegawai.",taken:"No. pegawai ini sudah dipakai akun mekanik lain.",self:"Anda tidak bisa menurunkan peran sendiri.",forbidden:"Hanya admin yang bisa melakukan ini."};
 async function setRole(uid,role,el){el.disabled=true;const {data,error}=await sb.rpc("approve_user",{p_user:uid,p_role:role});el.disabled=false;
-  if(error||data!=="ok"){toast(error?"Gagal menyimpan.":(APPROVE_MSG[data]||"Gagal: "+data));return}
+  if(error||data!=="ok"){toast(error?(error.code==="23505"?"No. pegawai akun ini sudah dipakai akun lain.":"Gagal menyimpan."):(APPROVE_MSG[data]||"Gagal: "+data));return}
   toast(role==="rejected"?"Pengajuan ditolak":"Peran diperbarui");await loadUsers();if(role==="mekanik")await loadAll();render()}
 function bindUsers(){
   document.querySelectorAll("[data-ap]").forEach(b=>b.onclick=()=>setRole(b.dataset.ap,b.dataset.role,b));
@@ -934,7 +1006,7 @@ function bindUsers(){
 async function fetchAll(table,map){const out=[];for(let from=0;;from+=1000){const {data,error}=await sb.from(table).select("*").order("created_at").range(from,from+999);if(error)throw error;out.push(...data.map(map));if(data.length<1000)break}return out}
 async function loadAll(){
   try{const [t,s2,cfg]=await Promise.all([fetchAll("trainees",fromTrainee),fetchAll("signoffs",fromSignoff),sb.from("app_settings").select("key,value")]);S.trainees=t;S.signoffs=s2;S.offline=false;
-    (cfg.data||[]).forEach(r=>{if(r.key==="stale_days"&&+r.value>0)STALE_DAYS=+r.value;if(r.key==="stat_max"&&+r.value>0)STAT_MAX=+r.value})}
+    (cfg.data||[]).forEach(r=>{if(r.key==="stale_days"&&+r.value>0)STALE_DAYS=+r.value;if(r.key==="stat_max"&&+r.value>0)STAT_MAX=+r.value});setBrand((cfg.data||[]).filter(r=>r.key.startsWith("brand_")))}
   catch(e){S.offline=true}
   if(ROLE==="admin")await loadUsers();
 }
@@ -956,6 +1028,8 @@ async function applySession(session){
   S.ready=true;render();
 }
 let lastUid;
+loadBrand();
+$("#btnOut").onclick=async()=>{if(!sb)return;$("#btnOut").disabled=true;await sb.auth.signOut();$("#btnOut").disabled=false;location.hash=""};
 if(sb){
   sb.auth.onAuthStateChange((ev,session)=>{
     if(ev==="PASSWORD_RECOVERY"){RECOVERY=true;lastUid=session?.user?.id;setTimeout(render,0);return}
