@@ -1,0 +1,757 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>CBTA Progress Tracker</title>
+<meta name="theme-color" content="#0f1820">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+/* Layout: one-column task-card logbook. Sticky header, trainee list → trainee detail → task sheet. */
+:root{
+  --bg:#eef1f3; --surface:#ffffff; --surface-2:#e3e8ec; --line:#cdd5dc;
+  --fg:#16212b; --muted:#5a6976;
+  --accent:#5f7a1f;        /* zinc-chromate primer green */
+  --accent-fg:#ffffff; --accent-soft:#e6edd3;
+  --seq1:#dbe6bf; --seq2:#b5cb7e; --seq3:#86a240; --seqfg:#ffffff;
+  --warn:#b46a00; --warn-soft:#f8ead2;
+  --ok:#2f7a4a; --ok-soft:#dcefe2;
+  --danger:#b23a2e;
+  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10161c; --surface:#18212a; --surface-2:#222d37; --line:#2f3c48;
+  --fg:#e5ebf0; --muted:#93a3b1;
+  --accent:#a9c45a; --accent-fg:#141a0a; --accent-soft:#2b3418;
+  --seq1:#2b3519; --seq2:#45561f; --seq3:#6f8a2f; --seqfg:#eef4dc;
+  --warn:#e6a446; --warn-soft:#3a2c14; --ok:#6cc58c; --ok-soft:#173222; --danger:#ef7b6e;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10161c; --surface:#18212a; --surface-2:#222d37; --line:#2f3c48;
+  --fg:#e5ebf0; --muted:#93a3b1;
+  --accent:#a9c45a; --accent-fg:#141a0a; --accent-soft:#2b3418;
+  --seq1:#2b3519; --seq2:#45561f; --seq3:#6f8a2f; --seqfg:#eef4dc;
+  --warn:#e6a446; --warn-soft:#3a2c14; --ok:#6cc58c; --ok-soft:#173222; --danger:#ef7b6e;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 48px;display:flex;flex-direction:column;gap:16px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+header.top .in{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px;display:flex;align-items:center;gap:12px}
+.brand{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:.02em;text-transform:uppercase;line-height:1}
+.brand small{display:block;font-family:var(--mono);font-size:10.5px;font-weight:400;letter-spacing:.04em;color:var(--muted);text-transform:none;margin-top:3px}
+.spacer{flex:1}
+h1,h2,h3{font-family:var(--display);font-weight:600;margin:0;text-wrap:balance;line-height:1.1}
+h1{font-size:30px}
+h2{font-size:21px;letter-spacing:.01em}
+h3{font-size:17px}
+.muted{color:var(--muted)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.label{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+button,.btn{font:inherit;font-weight:600;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:9px 14px;cursor:pointer;min-height:40px}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.row:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+button.ghost{background:transparent;border-color:transparent;color:var(--muted)}
+button.danger{color:var(--danger)}
+button.danger.armed{background:var(--danger);color:#fff;border-color:var(--danger)}
+button:disabled{opacity:.5;cursor:not-allowed}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.notice{border-radius:10px;padding:10px 14px;background:var(--warn-soft);color:var(--fg);font-size:14px}
+.notice.example{background:var(--accent-soft)}
+/* trainee list */
+.list{display:flex;flex-direction:column;gap:10px}
+.row{display:grid;grid-template-columns:1fr auto;gap:6px 12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;cursor:pointer;text-align:left;width:100%}
+.row:hover{border-color:var(--accent)}
+.row .name{font-weight:600;font-size:16px;min-width:0;overflow-wrap:anywhere}
+.row .meta{font-size:13px;color:var(--muted);grid-column:1/-1}
+.bar{height:8px;border-radius:99px;background:var(--surface-2);overflow:hidden;grid-column:1/-1}
+.bar>span{display:block;height:100%;background:var(--accent);border-radius:99px}
+.pct{font-family:var(--mono);font-weight:500;font-size:14px}
+.empty{text-align:center;padding:32px 16px;display:flex;flex-direction:column;gap:10px;align-items:center}
+/* trainee detail */
+.ident{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13.5px;color:var(--muted)}
+.ident b{color:var(--fg);font-weight:500}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:var(--surface-2);border-radius:10px;padding:10px 12px}
+.stat .v{font-family:var(--display);font-size:28px;font-weight:700;line-height:1}
+.stat .k{font-size:12px;color:var(--muted);margin-top:4px}
+.sec{display:grid;grid-template-columns:minmax(0,1fr) 64px;gap:4px 12px;align-items:center;font-size:14px}
+.sec .bar{grid-column:1/-1}
+.comps{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.comp{border:1px solid var(--line);border-radius:10px;padding:8px 10px;display:grid;grid-template-columns:auto 1fr;gap:0 10px;align-items:center}
+.comp .code{font-family:var(--display);font-weight:700;font-size:20px;width:34px}
+.comp .cnt{font-family:var(--mono);font-size:13px}
+.comp .nm{font-size:12px;color:var(--muted);line-height:1.25}
+.comp[data-l="0"]{border-style:dashed}
+.comp[data-l="0"] .code{color:var(--warn)}
+.comp[data-l="1"]{background:var(--accent-soft)}
+.comp[data-l="2"]{background:var(--accent-soft);border-color:var(--accent)}
+.comp[data-l="3"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.comp[data-l="3"] .nm{color:var(--accent-fg);opacity:.85}
+.tasks{display:flex;flex-direction:column}
+.task{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:10px 4px;border-top:1px solid var(--line);cursor:pointer;background:none;border-left:0;border-right:0;border-bottom:0;border-radius:0;text-align:left;width:100%;font-weight:400;min-height:0}
+.task:hover{background:var(--surface-2)}
+.task .t{font-size:14.5px;overflow-wrap:anywhere}
+.task .s{font-size:12px;color:var(--muted);grid-column:1}
+.pill{font-size:11.5px;font-weight:600;border-radius:99px;padding:3px 9px;white-space:nowrap;align-self:start}
+.pill.done{background:var(--ok-soft);color:var(--ok)}
+.pill.prog{background:var(--warn-soft);color:var(--warn)}
+.pill.none{background:var(--surface-2);color:var(--muted)}
+details.group{border-top:1px solid var(--line)}
+details.group>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:12px 0}
+details.group>summary::-webkit-details-marker{display:none}
+details.group>summary::before{content:"▸";color:var(--muted);transition:transform .15s}
+details.group[open]>summary::before{transform:rotate(90deg)}
+.timeline{display:flex;flex-direction:column;gap:8px}
+.entry{border-left:3px solid var(--line);padding:2px 0 2px 12px;font-size:14px}
+.entry.signed{border-left-color:var(--ok)}
+.entry .h{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.entry .c{font-family:var(--mono);font-size:12px;color:var(--muted)}
+/* sheet */
+.overlay{position:fixed;inset:0;background:rgba(10,15,20,.5);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);width:100%;max-width:640px;max-height:92%;overflow:auto;border-radius:16px 16px 0 0;padding:18px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:14px}
+@media (min-width:700px){.overlay{align-items:center}.sheet{border-radius:16px;max-height:88%}}
+.sheet .hd{display:flex;gap:10px;align-items:flex-start}
+.sheet .hd>div{flex:1;min-width:0}
+form{display:flex;flex-direction:column;gap:12px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fields .full{grid-column:1/-1}
+@media (max-width:460px){.fields{grid-template-columns:1fr}}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:500;min-width:0}
+input,select,textarea{font:inherit;font-size:15px;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px;width:100%;min-height:40px}
+textarea{min-height:64px;resize:vertical}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;width:1px;height:1px;min-height:0}
+.chip span{display:inline-block;font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:.03em;border:1px solid var(--line);border-radius:8px;padding:7px 0;width:50px;text-align:center;cursor:pointer;background:var(--surface)}
+.chip input:checked+span{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.chip input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:14px;background:var(--ok-soft);border-radius:10px;padding:10px 12px}
+.check input{width:20px;height:20px;min-height:0;margin-top:1px;accent-color:var(--ok)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;z-index:30}
+.tabs{display:flex;gap:2px;background:var(--surface-2);border-radius:9px;padding:3px}
+.tabs a{font-weight:600;font-size:13.5px;color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:7px}
+.tabs a.on{background:var(--surface);color:var(--fg)}
+@media (max-width:520px){header.top .in{flex-wrap:wrap}.brand small{display:none}#btnExport{padding-inline:8px}}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:620px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.kpi .v{font-family:var(--display);font-size:34px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.kpi .k{font-size:12.5px;color:var(--muted);margin-top:6px}
+.dgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:760px){.dgrid{grid-template-columns:1fr}}
+.hbars{display:flex;flex-direction:column;gap:8px}
+.hb{display:grid;grid-template-columns:minmax(0,170px) minmax(0,1fr) 48px;gap:10px;align-items:center;font-size:13.5px;background:none;border:0;padding:2px 0;min-height:0;font-weight:400;text-align:left;width:100%;border-radius:4px}
+button.hb{cursor:pointer}
+button.hb:hover .nm{text-decoration:underline}
+.hb .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hb .track{height:14px;background:var(--surface-2);border-radius:0 4px 4px 0;position:relative}
+.hb .fill{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:0 4px 4px 0;min-width:2px}
+.hb:hover .fill{filter:brightness(1.12)}
+.hb .val{font-family:var(--mono);font-size:12.5px;text-align:right;font-variant-numeric:tabular-nums}
+.flag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--warn);margin-left:6px}
+.heat{overflow-x:auto}
+.heat table{border-collapse:separate;border-spacing:2px;font-size:12.5px;min-width:100%}
+.heat th{font-weight:600;color:var(--muted);padding:2px 4px;text-align:center;font-family:var(--display);font-size:14px}
+.heat th.rn{text-align:left;font-family:var(--body);font-size:12.5px;color:var(--fg);font-weight:500;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.heat td{width:34px;height:30px;text-align:center;border-radius:4px;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.h0{background:var(--surface-2);color:var(--muted)}
+.h1{background:var(--seq1);color:var(--fg)}
+.h2{background:var(--seq2);color:var(--fg)}
+.h3{background:var(--seq3);color:var(--seqfg)}
+.h4{background:var(--accent);color:var(--accent-fg)}
+.cols{display:flex;align-items:flex-end;gap:2px;height:120px;border-bottom:1px solid var(--line);padding-top:16px}
+.col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;min-width:0;position:relative}
+.col .b{width:100%;max-width:28px;background:var(--accent);border-radius:4px 4px 0 0}
+.col .n{font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:2px}
+.col:hover .b{filter:brightness(1.12)}
+.xax{display:flex;gap:2px;font-size:10.5px;color:var(--muted);font-family:var(--mono)}
+.xax span{flex:1;text-align:center;min-width:0;overflow:hidden}
+#tip{position:fixed;z-index:40;pointer-events:none;background:var(--fg);color:var(--bg);font-size:12.5px;padding:6px 9px;border-radius:6px;max-width:240px;line-height:1.35}
+
+.rolesel{display:flex;flex-direction:column;gap:1px}
+.rolesel .label{font-size:9.5px}
+.rolesel select{min-height:32px;padding:4px 8px;font-size:13px;font-weight:600;width:auto}
+.lookup{display:flex;flex-direction:row;gap:10px;align-items:flex-end;flex-wrap:wrap}
+[hidden]{display:none!important}
+/* behaviours */
+.behs{display:flex;flex-direction:column;gap:6px}
+.bc{border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.bc.on{border-color:var(--accent)}
+.bh{display:flex;align-items:center;gap:8px;padding:5px 6px}
+.bt{flex:1;min-width:0;display:flex;align-items:center;gap:8px;background:none;border:0;padding:4px;min-height:36px;text-align:left;font-weight:500;font-size:13.5px}
+.bt .bn{flex:1;min-width:0}
+.bt .bk{font-family:var(--mono);font-size:12px;color:var(--accent)}
+.bt .car{color:var(--muted);transition:transform .15s}
+.bc.open .car{transform:rotate(180deg)}
+.bl{list-style:none;margin:0;padding:2px 10px 10px 10px;display:flex;flex-direction:column;gap:4px}
+.bl label{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.4;padding:6px 8px;border-radius:8px;cursor:pointer}
+.bl label:hover{background:var(--surface-2)}
+.bl input{width:18px;height:18px;min-height:0;margin-top:1px;flex:none;accent-color:var(--accent)}
+details.behlist{font-size:12.5px;color:var(--muted);margin-top:2px}
+details.behlist summary{cursor:pointer}
+details.behlist ul{margin:4px 0 0;padding-left:18px}
+/* HUD status card: a deliberate cockpit-display look in both themes */
+.hud{--hud-bg:#0f1820;--hud-bg2:#16232e;--hud-fg:#e8eef2;--hud-muted:#8fa2b0;--hud-grid:#2a3a47;--hud-accent:#b5d36a;--hud-gold:#e9c46a;
+  background:linear-gradient(160deg,var(--hud-bg2),var(--hud-bg) 60%);color:var(--hud-fg);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:16px;border:1px solid #23323e;position:relative;overflow:hidden}
+.hud::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,255,255,.018) 3px 4px);pointer-events:none}
+.hud-label{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--hud-muted);font-weight:600}
+.hud-muted{color:var(--hud-muted)}
+.hud-top{display:flex;gap:14px;align-items:center}
+.avatar{position:relative;flex:none;width:72px;height:72px;border-radius:14px;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:30px;color:var(--hud-bg);background:var(--hud-accent);box-shadow:0 0 0 3px var(--hud-bg),0 0 0 5px var(--hud-accent)}
+.avatar .lv{position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);background:var(--hud-gold);color:#1d1606;font-family:var(--mono);font-size:11px;font-weight:600;padding:1px 7px;border-radius:99px;white-space:nowrap}
+.who{min-width:0}
+.hud-name{font-family:var(--display);font-weight:700;font-size:28px;line-height:1.05;overflow-wrap:anywhere}
+.rank{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;margin-top:4px;font-size:13px}
+.rank b{color:var(--hud-fg)}
+.rk{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--hud-gold)}
+.meters{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.meters{grid-template-columns:1fr}}
+.mh{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--hud-muted);margin-bottom:5px}
+.mh .mono{color:var(--hud-fg)}
+.mbar{height:10px;border-radius:99px;background:#0a1117;border:1px solid var(--hud-grid);overflow:hidden}
+.mbar span{display:block;height:100%;background:var(--hud-accent);border-radius:99px;box-shadow:0 0 10px rgba(181,211,106,.5)}
+.mbar.xp span{background:var(--hud-gold);box-shadow:0 0 10px rgba(233,196,106,.45)}
+.hud-body{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px;align-items:start;position:relative;z-index:1}
+@media (max-width:620px){.hud-body{grid-template-columns:1fr}}
+.radarbox{display:flex;flex-direction:column;gap:4px;min-width:0}
+.radar{width:100%;max-width:360px;margin:0 auto;display:block}
+.hud-side{display:flex;flex-direction:column;gap:10px;min-width:0}
+.hl{display:flex;flex-direction:column;gap:2px;background:rgba(255,255,255,.04);border:1px solid var(--hud-grid);border-radius:10px;padding:8px 10px;font-size:14px}
+.badges{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.badge{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;min-width:0}
+.badge svg{width:40px;height:44px}
+.badge .hx{fill:#0a1117;stroke:var(--hud-grid);stroke-width:2}
+.badge .ht{font-family:var(--mono);font-size:9.5px;font-weight:600;fill:var(--hud-muted)}
+.badge.got .hx{fill:var(--hud-gold);stroke:#fff3c4}
+.badge.got .ht{fill:#1d1606}
+.badge .bn{font-size:10.5px;line-height:1.15;color:var(--hud-muted)}
+.badge.got .bn{color:var(--hud-fg);font-weight:600}
+.badge .bp{font-family:var(--mono);font-size:10px;color:var(--hud-muted)}
+.hud-foot{font-size:11px;position:relative;z-index:1}
+#btnExport,.brand small{white-space:nowrap}
+@media (max-width:900px){.brand small{display:none}}
+.userchip{display:flex;align-items:center;gap:6px;font-size:13px;line-height:1.2;text-align:right}
+.userchip b{display:block;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.userchip .label{font-size:10px}
+.hero{display:flex;flex-direction:column;gap:6px}
+.hero a,.panel a{color:var(--accent);font-weight:600}
+.ulist{display:flex;flex-direction:column}
+.urow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.urow select{width:auto;min-height:36px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head><body>
+<header class="top"><div class="in">
+  <div class="brand">CBTA Tracker<small>BT-RRF-079/R0 · Fundamental OJT Task List</small></div>
+  <div class="spacer"></div>
+  <nav class="tabs" aria-label="Halaman" id="navTabs" hidden><a href="#dashboard" id="navDash">Dashboard</a><a href="#mekanik" id="navList">Mekanik</a><a href="#pengguna" id="navUsers" hidden>Pengguna</a></nav>
+  <div class="userchip" id="userChip" hidden><span><b id="ucName"></b><span class="label" id="ucRole"></span></span><button type="button" class="ghost" id="btnOut">Keluar</button></div>
+  <button id="btnExport" class="ghost" type="button" hidden>Ekspor CSV</button>
+</div></header>
+<main class="wrap" id="app"><div class="panel"><p class="muted" style="margin:0">Memuat…</p></div></main>
+<div id="sheetRoot"></div>
+<div id="tip" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+const SUPABASE_URL="https://zqgnbijplqfczehibmtp.supabase.co";
+const SUPABASE_KEY="sb_publishable_w8ro1e6zkGOtusHME0eZlw_bW4hqp5u";
+const COMPS=[
+ ["AP","Application of Procedures"],["WM","Work Management"],["SA","Situational Awareness"],
+ ["TE","Technical Expertise"],["ST","System Thinking"],["CH","Coordination and Handover"],
+ ["RM","Risk Management"],["TW","Teamwork"],["PD","Problem Solving & Decision Making"],
+ ["SM","Self-Management & Continuous Learning"],["CO","Communications"]];
+const BEH={
+ AP:["Identifies correct processes and procedures associated with a specific task.","Demonstrates proper use of documents.","Applies system knowledge appropriately."],
+ WM:["Selects the appropriate tools, equipment and resources to support the efficient achievement of tasks.","Uses available tools and equipment safely, efficiently and effectively.","Verifies that tasks are completed to the relevant procedures."],
+ SA:["Maintains awareness of the maintenance environment.","Maintains awareness of hazard situations.","Is cognizant of ongoing activities around the airplane.","Verifies that information is accurate, and assumptions are correct."],
+ TE:["Applies technical knowledge and skills as appropriate for the task.","Answers technical questions accurately.","Applies appropriate procedures in accordance with the applicable standards.","Keeps up to date on specialized technical knowledge and skills."],
+ ST:["Understands the inter-relationship between policies, processes and procedures.","Understands the inter-relationship between various systems including quality planning, quality control and quality assurance.","Recognizes the importance of continuous improvement, reactive and proactive processes.","Is familiar with the essential components of a functional safety management system."],
+ CH:["Demonstrates proper coordination and communications for handover when coming onto the job.","Conducts effective briefings during the transfer of maintenance tasks.","Demonstrates proper coordination and communications for handover when leaving the job.","Uses clear and concise terminology for verbal coordination and confirms message was received.","Uses standard message formats and protocols for non-verbal coordination."],
+ RM:["Makes decisions based on risk assessment outcome.","Identifies accurately problem areas or hazards that may negatively impact safety.","Recognizes company policies, work practices, or organizational cultures that indicate increased levels of risk.","Carries out comprehensive risk assessment.","Analyzes root causes applicable to their task."],
+ TW:["Knows and understands how to work as a maintenance team.","Is willing to ask for help when needed.","Is familiar with the roles and responsibilities of the various groups working on the airplane.","Understands the influence maintenance has on the operation of other groups.","Anticipates and responds appropriately to the needs of others.","Demonstrates integrity, honesty and good judgment."],
+ PD:["Determines possible solutions to an identified problem.","Considers rules and operating procedures when determining possible solutions to a problem.","Implements a chosen solution to a problem.","Organizes tasks in accordance with determined priorities.","Works through problems without reducing safety."],
+ SM:["Improves performance through self-development and learning.","Manages stress in an appropriate manner.","Maintains self-control to perform effectively in adverse situations.","Takes responsibility for own performance; detects and resolves own errors.","Improves performance through self-evaluation."],
+ CO:["Demonstrates when communication with others is essential.","Demonstrates what is needed for communicating with others.","Knows who to communicate with for the different work groups.","Uses appropriate vocabulary and expressions when communicating.","Demonstrates active listening by asking questions and providing feedback, and verifies comprehension."]};
+const SECTIONS=[
+ ["gse","Ground Support Equipment",["External Power Cart/Source","Ground Air Conditioning Cart/Source","Ground Pneumatic Cart/Source Operation","Ladders and Stands"]],
+ ["svc","Servicing Equipment",["Hydraulic Servicing Equipment","Oil Servicing Equipment","Nitrogen Servicing Equipment – High Pressure","Nitrogen Servicing Equipment – Low Pressure","Oxygen Servicing Equipment","Liquid Cooling Servicing Equipment","Fuel Servicing","Potable Water Servicing","Lavatory Waste Servicing"]],
+ ["mov","Airplane Movement, Operations & Hazardous Energy",["Marshalling","Engine Operations","Towing","Wing Walking/Spotter","Communications with Airplane","Airplane Door Operations","Lockout/Tagout","Hazardous Energy State"]],
+ ["haz","Hazards and Safety",["Safety Management System","Flight Line/Hangar Hazards","Foreign Object Damage/Debris (FOD)","Personal Protective Equipment","Fall Protection","Fuel Tank Entry","Nitrogen Generation System","Confined Space","Eye Wash/Emergency Shower","First Aid Kit/AED","Emergency Services"]],
+ ["doc","Paperwork & Maintenance Documentation",["Logbook","Parts Tag","Maintenance Documents","Company Policy Documents"]],
+ ["tool","Tooling",["Common Tooling","Tool Room/Special Tooling","ATC Tool"]],
+ ["env","Environmental",["Cold Weather Operations","Hot Weather Operations","Lightning","High Wind Conditions","Storm Activity","Night Operations","Dusk/Dawn Operations","Animals/Insects","Hazardous Waste Cleanup","Hazardous Waste Disposal","Biological Hazardous Waste"]],
+ ["sp","Airplane Standard Practices (AMM Ch. 20)",["Airworthiness Limitation Precautions","E/E Rack-Mounted Components and Printed Circuit Card – Removal/Installation","Personnel Equipment Safety Harness","Hydraulic Caps and Plugs","Electrical Bonding","Locking Devices – Removal/Installation","Flexible Hose – Removal/Installation","Fluid Line Tubing Clamps – Removal/Installation","Airplane Grounding","Electrostatic Discharge Sensitive Devices (ESDS)","Standard Torque Values","Circuit Breaker Reset","Corrosion Removal","Interior and Exterior Finishes – Primer – Cleaning/Painting","Interior and Exterior Finishes – Topcoat – Cleaning/Painting","Seals and Sealing – Prepare for Sealing","Seals and Sealing – Fillet Seal Application","Seals and Sealing – Aerodynamic Smoother Application"]]];
+const TASKS=[];const TASK={};
+SECTIONS.forEach(([sid,sname,list])=>list.forEach((name,i)=>{const id=sid+"-"+(i+1);const t={id,sid,sname,name};TASKS.push(t);TASK[id]=t;}));
+const TOTAL=TASKS.length;
+
+const S={db:null,ready:false,offline:false,trainees:[],signoffs:[],writable:true};
+const ROLES={admin:"Admin",assessor:"Assessor",pembina:"Pembina",pending:"Menunggu persetujuan",mekanik:"Mekanik"};
+let ROLE="mekanik";            /* no session = mechanic self-service */
+const ME={id:null,name:"",email:""};
+const isAssessor=()=>ROLE==="assessor"||ROLE==="admin";
+const isStaff=()=>ROLE==="assessor"||ROLE==="admin"||ROLE==="pembina";
+const sb=window.supabase?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
+const fromTrainee=r=>({id:r.id,name:r.name,empNo:r.emp_no,company:r.company,location:r.location,issued:r.issued,selfRegistered:r.self_registered});
+const fromSignoff=r=>({id:r.id,traineeId:r.trainee_id,taskId:r.task_id,date:r.date,mode:r.mode,aircraft:r.aircraft,reference:r.reference,trainer:r.trainer,comps:r.comps||[],beh:r.beh||[],notes:r.notes,complete:r.complete,assessorId:r.assessor_id,createdAt:Date.parse(r.created_at)||0});
+const $=s=>document.querySelector(s);
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const fmtDate=s=>{if(!s)return"–";const [y,m,d]=s.split("-");const M=["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];return `${+d} ${M[+m-1]} ${y}`};
+const MEM={};
+const lsGet=k=>{try{return localStorage.getItem(k)||MEM[k]||""}catch(e){return MEM[k]||""}};
+const lsSet=(k,v)=>{MEM[k]=v;try{localStorage.setItem(k,v)}catch(e){}};
+function toast(msg){const t=document.createElement("div");t.className="toast";t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2400)}
+
+function statsFor(tid){
+  const entries=S.signoffs.filter(s=>s.traineeId===tid);
+  const byTask={};entries.forEach(e=>{(byTask[e.taskId]=byTask[e.taskId]||[]).push(e)});
+  Object.values(byTask).forEach(a=>a.sort((x,y)=>(y.date||"").localeCompare(x.date||"")||(y.createdAt||0)-(x.createdAt||0)));
+  const done=new Set(entries.filter(e=>e.complete).map(e=>e.taskId));
+  const comp={};COMPS.forEach(([c])=>comp[c]=0);entries.forEach(e=>(e.comps||[]).forEach(c=>{if(c in comp)comp[c]++}));
+  const last=entries.reduce((m,e)=>(e.date||"")>m?e.date:m,"");
+  return {entries,byTask,done,comp,last};
+}
+function taskStatus(st,id){if(st.done.has(id))return["done","Selesai"];if(st.byTask[id])return["prog","Sedang"];return["none","Belum"]}
+
+/* ---------- routing ---------- */
+function route(){const h=location.hash.slice(1);
+  if(ROLE==="mekanik"){if(h==="daftar")return{view:"register"};if(h==="masuk")return{view:"login"};return{view:"me"}}
+  if(ROLE==="pending")return{view:"pending"};
+  if(h==="pengguna"&&ROLE==="admin")return{view:"users"};
+  if(h.startsWith("t-"))return{view:"trainee",id:h.slice(2)};if(h==="baru"&&isAssessor())return{view:"new"};if(h==="mekanik")return{view:"home"};return{view:"dash"}}
+window.addEventListener("hashchange",render);
+
+function render(){
+  const app=$("#app");const r=route();
+  $("#btnExport").hidden=!(S.ready&&S.trainees.length&&isStaff());
+  $("#navTabs").hidden=!isStaff();$("#navUsers").hidden=ROLE!=="admin";
+  $("#userChip").hidden=ROLE==="mekanik";$("#ucName").textContent=ME.name||ME.email;$("#ucRole").textContent=ROLES[ROLE]||"";
+  document.documentElement.dataset.role=ROLE;
+  if(!sb){app.innerHTML=`<div class="panel"><h2>Aplikasi gagal dimuat</h2><p class="muted" style="margin:0">Periksa koneksi internet lalu muat ulang halaman.</p></div>`;return}
+  if(r.view==="login"){app.innerHTML=loginView();bindLogin();return}
+  if(r.view==="pending"){app.innerHTML=pendingView();return}
+  if(!S.ready){return}
+  let banner=S.offline?`<div class="notice">Data belum bisa dijangkau. Periksa koneksi internet; data yang tampil mungkin belum terbaru.</div>`:"";
+  if(r.view==="me"){app.innerHTML=banner+meView();bindMe();return}
+  if(r.view==="users"){app.innerHTML=banner+usersView();bindUsers();return}
+  if(r.view==="register"){app.innerHTML=banner+traineeForm(null,true);bindTraineeForm(null,true);return}
+  if(r.view==="trainee"){const t=S.trainees.find(x=>x.id===r.id);if(t){app.innerHTML=banner+traineeView(t);bindTrainee(t);return}}
+  if(r.view==="new"){app.innerHTML=banner+traineeForm();bindTraineeForm(null);return}
+  const r2=route();$("#navDash").classList.toggle("on",r2.view==="dash");$("#navList").classList.toggle("on",r2.view==="home"||r2.view==="trainee"||r2.view==="new");$("#navUsers").classList.toggle("on",false);
+  if(r.view==="dash"){app.innerHTML=banner+dashView();bindDash();return}
+  app.innerHTML=banner+homeView();
+  app.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>location.hash="t-"+b.dataset.open);
+  const add=$("#btnAdd");if(add)add.onclick=()=>location.hash="baru";
+}
+
+function homeView(){
+  const ts=[...S.trainees].sort((a,b)=>(a.name||"").localeCompare(b.name||""));
+  const rows=ts.map(t=>{const st=statsFor(t.id);const p=Math.round(st.done.size/TOTAL*100);
+    return `<button class="row" type="button" data-open="${esc(t.id)}">
+      <span class="name">${esc(t.name)}${t.example?' <span class="pill none">contoh</span>':""}</span>
+      <span class="pct">${st.done.size}/${TOTAL}</span>
+      <span class="bar"><span style="width:${p}%"></span></span>
+      <span class="meta">${esc([t.empNo,t.company,t.location].filter(Boolean).join(" · ")||"–")} · Terakhir dinilai: ${fmtDate(st.last)}</span>
+    </button>`}).join("");
+  return `<div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
+      <div style="flex:1;min-width:0"><div class="label">Trainee</div><h1>Mekanik yang dinilai</h1></div>
+      ${isAssessor()?`<button id="btnAdd" class="primary" type="button" ${S.writable?"":"disabled"}>+ Tambah mekanik</button>`:""}
+    </div>
+    ${ts.length?`<div class="list">${rows}</div>`:`<div class="panel empty"><h2>Belum ada mekanik</h2><p class="muted" style="margin:0;max-width:40ch">Tambahkan mekanik pertama, lalu catat setiap tugas OJT yang Anda amati. Progres ${TOTAL} tugas dan 11 kompetensi akan terhitung otomatis.</p></div>`}`;
+}
+
+function traineeForm(t,self){
+  t=t||{};if(self&&!t.empNo)t.empNo=lsGet("cbta.myid");
+  return `<div class="panel"><h2>${self?"Daftarkan data saya":t.id?"Ubah data mekanik":"Tambah mekanik"}</h2>${self?`<p class="muted" style="margin:0;font-size:13.5px">Isi sesuai halaman Personal Details di form CBTA. Penilaian tetap diisi oleh assessor.</p>`:""}
+  <form id="fTrainee"><div class="fields">
+    <label class="f full">Nama trainee<input id="tn" required value="${esc(t.name)}"></label>
+    <label class="f">No. pegawai (ID)<input id="te" required value="${esc(t.empNo)}"></label>
+    <label class="f">Perusahaan<input id="tc" value="${esc(t.company)}"></label>
+    <label class="f">Lokasi<input id="tl" value="${esc(t.location)}"></label>
+    <label class="f">Tanggal form diterbitkan<input id="ti" type="date" value="${esc(t.issued||today())}"></label>
+  </div>
+  <div class="actions"><button type="button" id="tCancel">Batal</button><button class="primary" type="submit">Simpan</button></div></form></div>`;
+}
+function bindTraineeForm(t,self){
+  $("#tCancel").onclick=()=>{if(t)render();else location.hash=self?"":"mekanik"};
+  $("#fTrainee").onsubmit=async e=>{e.preventDefault();
+    const body={name:$("#tn").value.trim(),empNo:$("#te").value.trim(),company:$("#tc").value.trim(),location:$("#tl").value.trim(),issued:$("#ti").value};
+    if(!body.name)return;
+    if(self){if(!body.empNo)return;
+      try{const {data,error}=await sb.rpc("register_mechanic",{p_name:body.name,p_emp_no:body.empNo,p_company:body.company,p_location:body.location,p_issued:body.issued||null});if(error)throw error;
+        if(data==="exists"){toast("ID ini sudah terdaftar.");return}if(data!=="ok"){toast("Data belum lengkap atau terlalu panjang.");return}
+        lsSet("cbta.myid",body.empNo);MYDATA=null;toast("Data Anda tersimpan");location.hash="";lookupMe(body.empNo);}catch(err){writeError(err)}return}
+    try{
+      const row={name:body.name,emp_no:body.empNo,company:body.company,location:body.location,issued:body.issued||null};
+      if(t){const {error}=await sb.from("trainees").update(row).eq("id",t.id);if(error)throw error;toast("Data mekanik disimpan");await loadAll();render();}
+      else{const {data,error}=await sb.from("trainees").insert(row).select().single();if(error)throw error;S.trainees.push(fromTrainee(data));toast("Mekanik ditambahkan");location.hash="t-"+data.id;}
+    }catch(err){writeError(err)}
+  };
+}
+
+function traineeView(t){
+  const st=statsFor(t.id);const p=Math.round(st.done.size/TOTAL*100);
+  const inprog=TASKS.filter(x=>st.byTask[x.id]&&!st.done.has(x.id)).length;
+  const max=Math.max(1,...Object.values(st.comp));
+  const lvl=n=>n===0?0:n>=max*0.67?3:n>=max*0.34?2:1;
+  const comps=COMPS.map(([c,n])=>`<div class="comp" data-l="${lvl(st.comp[c])}" title="${esc(n)}"><span class="code">${c}</span><span><span class="cnt">${st.comp[c]}×</span><br><span class="nm">${esc(n)}</span></span></div>`).join("");
+  const never=COMPS.filter(([c])=>st.comp[c]===0).map(([c])=>c);
+  const secs=SECTIONS.map(([sid,sname,list])=>{const ids=list.map((_,i)=>sid+"-"+(i+1));const d=ids.filter(i=>st.done.has(i)).length;
+    return `<div class="sec"><span>${esc(sname)}</span><span class="mono" style="text-align:right">${d}/${ids.length}</span><span class="bar"><span style="width:${Math.round(d/ids.length*100)}%"></span></span></div>`}).join("");
+  const groups=SECTIONS.map(([sid,sname,list])=>{const ids=list.map((_,i)=>sid+"-"+(i+1));const d=ids.filter(i=>st.done.has(i)).length;
+    const rows=ids.map(id=>{const [cls,lab]=taskStatus(st,id);const es=st.byTask[id]||[];
+      return `<button type="button" class="task" data-task="${id}"><span class="t">${esc(TASK[id].name)}</span><span class="pill ${cls}">${lab}</span><span class="s">${es.length?`${es.length} catatan · terakhir ${fmtDate(es[0].date)}`:"Belum ada catatan"}</span></button>`}).join("");
+    return `<details class="group" data-sec="${sid}"><summary><h3 style="flex:1">${esc(sname)}</h3><span class="mono muted">${d}/${ids.length}</span></summary><div class="tasks">${rows}</div></details>`}).join("");
+  const recent=[...st.entries].sort((a,b)=>(b.date||"").localeCompare(a.date||"")||(b.createdAt||0)-(a.createdAt||0)).slice(0,8);
+  const tl=recent.length?recent.map(entryHtml).join(""):`<p class="muted" style="margin:0">Belum ada catatan. Buka salah satu tugas di bawah untuk mencatat penilaian pertama.</p>`;
+  return `<div><button type="button" class="ghost" id="back" style="padding-left:0">← Semua mekanik</button></div>
+  ${statusCard(t)}
+  ${t.example?`<div class="notice example">Ini data contoh untuk melihat cara kerja aplikasi. Hapus kapan saja lewat tombol di bawah.</div>`:""}
+  <div class="panel">
+    <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap"><div style="flex:1;min-width:0"><div class="label">Trainee</div><h1>${esc(t.name)}</h1></div>
+      ${isAssessor()?`<button type="button" id="edit" ${S.writable?"":"disabled"}>Ubah</button>`:""}</div>
+    <div class="ident"><span>No. pegawai <b>${esc(t.empNo||"–")}</b></span><span>Perusahaan <b>${esc(t.company||"–")}</b></span><span>Lokasi <b>${esc(t.location||"–")}</b></span><span>Diterbitkan <b>${fmtDate(t.issued)}</b></span></div>
+    <div class="stats">
+      <div class="stat"><div class="v">${p}%</div><div class="k">${st.done.size} dari ${TOTAL} tugas selesai</div></div>
+      <div class="stat"><div class="v">${inprog}</div><div class="k">tugas sedang berjalan</div></div>
+      <div class="stat"><div class="v">${st.entries.length}</div><div class="k">catatan penilaian</div></div>
+    </div>
+  </div>
+  <div class="panel"><h2>Kompetensi yang teramati</h2>
+    <p class="muted" style="margin:0;font-size:13.5px">Jumlah berapa kali tiap kompetensi dilingkari di seluruh catatan.${never.length?` Belum pernah teramati: <b style="color:var(--warn)">${never.join(", ")}</b>.`:""}</p>
+    <div class="comps">${comps}</div></div>
+  <div class="panel"><h2>Progres per bagian</h2>${secs}</div>
+  <div class="panel"><h2>Catatan terbaru</h2><div class="timeline">${tl}</div></div>
+  <div class="panel" style="gap:0"><h2 style="margin-bottom:8px">Daftar tugas OJT</h2>${groups}</div>
+  ${isAssessor()?`<div class="actions" style="justify-content:flex-start"><button type="button" class="danger" id="delT" ${S.writable?"":"disabled"}>Hapus mekanik ini</button></div>`:""}`;
+}
+function entryHtml(e){
+  return `<div class="entry ${e.complete?"signed":""}"><div class="h"><b>${esc(TASK[e.taskId]?.name||e.taskId)}</b><span class="mono muted" style="font-size:12.5px">${fmtDate(e.date)}</span>${e.complete?'<span class="pill done">Sign-off</span>':""}</div>
+  <div class="c">${esc([e.mode,e.aircraft,e.reference,e.trainer].filter(Boolean).join(" · "))}${(e.comps||[]).length?" · "+esc(e.comps.join("-")):""}</div>${(e.beh||[]).length?`<details class="behlist"><summary>${e.beh.length} perilaku teramati</summary><ul>${e.beh.map(b=>{const [c,i]=b.split("-");return `<li><b>${esc(c)}</b> ${esc(BEH[c]?.[+i]||"")}</li>`}).join("")}</ul></details>`:""}${e.notes?`<div style="font-size:13.5px">${esc(e.notes)}</div>`:""}</div>`;
+}
+const openSecs=new Set();
+function bindTrainee(t){
+  $("#back").onclick=()=>location.hash="mekanik";
+  const ed=$("#edit");if(ed)ed.onclick=()=>{$("#app").innerHTML=traineeForm(t);bindTraineeForm(t)};
+  document.querySelectorAll("details.group").forEach(d=>{if(openSecs.has(d.dataset.sec))d.open=true;d.addEventListener("toggle",()=>{d.open?openSecs.add(d.dataset.sec):openSecs.delete(d.dataset.sec)})});
+  document.querySelectorAll("[data-task]").forEach(b=>b.onclick=()=>openTask(t,b.dataset.task));
+  armDelete($("#delT"),"Yakin? Semua catatannya ikut terhapus",async()=>{
+    try{const {error}=await sb.from("trainees").delete().eq("id",t.id);if(error)throw error;S.trainees=S.trainees.filter(x=>x.id!==t.id);S.signoffs=S.signoffs.filter(x=>x.traineeId!==t.id);toast("Mekanik dihapus");location.hash="mekanik";}catch(err){writeError(err)}});
+}
+function armDelete(btn,confirmText,fn){if(!btn)return;const orig=btn.textContent;let timer;
+  btn.onclick=()=>{if(btn.classList.contains("armed")){clearTimeout(timer);btn.disabled=true;fn();return}
+    btn.classList.add("armed");btn.textContent=confirmText;timer=setTimeout(()=>{btn.classList.remove("armed");btn.textContent=orig},4000)}}
+
+/* ---------- task sheet ---------- */
+let sheetCtx=null;
+function openTask(t,taskId){sheetCtx={t,taskId};drawSheet()}
+function closeSheet(){sheetCtx=null;$("#sheetRoot").innerHTML=""}
+function drawSheet(){
+  if(!sheetCtx)return;const {t,taskId}=sheetCtx;const task=TASK[taskId];
+  const st=statsFor(t.id);const es=st.byTask[taskId]||[];const [cls,lab]=taskStatus(st,taskId);
+  const hist=histHtml(es);
+  const lastAc=lsGet("cbta.aircraft"),trainer=lsGet("cbta.trainer")||ME.name;
+  $("#sheetRoot").innerHTML=`<div class="overlay" id="ov"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="shT">
+    <div class="hd"><div><div class="label">${esc(task.sname)}</div><h2 id="shT">${esc(task.name)}</h2><div style="margin-top:6px"><span class="pill ${cls}" id="shPill">${lab}</span> <span class="muted" style="font-size:13px">${esc(t.name)}</span></div></div><button type="button" class="ghost" id="shX" aria-label="Tutup">✕</button></div>
+    <div class="timeline" id="shHist">${hist}</div>
+    ${!isAssessor()?`<div class="actions"><button type="button" id="eCancel">Tutup</button></div>`:`<form id="fEntry"><h3>Catat penilaian baru</h3>
+      <div class="fields">
+        <label class="f">Tanggal<input id="eDate" type="date" required value="${today()}"></label>
+        <label class="f">Perform / Demonstrate<select id="eMode"><option value="P">P – Perform</option><option value="D">D – Demonstrate</option></select></label>
+        <label class="f">Airplane ID &amp; Type<input id="eAc" placeholder="mis. PK-LKS B737-900ER" value="${esc(lastAc)}"></label>
+        <label class="f">Reference<input id="eRef" placeholder="mis. AMM 20-11-00"></label>
+        <label class="f full">Trainer / Assessor<input id="eTr" value="${esc(trainer)}" placeholder="Nama dan no. otorisasi"></label>
+      </div>
+      <div class="f" style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:500">Kompetensi & perilaku yang teramati</span>
+        <span class="muted" style="font-size:12.5px">Ketuk kode kompetensi, atau buka daftarnya dan centang perilaku yang Anda lihat. Kompetensi ikut tercentang otomatis.</span>
+        <div class="behs">${COMPS.map(([c,n])=>`<div class="bc" data-c="${c}"><div class="bh"><label class="chip"><input type="checkbox" class="cchk" value="${c}"><span>${c}</span></label><button type="button" class="bt" aria-expanded="false"><span class="bn">${esc(n)}</span><span class="bk" data-k="${c}"></span><span class="car">▾</span></button></div>
+          <ul class="bl" hidden>${BEH[c].map((b,i)=>`<li><label><input type="checkbox" class="bchk" value="${c}-${i}"><span>${esc(b)}</span></label></li>`).join("")}</ul></div>`).join("")}</div></div>
+      <label class="f">Catatan<textarea id="eNotes" placeholder="Hal yang perlu diperbaiki, coaching yang diberikan, dll."></textarea></label>
+      <label class="check"><input type="checkbox" id="eDone"><span><b>Tugas selesai (sign-off)</b><br><span class="muted" style="font-size:13px">Centang bila trainee sudah mampu melakukan tugas ini sendiri dan form kertas sudah ditandatangani.</span></span></label>
+      <div class="actions"><button type="button" id="eCancel">Tutup</button><button class="primary" type="submit" ${S.writable?"":"disabled"}>Simpan catatan</button></div>
+    </form>`}</div></div>`;
+  $("#shX").onclick=closeSheet;$("#eCancel").onclick=closeSheet;
+  $("#ov").addEventListener("click",e=>{if(e.target.id==="ov")closeSheet()});
+  bindHist();
+  if(!$("#fEntry"))return;
+  document.querySelectorAll(".bc").forEach(bc=>{const c=bc.dataset.c;const cchk=bc.querySelector(".cchk"),bt=bc.querySelector(".bt"),bl=bc.querySelector(".bl"),bk=bc.querySelector(".bk");
+    const upd=()=>{const n=bl.querySelectorAll(".bchk:checked").length;bk.textContent=n?n+"/"+BEH[c].length:"";bc.classList.toggle("on",cchk.checked)};
+    bt.onclick=()=>{bl.hidden=!bl.hidden;bt.setAttribute("aria-expanded",String(!bl.hidden));bc.classList.toggle("open",!bl.hidden)};
+    bl.querySelectorAll(".bchk").forEach(x=>x.onchange=()=>{if(x.checked)cchk.checked=true;upd()});
+    cchk.onchange=()=>{if(!cchk.checked)bl.querySelectorAll(".bchk").forEach(x=>x.checked=false);upd()};});
+  $("#fEntry").onsubmit=async e=>{e.preventDefault();const btn=e.submitter||e.target.querySelector("[type=submit]");btn.disabled=true;
+    const body={trainee_id:t.id,task_id:taskId,date:$("#eDate").value,mode:$("#eMode").value,aircraft:$("#eAc").value.trim(),reference:$("#eRef").value.trim(),trainer:$("#eTr").value.trim(),assessor_id:ME.id,
+      comps:[...document.querySelectorAll(".cchk:checked")].map(i=>i.value),beh:[...document.querySelectorAll(".bchk:checked")].map(i=>i.value),notes:$("#eNotes").value.trim(),complete:$("#eDone").checked};
+    lsSet("cbta.aircraft",body.aircraft);lsSet("cbta.trainer",body.trainer);
+    try{const {data,error}=await sb.from("signoffs").insert(body).select().single();if(error)throw error;if(!S.signoffs.some(x=>x.id===data.id))S.signoffs.push(fromSignoff(data));toast(body.complete?"Tugas ditandai selesai":"Catatan disimpan");closeSheet();render();}catch(err){btn.disabled=false;writeError(err)}
+  };
+}
+function histHtml(es){return es.length?es.map(e=>`<div style="display:flex;gap:8px;align-items:flex-start"><div style="flex:1;min-width:0">${entryHtml(e)}</div>${isAssessor()&&(e.assessorId===ME.id||ROLE==="admin")?`<button type="button" class="ghost danger" data-del="${esc(e.id)}">Hapus</button>`:""}</div>`).join(""):`<p class="muted" style="margin:0">Belum ada catatan untuk tugas ini.</p>`}
+function bindHist(){document.querySelectorAll("[data-del]").forEach(b=>armDelete(b,"Yakin hapus?",async()=>{try{const {error}=await sb.from("signoffs").delete().eq("id",b.dataset.del);if(error)throw error;S.signoffs=S.signoffs.filter(x=>x.id!==b.dataset.del);toast("Catatan dihapus");render();refreshSheet()}catch(err){writeError(err)}}))}
+/* refresh only the history of an open sheet, so a half-filled form is never wiped by someone else's save */
+function refreshSheet(){if(!sheetCtx||!$("#shHist"))return;const {t,taskId}=sheetCtx;const st=statsFor(t.id);const [cls,lab]=taskStatus(st,taskId);
+  $("#shHist").innerHTML=histHtml(st.byTask[taskId]||[]);const p=$("#shPill");p.className="pill "+cls;p.textContent=lab;bindHist()}
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&sheetCtx)closeSheet()});
+
+function writeError(err){
+  const c=err&&err.code;
+  if(c==="23505"){toast("No. pegawai ini sudah dipakai mekanik lain.");return}
+  if(c==="42501"){toast("Akun Anda tidak punya izin untuk perubahan ini.");return}
+  toast("Gagal menyimpan. Coba lagi sebentar.");
+}
+
+
+/* ---------- dashboard ---------- */
+const STALE_DAYS=30;
+function daysSince(d){if(!d)return Infinity;return Math.floor((new Date(today())-new Date(d))/864e5)}
+function weekStart(d){const x=new Date(d+"T00:00:00");const k=(x.getDay()+6)%7;x.setDate(x.getDate()-k);return x}
+function dashView(){
+  const ts=S.trainees;
+  if(!ts.length)return `<div class="panel empty"><h2>Dashboard masih kosong</h2><p class="muted" style="margin:0;max-width:42ch">Tambahkan mekanik di tab Mekanik dan catat penilaian pertama. Ringkasan semua mekanik akan muncul di sini.</p><button class="primary" type="button" onclick="location.hash='baru'">+ Tambah mekanik</button></div>`;
+  const per=ts.map(t=>{const st=statsFor(t.id);return {t,st,pct:st.done.size/TOTAL,stale:daysSince(st.last)>STALE_DAYS}});
+  const avg=Math.round(per.reduce((a,p)=>a+p.pct,0)/per.length*100);
+  const doneAll=per.reduce((a,p)=>a+p.st.done.size,0);
+  const last30=S.signoffs.filter(s=>daysSince(s.date)<=30).length;
+  const staleN=per.filter(p=>p.stale).length;
+  // progress per trainee, lowest first
+  const sorted=[...per].sort((a,b)=>a.pct-b.pct||(a.t.name||"").localeCompare(b.t.name||""));
+  const pbars=sorted.map(p=>{const pc=Math.round(p.pct*100);
+    const tip=`${p.t.name}: ${p.st.done.size}/${TOTAL} tugas selesai (${pc}%). Terakhir dinilai ${fmtDate(p.st.last)}.`;
+    return `<button type="button" class="hb" data-open="${esc(p.t.id)}" data-tip="${esc(tip)}"><span class="nm">${esc(p.t.name)}${p.stale?`<span class="flag">⚠ ${p.st.last?">"+STALE_DAYS+" hari":"belum dinilai"}</span>`:""}</span><span class="track"><span class="fill" style="width:${pc}%"></span></span><span class="val">${pc}%</span></button>`}).join("");
+  // competencies across all
+  const cAll={};COMPS.forEach(([c])=>cAll[c]=0);S.signoffs.forEach(s=>(s.comps||[]).forEach(c=>{if(c in cAll)cAll[c]++}));
+  const cmax=Math.max(1,...Object.values(cAll));
+  const cbars=[...COMPS].sort((a,b)=>cAll[a[0]]-cAll[b[0]]).map(([c,n])=>`<div class="hb" data-tip="${esc(`${c} · ${n}: teramati ${cAll[c]} kali`)}"><span class="nm"><b style="font-family:var(--display);font-size:15px">${c}</b> <span class="muted">${esc(n)}</span></span><span class="track"><span class="fill" style="width:${cAll[c]/cmax*100}%"></span></span><span class="val">${cAll[c]}×</span></div>`).join("");
+  // section average
+  const sbars=SECTIONS.map(([sid,sname,list])=>{const ids=list.map((_,i)=>sid+"-"+(i+1));
+    const a=per.reduce((acc,p)=>acc+ids.filter(i=>p.st.done.has(i)).length/ids.length,0)/per.length;const pc=Math.round(a*100);
+    return `<div class="hb" data-tip="${esc(`${sname}: rata-rata ${pc}% tugas selesai per mekanik`)}"><span class="nm">${esc(sname)}</span><span class="track"><span class="fill" style="width:${pc}%"></span></span><span class="val">${pc}%</span></div>`}).join("");
+  // heatmap
+  const hm=[...per].sort((a,b)=>(a.t.name||"").localeCompare(b.t.name||"")).map(p=>{const m=Math.max(1,...Object.values(p.st.comp));
+    return `<tr><th class="rn" scope="row"><a href="#t-${esc(p.t.id)}" style="color:inherit">${esc(p.t.name)}</a></th>${COMPS.map(([c,n])=>{const v=p.st.comp[c];const l=v===0?0:Math.min(4,Math.ceil(v/m*4));return `<td class="h${l}" data-tip="${esc(`${p.t.name} · ${c} (${n}): ${v} kali`)}">${v||"·"}</td>`}).join("")}</tr>`}).join("");
+  // weekly activity, 12 weeks
+  const ws=weekStart(today());const weeks=[];for(let i=11;i>=0;i--){const d=new Date(ws);d.setDate(d.getDate()-7*i);weeks.push(d)}
+  const wc=weeks.map(()=>0);S.signoffs.forEach(s=>{if(!s.date)return;const w=weekStart(s.date).getTime();const i=weeks.findIndex(d=>d.getTime()===w);if(i>=0)wc[i]++});
+  const wmax=Math.max(1,...wc);const M=["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+  const cols=wc.map((v,i)=>`<div class="col" data-tip="${esc(`Minggu ${weeks[i].getDate()} ${M[weeks[i].getMonth()]}: ${v} catatan`)}">${v?`<span class="n">${v}</span>`:""}<div class="b" style="height:${v?Math.max(3,v/wmax*85):0}%"></div></div>`).join("");
+  const xax=weeks.map((d,i)=>`<span>${i%2===1?"":d.getDate()+" "+M[d.getMonth()]}</span>`).join("");
+  const tmap=Object.fromEntries(ts.map(t=>[t.id,t]));
+  const recent=[...S.signoffs].sort((a,b)=>(b.date||"").localeCompare(a.date||"")||(b.createdAt||0)-(a.createdAt||0)).slice(0,6)
+    .map(e=>entryHtml(e).replace('<div class="h">',`<div class="h"><span class="muted" style="font-size:13px">${esc(tmap[e.traineeId]?.name||"–")}</span>`)).join("")||`<p class="muted" style="margin:0">Belum ada catatan.</p>`;
+  return `<div><div class="label">Ringkasan semua trainee</div><h1>Dashboard CBTA</h1></div>
+  <div class="kpis">
+    <div class="kpi"><div class="v">${ts.length}</div><div class="k">mekanik dinilai</div></div>
+    <div class="kpi"><div class="v">${avg}%</div><div class="k">rata-rata progres (${TOTAL} tugas)</div></div>
+    <div class="kpi"><div class="v">${doneAll}</div><div class="k">total tugas sign-off</div></div>
+    <div class="kpi"><div class="v">${last30}</div><div class="k">catatan 30 hari terakhir</div></div>
+  </div>
+  ${staleN?`<div class="notice">⚠ ${staleN} mekanik belum dinilai lebih dari ${STALE_DAYS} hari. Mereka ditandai di grafik progres.</div>`:""}
+  <div class="dgrid">
+    <div class="panel"><h2>Progres per mekanik</h2><p class="muted" style="margin:0;font-size:13px">Diurutkan dari yang paling tertinggal. Ketuk nama untuk membuka detail.</p><div class="hbars">${pbars}</div></div>
+    <div class="panel"><h2>Kompetensi teramati</h2><p class="muted" style="margin:0;font-size:13px">Jumlah dari semua mekanik, paling jarang di atas.</p><div class="hbars">${cbars}</div></div>
+  </div>
+  <div class="panel"><h2>Peta kompetensi per mekanik</h2><p class="muted" style="margin:0;font-size:13px">Berapa kali tiap kompetensi teramati. Makin gelap makin sering untuk mekanik itu; titik berarti belum pernah.</p>
+    <div class="heat"><table><thead><tr><th></th>${COMPS.map(([c,n])=>`<th scope="col" title="${esc(n)}">${c}</th>`).join("")}</tr></thead><tbody>${hm}</tbody></table></div></div>
+  <div class="dgrid">
+    <div class="panel"><h2>Aktivitas penilaian</h2><p class="muted" style="margin:0;font-size:13px">Jumlah catatan per minggu, 12 minggu terakhir.</p><div><div class="cols">${cols}</div><div class="xax">${xax}</div></div></div>
+    <div class="panel"><h2>Rata-rata progres per bagian</h2><div class="hbars">${sbars}</div></div>
+  </div>
+  <div class="panel"><h2>Aktivitas terbaru</h2><div class="timeline">${recent}</div></div>`;
+}
+function bindDash(){document.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>location.hash="t-"+b.dataset.open)}
+(function tips(){const tip=document.getElementById("tip");let cur=null;
+  const show=(el,x,y)=>{cur=el;tip.textContent=el.dataset.tip;tip.hidden=false;const r=tip.getBoundingClientRect();
+    let L=Math.min(window.innerWidth-r.width-8,Math.max(8,x+12)),T=y-r.height-12;if(T<8)T=y+16;tip.style.left=L+"px";tip.style.top=T+"px"};
+  document.addEventListener("pointermove",e=>{const el=e.target.closest&&e.target.closest("[data-tip]");if(el)show(el,e.clientX,e.clientY);else if(cur){cur=null;tip.hidden=true}});
+  document.addEventListener("focusin",e=>{const el=e.target.closest&&e.target.closest("[data-tip]");if(el){const r=el.getBoundingClientRect();show(el,r.left+20,r.top)}});
+  document.addEventListener("focusout",()=>{tip.hidden=true;cur=null});
+  document.addEventListener("scroll",()=>{tip.hidden=true;cur=null},true);
+})();
+
+/* ---------- role switch ---------- */
+$("#btnOut").onclick=async()=>{await sb.auth.signOut();location.hash=""};
+
+/* ---------- game-style status ---------- */
+const RANKS=[[0,"Rookie"],[10,"Apprentice"],[25,"Technician"],[45,"Specialist"],[60,"Senior Specialist"],[68,"CBTA Certified"]];
+const BADGES={gse:["Ground Crew","GSE"],svc:["Servicer","SVC"],mov:["Ramp Operator","RMP"],haz:["Safety Sentinel","SAF"],doc:["Paper Trail","DOC"],tool:["Tool Master","TLS"],env:["All-Weather","ENV"],sp:["Standard Bearer","STD"]};
+const STAT_MAX=10; /* 10 observasi = stat penuh (100) */
+function gameFor(t){
+  const st=statsFor(t.id);const done=st.done.size;
+  const obs=Object.values(st.comp).reduce((a,b)=>a+b,0);const behN=st.entries.reduce((a,e)=>a+(e.beh||[]).length,0);
+  const xp=done*100+st.entries.length*25+obs*5+behN*2;
+  const lvl=1+Math.floor(xp/400);const into=xp%400;
+  let ri=0;RANKS.forEach((r,i)=>{if(done>=r[0])ri=i});
+  const next=RANKS[ri+1];
+  const stats=COMPS.map(([c,n])=>({c,n,v:Math.min(100,Math.round(st.comp[c]/STAT_MAX*100)),raw:st.comp[c]}));
+  const badges=SECTIONS.map(([sid,sname,list])=>{const ids=list.map((_,i)=>sid+"-"+(i+1));const d=ids.filter(i=>st.done.has(i)).length;return {sid,sname,d,n:ids.length,got:d===ids.length,name:BADGES[sid][0],tag:BADGES[sid][1]}});
+  const top=[...stats].sort((a,b)=>b.raw-a.raw)[0];const low=[...stats].sort((a,b)=>a.raw-b.raw)[0];
+  return {st,done,xp,lvl,into,rank:RANKS[ri][1],next,stats,badges,top,low};
+}
+function radar(stats){
+  const N=stats.length,cx=160,cy=150,R=96;const pt=(i,r)=>{const a=-Math.PI/2+i*2*Math.PI/N;return [cx+r*Math.cos(a),cy+r*Math.sin(a)]};
+  const rings=[25,50,75,100].map(k=>`<polygon points="${stats.map((_,i)=>pt(i,R*k/100).join(",")).join(" ")}" fill="none" stroke="var(--hud-grid)" stroke-width="1"/>`).join("");
+  const spokes=stats.map((_,i)=>{const [x,y]=pt(i,R);return `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="var(--hud-grid)" stroke-width="1"/>`}).join("");
+  const poly=stats.map((s,i)=>pt(i,R*Math.max(s.v,3)/100).join(",")).join(" ");
+  const dots=stats.map((s,i)=>{const [x,y]=pt(i,R*Math.max(s.v,3)/100);return `<circle cx="${x}" cy="${y}" r="4" fill="var(--hud-accent)" stroke="var(--hud-bg)" stroke-width="2"/><circle cx="${x}" cy="${y}" r="12" fill="transparent" data-tip="${esc(`${s.c} · ${s.n}: ${s.raw}× teramati (stat ${s.v}/100)`)}"/>`}).join("");
+  const labels=stats.map((s,i)=>{const [x,y]=pt(i,R+24);return `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" fill="var(--hud-fg)" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-weight="700" font-size="14">${s.c}<tspan x="${x}" dy="13" font-family="IBM Plex Mono, monospace" font-weight="400" font-size="10" fill="var(--hud-muted)">${s.v}</tspan></text>`}).join("");
+  return `<svg viewBox="0 0 320 306" class="radar" role="img" aria-label="Radar 11 kompetensi">${rings}${spokes}<polygon points="${poly}" fill="var(--hud-accent)" fill-opacity=".28" stroke="var(--hud-accent)" stroke-width="2" stroke-linejoin="round"/>${dots}${labels}</svg>`;
+}
+function statusCard(t){
+  const g=gameFor(t);const pct=Math.round(g.done/TOTAL*100);
+  const nextTxt=g.next?`${g.next[0]-g.done} tugas lagi menuju <b>${g.next[1]}</b>`:"Semua tugas Fundamental selesai";
+  const initials=(t.name||"?").split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join("").toUpperCase();
+  const badges=g.badges.map(b=>`<div class="badge ${b.got?"got":""}" data-tip="${esc(`${b.name} · ${b.sname}: ${b.d}/${b.n} tugas`)}"><svg viewBox="0 0 40 44" aria-hidden="true"><polygon points="20,2 38,12 38,32 20,42 2,32 2,12" class="hx"/><text x="20" y="25" text-anchor="middle" class="ht">${b.tag}</text></svg><span class="bn">${esc(b.name)}</span><span class="bp">${b.got?"Terbuka":b.d+"/"+b.n}</span></div>`).join("");
+  return `<section class="hud" aria-label="Kartu status mekanik">
+    <div class="hud-top">
+      <div class="avatar" aria-hidden="true">${esc(initials)}<span class="lv">LV ${g.lvl}</span></div>
+      <div class="who"><div class="hud-label">Kartu Status · ${esc(t.empNo||"tanpa ID")}</div><div class="hud-name">${esc(t.name)}</div>
+        <div class="rank"><span class="rk">${esc(g.rank)}</span><span class="hud-muted">${nextTxt}</span></div></div>
+    </div>
+    <div class="meters">
+      <div class="meter"><div class="mh"><span>Progres tugas</span><span class="mono">${g.done}/${TOTAL} · ${pct}%</span></div><div class="mbar"><span style="width:${pct}%"></span></div></div>
+      <div class="meter"><div class="mh"><span>XP level ${g.lvl}</span><span class="mono">${g.into}/400 · total ${g.xp} XP</span></div><div class="mbar xp"><span style="width:${g.into/4}%"></span></div></div>
+    </div>
+    <div class="hud-body">
+      <div class="radarbox">${radar(g.stats)}<div class="hud-muted" style="font-size:11.5px;text-align:center">Stat = jumlah observasi kompetensi · ${STAT_MAX}× = 100</div></div>
+      <div class="hud-side">
+        <div class="hl"><span class="hud-label">Kompetensi terkuat</span><b>${g.top.raw?esc(g.top.c+" · "+g.top.n):"–"}</b></div>
+        <div class="hl"><span class="hud-label">Perlu diasah</span><b>${g.low.raw===g.top.raw?(g.top.raw?"Semua kompetensi seimbang":"Belum ada observasi"):esc(g.low.c+" · "+g.low.n)}</b></div>
+        <div class="hud-label" style="margin-top:4px">Lencana bagian</div>
+        <div class="badges">${badges}</div>
+      </div>
+    </div>
+    <div class="hud-foot hud-muted">XP: 100 per tugas sign-off · 25 per catatan · 5 per kompetensi · 2 per perilaku teramati</div>
+  </section>`;
+}
+
+/* ---------- mechanic self-service ---------- */
+let MYDATA=null,MYLOADING=false;
+async function lookupMe(id){MYLOADING=true;render();
+  try{const {data,error}=await sb.rpc("mechanic_progress",{p_emp_no:id});if(error)throw error;
+    if(data&&data.trainee){const t=fromTrainee(data.trainee);MYDATA={id,t};S.trainees=[t];S.signoffs=(data.signoffs||[]).map(r=>fromSignoff({...r,trainee_id:t.id}))}
+    else{MYDATA={id,t:null};S.trainees=[];S.signoffs=[]}}
+  catch(e){toast("Gagal memuat data. Periksa koneksi internet.");MYDATA=null}
+  MYLOADING=false;render()}
+function meView(){
+  const id=lsGet("cbta.myid");const t=MYDATA&&MYDATA.id===id?MYDATA.t:null;
+  if(MYLOADING)return `<div class="panel"><p class="muted" style="margin:0">Mencari data ${esc(id)}…</p></div>`;
+  const form=`<form id="fMe" class="lookup"><label class="f" style="flex:1;min-width:0">No. pegawai (ID)<input id="meId" inputmode="text" autocomplete="off" value="${esc(id)}" placeholder="Masukkan ID Anda" required></label><button class="primary" type="submit">Lihat progres</button></form>`;
+  if(!t){
+  return `<div class="hero"><div class="label">CBTA · Fundamental OJT</div><h1>Cek progres CBTA saya</h1><p class="muted" style="margin:0">Untuk mekanik: masukkan nomor pegawai. Assessor dan pembina: <a href="#masuk">masuk dengan email</a>.</p></div>
+    <div class="panel">${form}${id&&MYDATA&&MYDATA.id===id?`<div class="notice">ID <b>${esc(id)}</b> belum terdaftar. Periksa kembali, atau daftarkan data Anda.</div><div><button type="button" id="goReg">Daftarkan data saya</button></div>`:`<p class="muted" style="margin:0;font-size:13.5px">Masukkan nomor pegawai untuk melihat kartu status, kompetensi, dan tugas yang sudah atau belum selesai.</p>`}</div>`}
+  const st=statsFor(t.id);
+  const secs=SECTIONS.map(([sid,sname,list])=>{const ids=list.map((_,i)=>sid+"-"+(i+1));const d=ids.filter(i=>st.done.has(i)).length;
+    const rows=ids.map(i=>{const [cls,lab]=taskStatus(st,i);return `<div class="task" style="cursor:default"><span class="t">${esc(TASK[i].name)}</span><span class="pill ${cls}">${lab}</span></div>`}).join("");
+    return `<details class="group"><summary><h3 style="flex:1">${esc(sname)}</h3><span class="mono muted">${d}/${ids.length}</span></summary><div class="tasks">${rows}</div></details>`}).join("");
+  const recent=[...st.entries].sort((a,b)=>(b.date||"").localeCompare(a.date||"")||(b.createdAt||0)-(a.createdAt||0)).slice(0,5);
+  return `<div class="panel" style="padding:12px 16px">${form}<p style="margin:0;font-size:13px" class="muted">Assessor atau pembina? <a href="#masuk">Masuk di sini</a></p></div>
+    ${statusCard(t)}
+    <div class="panel"><h2>Penilaian terakhir</h2><div class="timeline">${recent.length?recent.map(entryHtml).join(""):`<p class="muted" style="margin:0">Belum ada penilaian. Minta assessor Anda mencatat tugas OJT pertama.</p>`}</div></div>
+    <div class="panel" style="gap:0"><h2 style="margin-bottom:8px">Tugas OJT saya</h2>${secs}</div>`;
+}
+function bindMe(){
+  if(!$("#fMe"))return;
+  $("#fMe").onsubmit=e=>{e.preventDefault();const v=$("#meId").value.trim();if(!v)return;lsSet("cbta.myid",v);lookupMe(v)};
+  const g=$("#goReg");if(g)g.onclick=()=>location.hash="daftar";
+}
+/* ---------- export ---------- */
+function csvCell(v){v=String(v??"");return /[",\n;]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+$("#btnExport").onclick=async()=>{
+  const r=route();const only=r.view==="trainee"?r.id:null;
+  const head=["Trainee","No. pegawai","Bagian","Tugas","Tanggal","P/D","Airplane ID & Type","Reference","Kompetensi teramati","Trainer","Sign-off","Catatan"];
+  const rows=[head];
+  const tmap=Object.fromEntries(S.trainees.map(t=>[t.id,t]));
+  [...S.signoffs].filter(s=>!only||s.traineeId===only).sort((a,b)=>((tmap[a.traineeId]?.name||"").localeCompare(tmap[b.traineeId]?.name||""))||(a.date||"").localeCompare(b.date||""))
+   .forEach(s=>{const t=tmap[s.traineeId]||{};const k=TASK[s.taskId]||{};rows.push([t.name,t.empNo,k.sname,k.name,s.date,s.mode,s.aircraft,s.reference,(s.comps||[]).join("-"),s.trainer,s.complete?"Ya":"",s.notes])});
+  const csv="﻿"+rows.map(r=>r.map(csvCell).join(",")).join("\r\n");
+  const name=only?`CBTA_${(tmap[only]?.name||"trainee").replace(/[^\w-]+/g,"_")}_${today()}.csv`:`CBTA_semua_${today()}.csv`;
+  const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));const a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
+};
+
+/* ---------- auth screens ---------- */
+let AUTHMODE="in";
+function loginView(){
+  const up=AUTHMODE==="up";
+  return `<div class="hero"><div class="label">Assessor & Pembina</div><h1>${up?"Daftar akun":"Masuk"}</h1></div>
+  <div class="panel" style="max-width:460px">
+    <form id="fAuth">
+      ${up?`<label class="f">Nama lengkap<input id="aName" required autocomplete="name"></label>`:""}
+      <label class="f">Email<input id="aEmail" type="email" required autocomplete="email"></label>
+      <label class="f">Kata sandi<input id="aPass" type="password" required minlength="8" autocomplete="${up?"new-password":"current-password"}"></label>
+      <div class="actions" style="justify-content:space-between;align-items:center"><button type="button" class="ghost" id="aSwitch" style="padding-left:0">${up?"Sudah punya akun? Masuk":"Belum punya akun? Daftar"}</button><button class="primary" type="submit">${up?"Daftar":"Masuk"}</button></div>
+    </form>
+    ${up?`<p class="muted" style="margin:0;font-size:13px">Setelah mendaftar, admin perlu menyetujui akun Anda dan memberi peran assessor atau pembina. Kata sandi minimal 8 karakter.</p>`:""}
+    <p style="margin:0;font-size:13.5px"><a href="#">← Saya mekanik, cek progres dengan ID</a></p>
+  </div>`;
+}
+function bindLogin(){
+  $("#aSwitch").onclick=()=>{AUTHMODE=AUTHMODE==="up"?"in":"up";render()};
+  $("#fAuth").onsubmit=async e=>{e.preventDefault();const btn=e.submitter||e.target.querySelector("[type=submit]");btn.disabled=true;
+    const email=$("#aEmail").value.trim(),password=$("#aPass").value;
+    try{
+      if(AUTHMODE==="up"){const {data,error}=await sb.auth.signUp({email,password,options:{data:{full_name:$("#aName").value.trim()},emailRedirectTo:location.origin+location.pathname}});if(error)throw error;
+        if(!data.session){toast("Cek email Anda untuk konfirmasi, lalu masuk.");AUTHMODE="in";render();return}}
+      else{const {error}=await sb.auth.signInWithPassword({email,password});if(error)throw error}
+      location.hash="";
+    }catch(err){btn.disabled=false;const m=String(err&&err.message||"");
+      toast(/Invalid login/i.test(m)?"Email atau kata sandi salah.":/confirm/i.test(m)?"Email belum dikonfirmasi. Cek kotak masuk Anda.":/registered/i.test(m)?"Email ini sudah terdaftar. Silakan masuk.":/rate limit/i.test(m)?"Terlalu banyak percobaan. Coba lagi beberapa menit lagi.":"Gagal: "+m)}
+  };
+}
+function pendingView(){return `<div class="panel" style="max-width:520px"><h2>Akun menunggu persetujuan</h2><p class="muted" style="margin:0">Halo ${esc(ME.name||ME.email)}. Admin perlu memberi peran assessor atau pembina sebelum Anda bisa melihat data. Hubungi admin CBTA, lalu muat ulang halaman ini.</p></div>`}
+
+/* ---------- admin: users ---------- */
+let USERS=[];
+async function loadUsers(){const {data,error}=await sb.from("profiles").select("id,full_name,email,role,created_at").order("created_at");if(!error)USERS=data||[]}
+function usersView(){
+  const order={pending:0,admin:1,assessor:2,pembina:3};
+  const rows=[...USERS].sort((a,b)=>(order[a.role]-order[b.role])||(a.full_name||"").localeCompare(b.full_name||"")).map(u=>`<div class="urow"><div style="min-width:0"><b>${esc(u.full_name||"(tanpa nama)")}</b><div class="muted" style="font-size:13px;overflow-wrap:anywhere">${esc(u.email)}</div></div>
+    ${u.id===ME.id?`<span class="pill none">Admin (Anda)</span>`:`<select data-uid="${esc(u.id)}" aria-label="Peran ${esc(u.full_name)}">${["pending","assessor","pembina","admin"].map(r=>`<option value="${r}" ${u.role===r?"selected":""}>${ROLES[r]}</option>`).join("")}</select>`}</div>`).join("");
+  const pend=USERS.filter(u=>u.role==="pending").length;
+  return `<div><div class="label">Admin</div><h1>Pengguna</h1></div>
+  ${pend?`<div class="notice">${pend} akun menunggu persetujuan. Pilih perannya di bawah.</div>`:""}
+  <div class="panel"><p class="muted" style="margin:0;font-size:13.5px">Assessor bisa mencatat penilaian. Pembina hanya melihat dashboard dan detail mekanik. Mekanik tidak perlu akun.</p><div class="ulist">${rows||'<p class="muted">Belum ada pengguna lain.</p>'}</div></div>`;
+}
+function bindUsers(){
+  $("#navUsers").classList.add("on");$("#navDash").classList.remove("on");$("#navList").classList.remove("on");
+  document.querySelectorAll("[data-uid]").forEach(sel=>sel.onchange=async()=>{sel.disabled=true;
+  const {error}=await sb.from("profiles").update({role:sel.value}).eq("id",sel.dataset.uid);sel.disabled=false;
+  if(error){toast("Gagal mengubah peran.");return}toast("Peran diperbarui");await loadUsers();render()})}
+
+/* ---------- data ---------- */
+async function fetchAll(table,map){const out=[];for(let from=0;;from+=1000){const {data,error}=await sb.from(table).select("*").order("created_at").range(from,from+999);if(error)throw error;out.push(...data.map(map));if(data.length<1000)break}return out}
+async function loadAll(){
+  try{const [t,s2]=await Promise.all([fetchAll("trainees",fromTrainee),fetchAll("signoffs",fromSignoff)]);S.trainees=t;S.signoffs=s2;S.offline=false}
+  catch(e){S.offline=true}
+  if(ROLE==="admin")await loadUsers();
+}
+let reloadTimer=null,channel=null;
+function scheduleReload(){clearTimeout(reloadTimer);reloadTimer=setTimeout(async()=>{await loadAll();
+  if(document.querySelector("#fTrainee"))return; /* don't wipe a form being typed */
+  render();refreshSheet()},800)}
+async function applySession(session){
+  if(channel){sb.removeChannel(channel);channel=null}
+  if(!session){ROLE="mekanik";ME.id=null;ME.name="";ME.email="";S.trainees=[];S.signoffs=[];S.ready=true;MYDATA=null;render();
+    const id=lsGet("cbta.myid");if(id)lookupMe(id);return}
+  ME.id=session.user.id;ME.email=session.user.email||"";
+  const {data:prof}=await sb.from("profiles").select("full_name,role").eq("id",ME.id).maybeSingle();
+  ROLE=prof?.role||"pending";ME.name=prof?.full_name||"";
+  if(isStaff()){S.ready=false;$("#app").innerHTML=`<div class="panel"><p class="muted" style="margin:0">Memuat data…</p></div>`;await loadAll();
+    channel=sb.channel("cbta").on("postgres_changes",{event:"*",schema:"public",table:"signoffs"},scheduleReload).on("postgres_changes",{event:"*",schema:"public",table:"trainees"},scheduleReload).subscribe();
+    if(ROLE==="admin"&&USERS.some(u=>u.role==="pending"))setTimeout(()=>toast("Ada akun baru yang menunggu persetujuan di tab Pengguna."),600);}
+  S.ready=true;render();
+}
+let lastUid;
+if(sb){
+  sb.auth.onAuthStateChange((ev,session)=>{const uid=session?.user?.id||null;if(ev!=="INITIAL_SESSION"&&uid===lastUid)return;lastUid=uid;setTimeout(()=>applySession(session),0)});
+}else{S.ready=true;render()}
+</script>
+</body></html>
