@@ -244,6 +244,61 @@ details.behlist ul{margin:4px 0 0;padding-left:18px}
 .ulist{display:flex;flex-direction:column}
 .urow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
 .urow select{width:auto;min-height:36px}
+
+.tabs a{position:relative;white-space:nowrap}
+.tabs .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--warn);vertical-align:2px}
+@media (max-width:640px){header.top .in{flex-wrap:wrap;row-gap:8px}#navTabs{order:3;width:100%;overflow-x:auto}#navTabs a{flex:1;text-align:center}}
+a.userchip{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--fg);padding:4px 8px 4px 4px;border-radius:99px;border:1px solid transparent;text-align:left}
+a.userchip:hover,a.userchip.on{border-color:var(--line);background:var(--surface-2)}
+.ucav{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:var(--accent-fg);font-family:var(--display);font-weight:700;font-size:14px;flex:none}
+.uctx{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+@media (max-width:420px){.uctx{display:none}}
+a.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:var(--fg);font-weight:600;font-size:14px}
+.idcard{gap:14px}
+.idtop{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.idav{width:64px;height:64px;border-radius:16px;display:grid;place-items:center;background:var(--accent);color:var(--accent-fg);font-family:var(--display);font-weight:700;font-size:26px;flex:none}
+.idgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px 16px;margin:0}
+.idgrid dt{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+.idgrid dd{margin:2px 0 0;font-size:14.5px;overflow-wrap:anywhere}
+.rolebadge{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:6px;padding:3px 8px;background:var(--surface-2);color:var(--muted);margin-top:4px}
+.rolebadge.r-admin{background:var(--fg);color:var(--bg)}
+.rolebadge.r-assessor{background:var(--accent);color:var(--accent-fg)}
+.rolebadge.r-pembina{background:var(--warn-soft);color:var(--warn)}
+.rolebadge.r-mekanik{background:var(--accent-soft);color:var(--accent)}
+.setgrid{display:grid;grid-template-columns:1fr;gap:16px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg label{position:relative}
+.seg input{position:absolute;opacity:0;width:1px;height:1px;min-height:0}
+.seg span{display:inline-block;padding:8px 14px;border:1px solid var(--line);border-radius:8px;cursor:pointer;font-weight:600;font-size:14px}
+.seg input:checked+span{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.seg input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.exrow{display:flex;gap:12px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;padding-top:10px;border-top:1px solid var(--line)}
+.exrow>div{min-width:0;flex:1}
+.req{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.reqact{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+@media (max-width:520px){.req{grid-template-columns:1fr}.reqact{justify-content:flex-start}}
+/* auth */
+.authwrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:0;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:var(--surface);margin-top:8px}
+@media (max-width:720px){.authwrap{grid-template-columns:1fr}}
+.authside{--hud-muted:#8fa2b0;background:linear-gradient(160deg,#16232e,#0f1820 65%);color:#e8eef2;padding:28px;display:flex;flex-direction:column;gap:12px;justify-content:flex-end;min-height:220px;position:relative;overflow:hidden}
+.authside::before{content:"";position:absolute;right:-60px;top:-60px;width:240px;height:240px;border-radius:50%;border:2px solid rgba(181,211,106,.35);box-shadow:0 0 0 30px rgba(181,211,106,.06),0 0 0 60px rgba(181,211,106,.04)}
+.authbrand{font-family:var(--display);font-weight:700;font-size:52px;line-height:.9;letter-spacing:.01em;text-transform:uppercase;color:#b5d36a}
+.authside p{margin:0;color:#b9c7d1;max-width:34ch;font-size:14.5px}
+.authcard{border:0;border-radius:0;padding:28px;gap:16px}
+.authcard a{color:var(--accent);font-weight:600}
+.pw{display:flex;gap:6px}
+.pw input{flex:1;min-width:0}
+.pwt{min-height:40px;padding-inline:10px;font-size:13px}
+fieldset.rolepick{border:0;padding:0;margin:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+fieldset.rolepick legend{margin-bottom:6px}
+@media (max-width:520px){fieldset.rolepick{grid-template-columns:1fr}}
+.rolepick label{position:relative}
+.rolepick input{position:absolute;opacity:0;width:1px;height:1px;min-height:0}
+.rolepick span{display:flex;flex-direction:column;gap:2px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;height:100%}
+.rolepick b{font-family:var(--display);font-size:18px}
+.rolepick small{color:var(--muted);font-size:12.5px;line-height:1.3}
+.rolepick input:checked+span{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.rolepick input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -251,9 +306,8 @@ details.behlist ul{margin:4px 0 0;padding-left:18px}
 <header class="top"><div class="in">
   <div class="brand">CBTA Tracker<small>BT-RRF-079/R0 · Fundamental OJT Task List</small></div>
   <div class="spacer"></div>
-  <nav class="tabs" aria-label="Halaman" id="navTabs" hidden><a href="#dashboard" id="navDash">Dashboard</a><a href="#mekanik" id="navList">Mekanik</a><a href="#pengguna" id="navUsers" hidden>Pengguna</a></nav>
-  <div class="userchip" id="userChip" hidden><span><b id="ucName"></b><span class="label" id="ucRole"></span></span><button type="button" class="ghost" id="btnOut">Keluar</button></div>
-  <button id="btnExport" class="ghost" type="button" hidden>Ekspor CSV</button>
+  <nav class="tabs" aria-label="Halaman" id="navTabs" hidden></nav>
+  <a class="userchip" id="userChip" href="#profil" hidden><span class="ucav" id="ucAv"></span><span class="uctx"><b id="ucName"></b><span class="label" id="ucRole"></span></span></a>
 </div></header>
 <main class="wrap" id="app"><div class="panel"><p class="muted" style="margin:0">Memuat…</p></div></main>
 <div id="sheetRoot"></div>
@@ -294,9 +348,9 @@ SECTIONS.forEach(([sid,sname,list])=>list.forEach((name,i)=>{const id=sid+"-"+(i
 const TOTAL=TASKS.length;
 
 const S={db:null,ready:false,offline:false,trainees:[],signoffs:[],writable:true};
-const ROLES={admin:"Admin",assessor:"Assessor",pembina:"Pembina",pending:"Menunggu persetujuan",mekanik:"Mekanik"};
-let ROLE="mekanik";            /* no session = mechanic self-service */
-const ME={id:null,name:"",email:""};
+const ROLES={admin:"Admin",assessor:"Assessor",pembina:"Pembina",pending:"Menunggu persetujuan",mekanik:"Mekanik",rejected:"Ditolak"};
+let ROLE="anon";               /* anon | pending | rejected | mekanik | assessor | pembina | admin */
+const ME={id:null,name:"",email:"",profile:null};
 const isAssessor=()=>ROLE==="assessor"||ROLE==="admin";
 const isStaff=()=>ROLE==="assessor"||ROLE==="admin"||ROLE==="pembina";
 const sb=window.supabase?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
@@ -324,29 +378,36 @@ function taskStatus(st,id){if(st.done.has(id))return["done","Selesai"];if(st.byT
 
 /* ---------- routing ---------- */
 function route(){const h=location.hash.slice(1);
-  if(ROLE==="mekanik"){if(h==="daftar")return{view:"register"};if(h==="masuk")return{view:"login"};return{view:"me"}}
-  if(ROLE==="pending")return{view:"pending"};
+  if(RECOVERY)return{view:"setpass"};
+  if(ROLE==="anon"){if(h==="daftar")return{view:"signup"};if(h==="lupa")return{view:"forgot"};return{view:"login"}}
+  if(h==="pengaturan")return{view:"settings"};
+  if(ROLE==="pending"||ROLE==="rejected")return{view:"pending"};
+  if(h==="profil"||ROLE==="mekanik")return{view:"profile"};
   if(h==="pengguna"&&ROLE==="admin")return{view:"users"};
   if(h.startsWith("t-"))return{view:"trainee",id:h.slice(2)};if(h==="baru"&&isAssessor())return{view:"new"};if(h==="mekanik")return{view:"home"};return{view:"dash"}}
-window.addEventListener("hashchange",render);
-
+window.addEventListener("hashchange",()=>{render();window.scrollTo(0,0)});
+const NAVS={mekanik:[["profile","#profil","Profil saya"],["settings","#pengaturan","Pengaturan"]],
+  staff:[["dash","#dashboard","Dashboard"],["home","#mekanik","Mekanik"],["settings","#pengaturan","Pengaturan"]]};
 function render(){
   const app=$("#app");const r=route();
-  $("#btnExport").hidden=!(S.ready&&S.trainees.length&&isStaff());
-  $("#navTabs").hidden=!isStaff();$("#navUsers").hidden=ROLE!=="admin";
-  $("#userChip").hidden=ROLE==="mekanik";$("#ucName").textContent=ME.name||ME.email;$("#ucRole").textContent=ROLES[ROLE]||"";
+  let nav=ROLE==="mekanik"?NAVS.mekanik:isStaff()?NAVS.staff.slice():[];
+  if(ROLE==="admin")nav.splice(2,0,["users","#pengguna","Pengguna"]);
+  const cur=r.view==="trainee"||r.view==="new"?"home":r.view;
+  $("#navTabs").innerHTML=nav.map(([v,h,l])=>`<a href="${h}" class="${cur===v?"on":""}">${l}${v==="users"&&USERS.some(u=>u.role==="pending")?' <span class="dot" aria-label="ada pengajuan"></span>':""}</a>`).join("");
+  $("#navTabs").hidden=!nav.length;
+  $("#userChip").hidden=ROLE==="anon";$("#ucName").textContent=ME.name||ME.email;$("#ucRole").textContent=ROLES[ROLE]||"";$("#ucAv").textContent=initialsOf(ME.name||ME.email);
+  $("#userChip").classList.toggle("on",r.view==="profile");
   document.documentElement.dataset.role=ROLE;
   if(!sb){app.innerHTML=`<div class="panel"><h2>Aplikasi gagal dimuat</h2><p class="muted" style="margin:0">Periksa koneksi internet lalu muat ulang halaman.</p></div>`;return}
-  if(r.view==="login"){app.innerHTML=loginView();bindLogin();return}
+  if(["login","signup","forgot","setpass"].includes(r.view)){app.innerHTML=r.view==="login"?loginView():r.view==="signup"?signupView():r.view==="forgot"?forgotView():setPassView();bindAuth(r.view);return}
   if(r.view==="pending"){app.innerHTML=pendingView();return}
   if(!S.ready){return}
   let banner=S.offline?`<div class="notice">Data belum bisa dijangkau. Periksa koneksi internet; data yang tampil mungkin belum terbaru.</div>`:"";
-  if(r.view==="me"){app.innerHTML=banner+meView();bindMe();return}
+  if(r.view==="settings"){app.innerHTML=banner+settingsView();bindSettings();return}
+  if(r.view==="profile"){app.innerHTML=banner+profileView();bindDash();return}
   if(r.view==="users"){app.innerHTML=banner+usersView();bindUsers();return}
-  if(r.view==="register"){app.innerHTML=banner+traineeForm(null,true);bindTraineeForm(null,true);return}
   if(r.view==="trainee"){const t=S.trainees.find(x=>x.id===r.id);if(t){app.innerHTML=banner+traineeView(t);bindTrainee(t);return}}
   if(r.view==="new"){app.innerHTML=banner+traineeForm();bindTraineeForm(null);return}
-  const r2=route();$("#navDash").classList.toggle("on",r2.view==="dash");$("#navList").classList.toggle("on",r2.view==="home"||r2.view==="trainee"||r2.view==="new");$("#navUsers").classList.toggle("on",false);
   if(r.view==="dash"){app.innerHTML=banner+dashView();bindDash();return}
   app.innerHTML=banner+homeView();
   app.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>location.hash="t-"+b.dataset.open);
@@ -389,7 +450,7 @@ function bindTraineeForm(t,self){
     if(self){if(!body.empNo)return;
       try{const {data,error}=await sb.rpc("register_mechanic",{p_name:body.name,p_emp_no:body.empNo,p_company:body.company,p_location:body.location,p_issued:body.issued||null});if(error)throw error;
         if(data==="exists"){toast("ID ini sudah terdaftar.");return}if(data!=="ok"){toast("Data belum lengkap atau terlalu panjang.");return}
-        lsSet("cbta.myid",body.empNo);MYDATA=null;toast("Data Anda tersimpan");location.hash="";lookupMe(body.empNo);}catch(err){writeError(err)}return}
+        lsSet("cbta.myid",body.empNo);toast("Data Anda tersimpan");location.hash="";}catch(err){writeError(err)}return}
     try{
       const row={name:body.name,emp_no:body.empNo,company:body.company,location:body.location,issued:body.issued||null};
       if(t){const {error}=await sb.from("trainees").update(row).eq("id",t.id);if(error)throw error;toast("Data mekanik disimpan");await loadAll();render();}
@@ -466,7 +527,7 @@ function drawSheet(){
     ${!isAssessor()?`<div class="actions"><button type="button" id="eCancel">Tutup</button></div>`:`<form id="fEntry"><h3>Catat penilaian baru</h3>
       <div class="fields">
         <label class="f">Tanggal<input id="eDate" type="date" required value="${today()}"></label>
-        <label class="f">Perform / Demonstrate<select id="eMode"><option value="P">P – Perform</option><option value="D">D – Demonstrate</option></select></label>
+        <label class="f">Perform / Demonstrate<select id="eMode"><option value="P">P – Perform</option><option value="D" ${ME.profile?.prefs?.mode==="D"?"selected":""}>D – Demonstrate</option></select></label>
         <label class="f">Airplane ID &amp; Type<input id="eAc" placeholder="mis. PK-LKS B737-900ER" value="${esc(lastAc)}"></label>
         <label class="f">Reference<input id="eRef" placeholder="mis. AMM 20-11-00"></label>
         <label class="f full">Trainer / Assessor<input id="eTr" value="${esc(trainer)}" placeholder="Nama dan no. otorisasi"></label>
@@ -511,7 +572,7 @@ function writeError(err){
 
 
 /* ---------- dashboard ---------- */
-const STALE_DAYS=30;
+let STALE_DAYS=30;
 function daysSince(d){if(!d)return Infinity;return Math.floor((new Date(today())-new Date(d))/864e5)}
 function weekStart(d){const x=new Date(d+"T00:00:00");const k=(x.getDay()+6)%7;x.setDate(x.getDate()-k);return x}
 function dashView(){
@@ -578,12 +639,12 @@ function bindDash(){document.querySelectorAll("[data-open]").forEach(b=>b.onclic
 })();
 
 /* ---------- role switch ---------- */
-$("#btnOut").onclick=async()=>{await sb.auth.signOut();location.hash=""};
+
 
 /* ---------- game-style status ---------- */
 const RANKS=[[0,"Rookie"],[10,"Apprentice"],[25,"Technician"],[45,"Specialist"],[60,"Senior Specialist"],[68,"CBTA Certified"]];
 const BADGES={gse:["Ground Crew","GSE"],svc:["Servicer","SVC"],mov:["Ramp Operator","RMP"],haz:["Safety Sentinel","SAF"],doc:["Paper Trail","DOC"],tool:["Tool Master","TLS"],env:["All-Weather","ENV"],sp:["Standard Bearer","STD"]};
-const STAT_MAX=10; /* 10 observasi = stat penuh (100) */
+let STAT_MAX=10; /* observasi untuk stat penuh (100), diatur admin */
 function gameFor(t){
   const st=statsFor(t.id);const done=st.done.size;
   const obs=Object.values(st.comp).reduce((a,b)=>a+b,0);const behN=st.entries.reduce((a,e)=>a+(e.beh||[]).length,0);
@@ -633,125 +694,272 @@ function statusCard(t){
   </section>`;
 }
 
-/* ---------- mechanic self-service ---------- */
-let MYDATA=null,MYLOADING=false;
-async function lookupMe(id){MYLOADING=true;render();
-  try{const {data,error}=await sb.rpc("mechanic_progress",{p_emp_no:id});if(error)throw error;
-    if(data&&data.trainee){const t=fromTrainee(data.trainee);MYDATA={id,t};S.trainees=[t];S.signoffs=(data.signoffs||[]).map(r=>fromSignoff({...r,trainee_id:t.id}))}
-    else{MYDATA={id,t:null};S.trainees=[];S.signoffs=[]}}
-  catch(e){toast("Gagal memuat data. Periksa koneksi internet.");MYDATA=null}
-  MYLOADING=false;render()}
-function meView(){
-  const id=lsGet("cbta.myid");const t=MYDATA&&MYDATA.id===id?MYDATA.t:null;
-  if(MYLOADING)return `<div class="panel"><p class="muted" style="margin:0">Mencari data ${esc(id)}…</p></div>`;
-  const form=`<form id="fMe" class="lookup"><label class="f" style="flex:1;min-width:0">No. pegawai (ID)<input id="meId" inputmode="text" autocomplete="off" value="${esc(id)}" placeholder="Masukkan ID Anda" required></label><button class="primary" type="submit">Lihat progres</button></form>`;
-  if(!t){
-  return `<div class="hero"><div class="label">CBTA · Fundamental OJT</div><h1>Cek progres CBTA saya</h1><p class="muted" style="margin:0">Untuk mekanik: masukkan nomor pegawai. Assessor dan pembina: <a href="#masuk">masuk dengan email</a>.</p></div>
-    <div class="panel">${form}${id&&MYDATA&&MYDATA.id===id?`<div class="notice">ID <b>${esc(id)}</b> belum terdaftar. Periksa kembali, atau daftarkan data Anda.</div><div><button type="button" id="goReg">Daftarkan data saya</button></div>`:`<p class="muted" style="margin:0;font-size:13.5px">Masukkan nomor pegawai untuk melihat kartu status, kompetensi, dan tugas yang sudah atau belum selesai.</p>`}</div>`}
+/* ---------- profile ---------- */
+const ROLE_DESC={mekanik:"Mekanik (trainee)",assessor:"Assessor",pembina:"Pembina",admin:"Admin",pending:"Menunggu persetujuan",rejected:"Pengajuan ditolak"};
+function initialsOf(n){return (n||"?").split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join("").toUpperCase()}
+function idCard(){
+  const p=ME.profile||{};
+  const rows=[["Email",ME.email],["No. pegawai",p.emp_no],p.auth_no||p.requested_role==="assessor"?["No. otorisasi",p.auth_no]:null,["Unit / lokasi",p.unit],["Telepon",p.phone],["Bergabung",p.approved_at?fmtDate(p.approved_at.slice(0,10)):"–"]].filter(Boolean);
+  return `<section class="panel idcard">
+    <div class="idtop"><div class="idav" aria-hidden="true">${esc(initialsOf(ME.name||ME.email))}</div>
+      <div style="min-width:0;flex:1"><div class="label">Profil</div><h1 style="overflow-wrap:anywhere">${esc(ME.name||ME.email)}</h1><span class="rolebadge r-${esc(ROLE)}">${esc(ROLE_DESC[ROLE]||ROLE)}</span></div>
+      <a class="btn" href="#pengaturan">Ubah profil</a></div>
+    <dl class="idgrid">${rows.map(([k,v])=>`<div><dt>${esc(k)}</dt><dd>${esc(v||"–")}</dd></div>`).join("")}</dl>
+  </section>`;
+}
+function profileView(){
+  if(ROLE==="mekanik")return mechProfile();
+  let extra="";
+  if(isAssessor()){
+    const mine=S.signoffs.filter(s=>s.assessorId===ME.id);
+    const trainees=new Set(mine.map(s=>s.traineeId));
+    const signed=mine.filter(s=>s.complete).length;const last30=mine.filter(s=>daysSince(s.date)<=30).length;
+    const tmap=Object.fromEntries(S.trainees.map(t=>[t.id,t]));
+    const recent=[...mine].sort((a,b)=>(b.date||"").localeCompare(a.date||"")||(b.createdAt||0)-(a.createdAt||0)).slice(0,6)
+      .map(e=>entryHtml(e).replace('<div class="h">',`<div class="h"><a class="muted" style="font-size:13px" href="#t-${esc(e.traineeId)}">${esc(tmap[e.traineeId]?.name||"–")}</a>`)).join("");
+    const cnt={};COMPS.forEach(([c])=>cnt[c]=0);mine.forEach(s=>(s.comps||[]).forEach(c=>{if(c in cnt)cnt[c]++}));
+    const cmax=Math.max(1,...Object.values(cnt));
+    extra=`<div class="kpis">
+      <div class="kpi"><div class="v">${mine.length}</div><div class="k">penilaian dicatat</div></div>
+      <div class="kpi"><div class="v">${trainees.size}</div><div class="k">mekanik dinilai</div></div>
+      <div class="kpi"><div class="v">${signed}</div><div class="k">tugas di-sign-off</div></div>
+      <div class="kpi"><div class="v">${last30}</div><div class="k">penilaian 30 hari terakhir</div></div></div>
+    <div class="dgrid">
+      <div class="panel"><h2>Kompetensi yang paling sering Anda amati</h2><div class="hbars">${COMPS.map(([c,n])=>`<div class="hb" data-tip="${esc(`${c} · ${n}: ${cnt[c]}×`)}"><span class="nm"><b style="font-family:var(--display);font-size:15px">${c}</b> <span class="muted">${esc(n)}</span></span><span class="track"><span class="fill" style="width:${cnt[c]/cmax*100}%"></span></span><span class="val">${cnt[c]}×</span></div>`).join("")}</div></div>
+      <div class="panel"><h2>Penilaian terakhir Anda</h2><div class="timeline">${recent||`<p class="muted" style="margin:0">Belum ada. Buka tab Mekanik untuk mulai menilai.</p>`}</div></div>
+    </div>`;
+  }else{
+    const per=S.trainees.map(t=>statsFor(t.id));
+    const avg=per.length?Math.round(per.reduce((a,s)=>a+s.done.size/TOTAL,0)/per.length*100):0;
+    const done=per.filter(s=>s.done.size===TOTAL).length;
+    extra=`<div class="kpis">
+      <div class="kpi"><div class="v">${S.trainees.length}</div><div class="k">mekanik dipantau</div></div>
+      <div class="kpi"><div class="v">${avg}%</div><div class="k">rata-rata progres</div></div>
+      <div class="kpi"><div class="v">${done}</div><div class="k">sudah CBTA Certified</div></div>
+      <div class="kpi"><div class="v">${S.signoffs.filter(s=>daysSince(s.date)<=30).length}</div><div class="k">penilaian 30 hari terakhir</div></div></div>
+    <div class="panel"><p style="margin:0">Lihat <a href="#dashboard">Dashboard</a> untuk ringkasan lengkap, atau <a href="#mekanik">daftar mekanik</a> untuk detail per orang.</p></div>`;
+  }
+  return idCard()+extra;
+}
+function mechProfile(){
+  const t=S.trainees.find(x=>x.id===ME.profile?.trainee_id);
+  if(!t)return idCard()+`<div class="notice">Akun Anda belum terhubung ke data trainee. Hubungi admin CBTA.</div>`;
   const st=statsFor(t.id);
   const secs=SECTIONS.map(([sid,sname,list])=>{const ids=list.map((_,i)=>sid+"-"+(i+1));const d=ids.filter(i=>st.done.has(i)).length;
     const rows=ids.map(i=>{const [cls,lab]=taskStatus(st,i);return `<div class="task" style="cursor:default"><span class="t">${esc(TASK[i].name)}</span><span class="pill ${cls}">${lab}</span></div>`}).join("");
     return `<details class="group"><summary><h3 style="flex:1">${esc(sname)}</h3><span class="mono muted">${d}/${ids.length}</span></summary><div class="tasks">${rows}</div></details>`}).join("");
   const recent=[...st.entries].sort((a,b)=>(b.date||"").localeCompare(a.date||"")||(b.createdAt||0)-(a.createdAt||0)).slice(0,5);
-  return `<div class="panel" style="padding:12px 16px">${form}<p style="margin:0;font-size:13px" class="muted">Assessor atau pembina? <a href="#masuk">Masuk di sini</a></p></div>
-    ${statusCard(t)}
+  return `${statusCard(t)}
     <div class="panel"><h2>Penilaian terakhir</h2><div class="timeline">${recent.length?recent.map(entryHtml).join(""):`<p class="muted" style="margin:0">Belum ada penilaian. Minta assessor Anda mencatat tugas OJT pertama.</p>`}</div></div>
-    <div class="panel" style="gap:0"><h2 style="margin-bottom:8px">Tugas OJT saya</h2>${secs}</div>`;
+    <div class="panel" style="gap:0"><h2 style="margin-bottom:8px">Tugas OJT saya</h2>${secs}</div>
+    ${idCard()}`;
 }
-function bindMe(){
-  if(!$("#fMe"))return;
-  $("#fMe").onsubmit=e=>{e.preventDefault();const v=$("#meId").value.trim();if(!v)return;lsSet("cbta.myid",v);lookupMe(v)};
-  const g=$("#goReg");if(g)g.onclick=()=>location.hash="daftar";
-}
-/* ---------- export ---------- */
-function csvCell(v){v=String(v??"");return /[",\n;]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
-$("#btnExport").onclick=async()=>{
-  const r=route();const only=r.view==="trainee"?r.id:null;
-  const head=["Trainee","No. pegawai","Bagian","Tugas","Tanggal","P/D","Airplane ID & Type","Reference","Kompetensi teramati","Trainer","Sign-off","Catatan"];
-  const rows=[head];
-  const tmap=Object.fromEntries(S.trainees.map(t=>[t.id,t]));
-  [...S.signoffs].filter(s=>!only||s.traineeId===only).sort((a,b)=>((tmap[a.traineeId]?.name||"").localeCompare(tmap[b.traineeId]?.name||""))||(a.date||"").localeCompare(b.date||""))
-   .forEach(s=>{const t=tmap[s.traineeId]||{};const k=TASK[s.taskId]||{};rows.push([t.name,t.empNo,k.sname,k.name,s.date,s.mode,s.aircraft,s.reference,(s.comps||[]).join("-"),s.trainer,s.complete?"Ya":"",s.notes])});
-  const csv="﻿"+rows.map(r=>r.map(csvCell).join(",")).join("\r\n");
-  const name=only?`CBTA_${(tmap[only]?.name||"trainee").replace(/[^\w-]+/g,"_")}_${today()}.csv`:`CBTA_semua_${today()}.csv`;
-  const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));const a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
-};
 
-/* ---------- auth screens ---------- */
-let AUTHMODE="in";
-function loginView(){
-  const up=AUTHMODE==="up";
-  return `<div class="hero"><div class="label">Assessor & Pembina</div><h1>${up?"Daftar akun":"Masuk"}</h1></div>
-  <div class="panel" style="max-width:460px">
-    <form id="fAuth">
-      ${up?`<label class="f">Nama lengkap<input id="aName" required autocomplete="name"></label>`:""}
-      <label class="f">Email<input id="aEmail" type="email" required autocomplete="email"></label>
-      <label class="f">Kata sandi<input id="aPass" type="password" required minlength="8" autocomplete="${up?"new-password":"current-password"}"></label>
-      <div class="actions" style="justify-content:space-between;align-items:center"><button type="button" class="ghost" id="aSwitch" style="padding-left:0">${up?"Sudah punya akun? Masuk":"Belum punya akun? Daftar"}</button><button class="primary" type="submit">${up?"Daftar":"Masuk"}</button></div>
-    </form>
-    ${up?`<p class="muted" style="margin:0;font-size:13px">Setelah mendaftar, admin perlu menyetujui akun Anda dan memberi peran assessor atau pembina. Kata sandi minimal 8 karakter.</p>`:""}
-    <p style="margin:0;font-size:13.5px"><a href="#">← Saya mekanik, cek progres dengan ID</a></p>
+/* ---------- settings ---------- */
+function applyTheme(){const th=lsGet("cbta.theme");if(th==="light"||th==="dark")document.documentElement.dataset.theme=th;else delete document.documentElement.dataset.theme}
+applyTheme();
+function settingsView(){
+  const p=ME.profile||{};const th=lsGet("cbta.theme")||"system";const pr=p.prefs||{};
+  const traineeOpts=[...S.trainees].sort((a,b)=>(a.name||"").localeCompare(b.name||"")).map(t=>`<option value="${esc(t.id)}">${esc(t.name)}${t.empNo?" · "+esc(t.empNo):""}</option>`).join("");
+  return `<div><div class="label">Akun & aplikasi</div><h1>Pengaturan</h1></div>
+  <div class="setgrid">
+  <section class="panel" id="sec-profil"><h2>Profil saya</h2>
+    <form id="fProf"><div class="fields">
+      <label class="f full">Nama lengkap<input id="pName" required maxlength="120" value="${esc(p.full_name)}"></label>
+      <label class="f">No. pegawai<input id="pEmp" maxlength="40" value="${esc(p.emp_no)}" ${ROLE==="mekanik"?'disabled title="Hubungi admin untuk mengubah no. pegawai"':""}></label>
+      ${isAssessor()||p.requested_role==="assessor"?`<label class="f">No. otorisasi assessor<input id="pAuth" maxlength="60" value="${esc(p.auth_no)}"></label>`:""}
+      <label class="f">Unit / lokasi<input id="pUnit" maxlength="120" value="${esc(p.unit)}"></label>
+      <label class="f">Telepon / WhatsApp<input id="pPhone" type="tel" maxlength="40" value="${esc(p.phone)}"></label>
+    </div><div class="actions"><button class="primary" type="submit">Simpan profil</button></div></form>
+  </section>
+  <section class="panel"><h2>Keamanan</h2>
+    <form id="fPass"><div class="fields">
+      <label class="f">Kata sandi baru<input id="np1" type="password" minlength="8" required autocomplete="new-password"></label>
+      <label class="f">Ulangi kata sandi baru<input id="np2" type="password" minlength="8" required autocomplete="new-password"></label>
+    </div><div class="actions"><button type="submit">Ganti kata sandi</button></div></form>
+    <div class="actions" style="justify-content:flex-start"><button type="button" class="danger" id="sOut">Keluar dari akun</button></div>
+  </section>
+  <section class="panel"><h2>Tampilan</h2>
+    <div class="seg" role="radiogroup" aria-label="Tema">${[["system","Ikuti perangkat"],["light","Terang"],["dark","Gelap"]].map(([v,l])=>`<label><input type="radio" name="theme" value="${v}" ${th===v?"checked":""}><span>${l}</span></label>`).join("")}</div>
+  </section>
+  ${isAssessor()?`<section class="panel"><h2>Isian default penilaian</h2>
+    <form id="fPrefs"><div class="fields">
+      <label class="f">Nama trainer / assessor<input id="dTr" value="${esc(pr.trainer||lsGet("cbta.trainer")||p.full_name)}"></label>
+      <label class="f">Airplane ID & Type<input id="dAc" placeholder="mis. PK-LKS B737-900ER" value="${esc(pr.aircraft||lsGet("cbta.aircraft"))}"></label>
+      <label class="f">Mode default<select id="dMode"><option value="P" ${pr.mode!=="D"?"selected":""}>P – Perform</option><option value="D" ${pr.mode==="D"?"selected":""}>D – Demonstrate</option></select></label>
+    </div><div class="actions"><button type="submit">Simpan default</button></div></form></section>`:""}
+  ${isStaff()?`<section class="panel"><h2>Ekspor data</h2>
+    <p class="muted" style="margin:0;font-size:13.5px">File CSV bisa dibuka di Excel atau Google Sheets.</p>
+    <div class="exrow"><div><b>Semua catatan penilaian</b><div class="muted" style="font-size:13px">${S.signoffs.length} catatan, satu baris per penilaian</div></div><button type="button" id="exAll">Unduh CSV</button></div>
+    <div class="exrow"><div><b>Ringkasan progres per mekanik</b><div class="muted" style="font-size:13px">% selesai, per bagian, dan jumlah tiap kompetensi</div></div><button type="button" id="exSum">Unduh CSV</button></div>
+    <div class="exrow"><label class="f" style="flex:1;min-width:0">Catatan satu mekanik<select id="exWho">${traineeOpts||'<option value="">Belum ada mekanik</option>'}</select></label><button type="button" id="exOne" ${traineeOpts?"":"disabled"}>Unduh CSV</button></div>
+  </section>`:""}
+  ${ROLE==="admin"?`<section class="panel"><h2>Pengaturan aplikasi (admin)</h2>
+    <form id="fApp"><div class="fields">
+      <label class="f">Tandai mekanik tidak aktif setelah (hari)<input id="aStale" type="number" min="7" max="365" required value="${STALE_DAYS}"></label>
+      <label class="f">Observasi untuk stat kompetensi penuh<input id="aStat" type="number" min="1" max="100" required value="${STAT_MAX}"></label>
+    </div><div class="actions"><button type="submit">Simpan pengaturan aplikasi</button></div></form>
+    <p class="muted" style="margin:0;font-size:13px">Persetujuan akun baru ada di tab <a href="#pengguna">Pengguna</a>.</p></section>`:""}
   </div>`;
 }
-function bindLogin(){
-  $("#aSwitch").onclick=()=>{AUTHMODE=AUTHMODE==="up"?"in":"up";render()};
-  $("#fAuth").onsubmit=async e=>{e.preventDefault();const btn=e.submitter||e.target.querySelector("[type=submit]");btn.disabled=true;
-    const email=$("#aEmail").value.trim(),password=$("#aPass").value;
-    try{
-      if(AUTHMODE==="up"){const {data,error}=await sb.auth.signUp({email,password,options:{data:{full_name:$("#aName").value.trim()},emailRedirectTo:location.origin+location.pathname}});if(error)throw error;
-        if(!data.session){toast("Cek email Anda untuk konfirmasi, lalu masuk.");AUTHMODE="in";render();return}}
-      else{const {error}=await sb.auth.signInWithPassword({email,password});if(error)throw error}
-      location.hash="";
-    }catch(err){btn.disabled=false;const m=String(err&&err.message||"");
-      toast(/Invalid login/i.test(m)?"Email atau kata sandi salah.":/confirm/i.test(m)?"Email belum dikonfirmasi. Cek kotak masuk Anda.":/registered/i.test(m)?"Email ini sudah terdaftar. Silakan masuk.":/rate limit/i.test(m)?"Terlalu banyak percobaan. Coba lagi beberapa menit lagi.":"Gagal: "+m)}
-  };
+function bindSettings(){
+  $("#fProf").onsubmit=async e=>{e.preventDefault();const upd={full_name:$("#pName").value.trim(),unit:$("#pUnit").value.trim(),phone:$("#pPhone").value.trim()};
+    if(ROLE!=="mekanik")upd.emp_no=$("#pEmp").value.trim();const a=$("#pAuth");if(a)upd.auth_no=a.value.trim();
+    const {error}=await sb.from("profiles").update(upd).eq("id",ME.id);if(error){toast("Profil gagal disimpan.");return}
+    Object.assign(ME.profile,upd);ME.name=upd.full_name;toast("Profil disimpan");render()};
+  $("#fPass").onsubmit=async e=>{e.preventDefault();const a=$("#np1").value,b=$("#np2").value;if(a!==b){toast("Kedua kata sandi tidak sama.");return}
+    const {error}=await sb.auth.updateUser({password:a});if(error){toast(/different/i.test(error.message)?"Kata sandi baru harus berbeda dari yang lama.":"Gagal mengganti kata sandi.");return}
+    e.target.reset();toast("Kata sandi diganti")};
+  $("#sOut").onclick=async()=>{await sb.auth.signOut();location.hash=""};
+  document.querySelectorAll('input[name="theme"]').forEach(r=>r.onchange=()=>{lsSet("cbta.theme",r.value==="system"?"":r.value);applyTheme()});
+  const fp=$("#fPrefs");if(fp)fp.onsubmit=async e=>{e.preventDefault();const prefs={...(ME.profile.prefs||{}),trainer:$("#dTr").value.trim(),aircraft:$("#dAc").value.trim(),mode:$("#dMode").value};
+    const {error}=await sb.from("profiles").update({prefs}).eq("id",ME.id);if(error){toast("Gagal menyimpan.");return}ME.profile.prefs=prefs;lsSet("cbta.trainer",prefs.trainer);lsSet("cbta.aircraft",prefs.aircraft);toast("Default disimpan")};
+  const ea=$("#exAll");if(ea)ea.onclick=()=>exportEntries(null);
+  const es=$("#exSum");if(es)es.onclick=exportSummary;
+  const eo=$("#exOne");if(eo)eo.onclick=()=>{const v=$("#exWho").value;if(v)exportEntries(v)};
+  const fa=$("#fApp");if(fa)fa.onsubmit=async e=>{e.preventDefault();const sd=Math.round(+$("#aStale").value),sm=Math.round(+$("#aStat").value);
+    const {error}=await sb.from("app_settings").upsert([{key:"stale_days",value:sd,updated_at:new Date().toISOString()},{key:"stat_max",value:sm,updated_at:new Date().toISOString()}]);
+    if(error){toast("Gagal menyimpan pengaturan aplikasi.");return}STALE_DAYS=sd;STAT_MAX=sm;toast("Pengaturan aplikasi disimpan")};
 }
-function pendingView(){return `<div class="panel" style="max-width:520px"><h2>Akun menunggu persetujuan</h2><p class="muted" style="margin:0">Halo ${esc(ME.name||ME.email)}. Admin perlu memberi peran assessor atau pembina sebelum Anda bisa melihat data. Hubungi admin CBTA, lalu muat ulang halaman ini.</p></div>`}
+
+/* ---------- export ---------- */
+function csvCell(v){v=String(v??"");return /[",\n;]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+function download(name,rows){const csv="﻿"+rows.map(r=>r.map(csvCell).join(",")).join("\r\n");
+  const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));const a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);toast("File "+name+" diunduh")}
+function exportEntries(only){
+  const rows=[["Trainee","No. pegawai","Bagian","Tugas","Tanggal","P/D","Airplane ID & Type","Reference","Kompetensi teramati","Perilaku teramati","Trainer","Sign-off","Catatan"]];
+  const tmap=Object.fromEntries(S.trainees.map(t=>[t.id,t]));
+  [...S.signoffs].filter(s=>!only||s.traineeId===only).sort((a,b)=>((tmap[a.traineeId]?.name||"").localeCompare(tmap[b.traineeId]?.name||""))||(a.date||"").localeCompare(b.date||""))
+   .forEach(s=>{const t=tmap[s.traineeId]||{};const k=TASK[s.taskId]||{};rows.push([t.name,t.empNo,k.sname,k.name,s.date,s.mode,s.aircraft,s.reference,(s.comps||[]).join("-"),(s.beh||[]).map(b=>{const [c,i]=b.split("-");return c+": "+(BEH[c]?.[+i]||"")}).join(" | "),s.trainer,s.complete?"Ya":"",s.notes])});
+  download(only?`CBTA_${(tmap[only]?.name||"trainee").replace(/[^\w-]+/g,"_")}_${today()}.csv`:`CBTA_semua_penilaian_${today()}.csv`,rows);
+}
+function exportSummary(){
+  const rows=[["Trainee","No. pegawai","Perusahaan","Lokasi","Tugas selesai","% selesai","Pangkat","Terakhir dinilai",...SECTIONS.map(s=>s[1]),...COMPS.map(c=>c[0])]];
+  [...S.trainees].sort((a,b)=>(a.name||"").localeCompare(b.name||"")).forEach(t=>{const g=gameFor(t);const st=g.st;
+    rows.push([t.name,t.empNo,t.company,t.location,st.done.size,Math.round(st.done.size/TOTAL*100),g.rank,st.last,
+      ...SECTIONS.map(([sid,_,list])=>list.filter((_,i)=>st.done.has(sid+"-"+(i+1))).length+"/"+list.length),...COMPS.map(([c])=>st.comp[c])])});
+  download(`CBTA_ringkasan_${today()}.csv`,rows);
+}
+
+/* ---------- auth screens ---------- */
+let RECOVERY=false;
+function authShell(title,eyebrow,body){return `<div class="authwrap"><div class="authside"><div class="label" style="color:var(--hud-muted)">BT-RRF-079/R0</div><div class="authbrand">CBTA<br>Tracker</div><p>Progres Fundamental OJT: 68 tugas, 11 kompetensi, satu kartu status untuk setiap mekanik.</p></div>
+  <div class="panel authcard"><div><div class="label">${esc(eyebrow)}</div><h1>${esc(title)}</h1></div>${body}</div></div>`}
+function loginView(){return authShell("Masuk","Selamat datang",`
+  <form id="fLogin">
+    <label class="f">Email<input id="aEmail" type="email" required autocomplete="email"></label>
+    <label class="f">Kata sandi<span class="pw"><input id="aPass" type="password" required autocomplete="current-password"><button type="button" class="ghost pwt" aria-label="Tampilkan kata sandi">Lihat</button></span></label>
+    <div class="actions" style="justify-content:space-between;align-items:center"><a href="#lupa">Lupa kata sandi?</a><button class="primary" type="submit">Masuk</button></div>
+  </form>
+  <p class="muted" style="margin:0;font-size:14px;border-top:1px solid var(--line);padding-top:12px">Belum punya akun? <a href="#daftar">Buat akun</a> sebagai mekanik, assessor, atau pembina.</p>`)}
+function signupView(){return authShell("Buat akun","Pengajuan akun",`
+  <form id="fSign">
+    <fieldset class="rolepick"><legend class="label">Daftar sebagai</legend>
+      ${[["mekanik","Mekanik","Melihat progres dan kartu status sendiri"],["assessor","Assessor","Mencatat penilaian mekanik"],["pembina","Pembina","Memantau progres semua mekanik"]].map(([v,l,d],i)=>`<label><input type="radio" name="rr" value="${v}" ${i===0?"checked":""}><span><b>${l}</b><small>${d}</small></span></label>`).join("")}
+    </fieldset>
+    <div class="fields">
+      <label class="f full">Nama lengkap<input id="sName" required maxlength="120" autocomplete="name"></label>
+      <label class="f">No. pegawai<input id="sEmp" required maxlength="40"></label>
+      <label class="f" id="authWrap" hidden>No. otorisasi assessor<input id="sAuth" maxlength="60"></label>
+      <label class="f">Unit / lokasi<input id="sUnit" maxlength="120" placeholder="mis. Hangar 3 Batam"></label>
+      <label class="f">Telepon / WhatsApp<input id="sPhone" type="tel" maxlength="40"></label>
+      <label class="f full">Email<input id="sEmail" type="email" required autocomplete="email"></label>
+      <label class="f">Kata sandi<input id="sPass" type="password" minlength="8" required autocomplete="new-password"></label>
+      <label class="f">Ulangi kata sandi<input id="sPass2" type="password" minlength="8" required autocomplete="new-password"></label>
+    </div>
+    <p class="muted" style="margin:0;font-size:13px">Pengajuan Anda akan diperiksa admin. Anda bisa masuk setelah disetujui. Kata sandi minimal 8 karakter.</p>
+    <div class="actions" style="justify-content:space-between;align-items:center"><a href="#masuk">Sudah punya akun? Masuk</a><button class="primary" type="submit">Ajukan akun</button></div>
+  </form>`)}
+function forgotView(){return authShell("Lupa kata sandi","Atur ulang",`
+  <form id="fForgot"><p class="muted" style="margin:0;font-size:14px">Masukkan email akun Anda. Kami kirim tautan untuk membuat kata sandi baru.</p>
+    <label class="f">Email<input id="fEmail" type="email" required autocomplete="email"></label>
+    <div class="actions" style="justify-content:space-between;align-items:center"><a href="#masuk">← Kembali ke Masuk</a><button class="primary" type="submit">Kirim tautan</button></div></form>`)}
+function setPassView(){return authShell("Buat kata sandi baru","Atur ulang",`
+  <form id="fSet"><label class="f">Kata sandi baru<input id="rp1" type="password" minlength="8" required autocomplete="new-password"></label>
+    <label class="f">Ulangi kata sandi baru<input id="rp2" type="password" minlength="8" required autocomplete="new-password"></label>
+    <div class="actions"><button class="primary" type="submit">Simpan kata sandi</button></div></form>`)}
+function authErr(m){m=String(m||"");return /Invalid login/i.test(m)?"Email atau kata sandi salah.":/not confirmed|confirm/i.test(m)?"Email belum dikonfirmasi. Cek kotak masuk Anda.":/registered|exists/i.test(m)?"Email ini sudah terdaftar. Silakan masuk.":/rate limit|security purposes/i.test(m)?"Terlalu banyak percobaan. Coba lagi beberapa menit lagi.":/weak|at least/i.test(m)?"Kata sandi terlalu lemah. Gunakan minimal 8 karakter.":"Gagal: "+m}
+function bindAuth(view){
+  const busy=(f,on)=>{const b=f.querySelector("[type=submit]");if(b)b.disabled=on};
+  if(view==="login"){const pwt=$(".pwt");pwt.onclick=()=>{const i=$("#aPass");i.type=i.type==="password"?"text":"password";pwt.textContent=i.type==="password"?"Lihat":"Sembunyikan"};
+    $("#fLogin").onsubmit=async e=>{e.preventDefault();busy(e.target,true);const {error}=await sb.auth.signInWithPassword({email:$("#aEmail").value.trim(),password:$("#aPass").value});busy(e.target,false);if(error){toast(authErr(error.message));return}location.hash=""}}
+  if(view==="signup"){const sync=()=>{const v=document.querySelector('input[name="rr"]:checked').value;$("#authWrap").hidden=v!=="assessor"};document.querySelectorAll('input[name="rr"]').forEach(r=>r.onchange=sync);sync();
+    $("#fSign").onsubmit=async e=>{e.preventDefault();if($("#sPass").value!==$("#sPass2").value){toast("Kedua kata sandi tidak sama.");return}busy(e.target,true);
+      const rr=document.querySelector('input[name="rr"]:checked').value;
+      const {data,error}=await sb.auth.signUp({email:$("#sEmail").value.trim(),password:$("#sPass").value,options:{emailRedirectTo:location.origin+location.pathname,data:{full_name:$("#sName").value.trim(),requested_role:rr,emp_no:$("#sEmp").value.trim(),auth_no:rr==="assessor"?$("#sAuth").value.trim():"",unit:$("#sUnit").value.trim(),phone:$("#sPhone").value.trim()}}});
+      busy(e.target,false);if(error){toast(authErr(error.message));return}
+      if(data.user&&Array.isArray(data.user.identities)&&data.user.identities.length===0){toast("Email ini sudah terdaftar. Silakan masuk.");return}
+      if(!data.session){$("#app").innerHTML=authShell("Cek email Anda","Pengajuan terkirim",`<p style="margin:0">Kami mengirim tautan konfirmasi ke <b>${esc($("#sEmail").value)}</b>. Setelah dikonfirmasi, pengajuan Anda menunggu persetujuan admin.</p><a href="#masuk">Ke halaman Masuk</a>`);return}
+      location.hash=""}}
+  if(view==="forgot"){$("#fForgot").onsubmit=async e=>{e.preventDefault();busy(e.target,true);const email=$("#fEmail").value.trim();
+    const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});busy(e.target,false);
+    if(error){toast(authErr(error.message));return}
+    $("#app").innerHTML=authShell("Cek email Anda","Tautan terkirim",`<p style="margin:0">Jika <b>${esc(email)}</b> terdaftar, tautan untuk membuat kata sandi baru sudah dikirim. Periksa juga folder spam.</p><a href="#masuk">← Kembali ke Masuk</a>`)}}
+  if(view==="setpass"){$("#fSet").onsubmit=async e=>{e.preventDefault();if($("#rp1").value!==$("#rp2").value){toast("Kedua kata sandi tidak sama.");return}busy(e.target,true);
+    const {error}=await sb.auth.updateUser({password:$("#rp1").value});busy(e.target,false);if(error){toast(authErr(error.message));return}
+    RECOVERY=false;toast("Kata sandi baru tersimpan");location.hash="";const {data}=await sb.auth.getSession();applySession(data.session)}}
+}
+function pendingView(){const p=ME.profile||{};const rej=ROLE==="rejected";
+  return `<div class="panel" style="max-width:560px"><div class="label">${rej?"Pengajuan ditolak":"Menunggu persetujuan"}</div><h2>${rej?"Pengajuan akun Anda tidak disetujui":"Pengajuan Anda sedang diperiksa admin"}</h2>
+  <p class="muted" style="margin:0">${rej?"Hubungi admin CBTA bila menurut Anda ini keliru.":`Anda mengajukan akun sebagai <b>${esc(ROLE_DESC[p.requested_role]||p.requested_role)}</b>. Setelah admin menyetujui, muat ulang halaman ini.`}</p>
+  <div class="actions" style="justify-content:flex-start"><button type="button" onclick="location.reload()">Muat ulang</button><a class="btn" href="#pengaturan">Ubah profil</a></div></div>${idCard()}`}
 
 /* ---------- admin: users ---------- */
 let USERS=[];
-async function loadUsers(){const {data,error}=await sb.from("profiles").select("id,full_name,email,role,created_at").order("created_at");if(!error)USERS=data||[]}
+async function loadUsers(){const {data,error}=await sb.from("profiles").select("id,full_name,email,role,requested_role,emp_no,auth_no,unit,phone,created_at,approved_at").order("created_at");if(!error)USERS=data||[]}
 function usersView(){
-  const order={pending:0,admin:1,assessor:2,pembina:3};
-  const rows=[...USERS].sort((a,b)=>(order[a.role]-order[b.role])||(a.full_name||"").localeCompare(b.full_name||"")).map(u=>`<div class="urow"><div style="min-width:0"><b>${esc(u.full_name||"(tanpa nama)")}</b><div class="muted" style="font-size:13px;overflow-wrap:anywhere">${esc(u.email)}</div></div>
-    ${u.id===ME.id?`<span class="pill none">Admin (Anda)</span>`:`<select data-uid="${esc(u.id)}" aria-label="Peran ${esc(u.full_name)}">${["pending","assessor","pembina","admin"].map(r=>`<option value="${r}" ${u.role===r?"selected":""}>${ROLES[r]}</option>`).join("")}</select>`}</div>`).join("");
-  const pend=USERS.filter(u=>u.role==="pending").length;
+  const pend=USERS.filter(u=>u.role==="pending");
+  const rest=USERS.filter(u=>u.role!=="pending").sort((a,b)=>(a.role||"").localeCompare(b.role||"")||(a.full_name||"").localeCompare(b.full_name||""));
+  const meta=u=>[u.email,u.emp_no&&"No. pegawai "+u.emp_no,u.auth_no&&"Otorisasi "+u.auth_no,u.unit,u.phone].filter(Boolean).map(esc).join(" · ");
+  const pendRows=pend.map(u=>`<div class="req"><div style="min-width:0"><b>${esc(u.full_name||"(tanpa nama)")}</b> <span class="rolebadge r-${esc(u.requested_role)}">ingin jadi ${esc(ROLE_DESC[u.requested_role])}</span><div class="muted" style="font-size:13px;overflow-wrap:anywhere">${meta(u)}</div><div class="muted" style="font-size:12px">Diajukan ${fmtDate(u.created_at.slice(0,10))}</div></div>
+    <div class="reqact"><button type="button" class="primary" data-ap="${esc(u.id)}" data-role="${esc(u.requested_role)}">Setujui</button><button type="button" class="danger" data-ap="${esc(u.id)}" data-role="rejected">Tolak</button></div></div>`).join("");
+  const counts={};USERS.forEach(u=>counts[u.role]=(counts[u.role]||0)+1);
+  const restRows=rest.map(u=>`<div class="urow"><div style="min-width:0"><b>${esc(u.full_name||"(tanpa nama)")}</b><div class="muted" style="font-size:13px;overflow-wrap:anywhere">${meta(u)}</div></div>
+    ${u.id===ME.id?`<span class="rolebadge r-admin">Admin (Anda)</span>`:`<select data-uid="${esc(u.id)}" aria-label="Peran ${esc(u.full_name)}">${["mekanik","assessor","pembina","admin","rejected"].map(r=>`<option value="${r}" ${u.role===r?"selected":""}>${ROLE_DESC[r]}</option>`).join("")}</select>`}</div>`).join("");
   return `<div><div class="label">Admin</div><h1>Pengguna</h1></div>
-  ${pend?`<div class="notice">${pend} akun menunggu persetujuan. Pilih perannya di bawah.</div>`:""}
-  <div class="panel"><p class="muted" style="margin:0;font-size:13.5px">Assessor bisa mencatat penilaian. Pembina hanya melihat dashboard dan detail mekanik. Mekanik tidak perlu akun.</p><div class="ulist">${rows||'<p class="muted">Belum ada pengguna lain.</p>'}</div></div>`;
+  <div class="kpis">${[["assessor","assessor"],["pembina","pembina"],["mekanik","mekanik"],["pending","menunggu"]].map(([k,l])=>`<div class="kpi"><div class="v">${counts[k]||0}</div><div class="k">${l}</div></div>`).join("")}</div>
+  <div class="panel"><h2>Pengajuan baru ${pend.length?`<span class="pill prog">${pend.length}</span>`:""}</h2>${pendRows||`<p class="muted" style="margin:0">Tidak ada pengajuan yang menunggu.</p>`}</div>
+  <div class="panel"><h2>Pengguna aktif</h2><p class="muted" style="margin:0;font-size:13.5px">Ubah peran bila perlu. Mekanik terhubung ke data trainee lewat no. pegawai.</p><div class="ulist">${restRows||'<p class="muted">Belum ada pengguna lain.</p>'}</div></div>`;
 }
+const APPROVE_MSG={ok:"Disimpan",no_emp:"Mekanik ini belum mengisi no. pegawai.",taken:"No. pegawai ini sudah dipakai akun mekanik lain.",self:"Anda tidak bisa menurunkan peran sendiri.",forbidden:"Hanya admin yang bisa melakukan ini."};
+async function setRole(uid,role,el){el.disabled=true;const {data,error}=await sb.rpc("approve_user",{p_user:uid,p_role:role});el.disabled=false;
+  if(error||data!=="ok"){toast(error?"Gagal menyimpan.":(APPROVE_MSG[data]||"Gagal: "+data));return}
+  toast(role==="rejected"?"Pengajuan ditolak":"Peran diperbarui");await loadUsers();if(role==="mekanik")await loadAll();render()}
 function bindUsers(){
-  $("#navUsers").classList.add("on");$("#navDash").classList.remove("on");$("#navList").classList.remove("on");
-  document.querySelectorAll("[data-uid]").forEach(sel=>sel.onchange=async()=>{sel.disabled=true;
-  const {error}=await sb.from("profiles").update({role:sel.value}).eq("id",sel.dataset.uid);sel.disabled=false;
-  if(error){toast("Gagal mengubah peran.");return}toast("Peran diperbarui");await loadUsers();render()})}
+  document.querySelectorAll("[data-ap]").forEach(b=>b.onclick=()=>setRole(b.dataset.ap,b.dataset.role,b));
+  document.querySelectorAll("[data-uid]").forEach(sel=>sel.onchange=()=>setRole(sel.dataset.uid,sel.value,sel));
+}
 
 /* ---------- data ---------- */
 async function fetchAll(table,map){const out=[];for(let from=0;;from+=1000){const {data,error}=await sb.from(table).select("*").order("created_at").range(from,from+999);if(error)throw error;out.push(...data.map(map));if(data.length<1000)break}return out}
 async function loadAll(){
-  try{const [t,s2]=await Promise.all([fetchAll("trainees",fromTrainee),fetchAll("signoffs",fromSignoff)]);S.trainees=t;S.signoffs=s2;S.offline=false}
+  try{const [t,s2,cfg]=await Promise.all([fetchAll("trainees",fromTrainee),fetchAll("signoffs",fromSignoff),sb.from("app_settings").select("key,value")]);S.trainees=t;S.signoffs=s2;S.offline=false;
+    (cfg.data||[]).forEach(r=>{if(r.key==="stale_days"&&+r.value>0)STALE_DAYS=+r.value;if(r.key==="stat_max"&&+r.value>0)STAT_MAX=+r.value})}
   catch(e){S.offline=true}
   if(ROLE==="admin")await loadUsers();
 }
 let reloadTimer=null,channel=null;
 function scheduleReload(){clearTimeout(reloadTimer);reloadTimer=setTimeout(async()=>{await loadAll();
-  if(document.querySelector("#fTrainee"))return; /* don't wipe a form being typed */
+  if(document.querySelector("#fTrainee,#fProf,#fApp"))return; /* don't wipe a form being typed */
   render();refreshSheet()},800)}
 async function applySession(session){
   if(channel){sb.removeChannel(channel);channel=null}
-  if(!session){ROLE="mekanik";ME.id=null;ME.name="";ME.email="";S.trainees=[];S.signoffs=[];S.ready=true;MYDATA=null;render();
-    const id=lsGet("cbta.myid");if(id)lookupMe(id);return}
+  if(!session){ROLE="anon";ME.id=null;ME.name="";ME.email="";ME.profile=null;S.trainees=[];S.signoffs=[];S.ready=true;render();return}
   ME.id=session.user.id;ME.email=session.user.email||"";
-  const {data:prof}=await sb.from("profiles").select("full_name,role").eq("id",ME.id).maybeSingle();
-  ROLE=prof?.role||"pending";ME.name=prof?.full_name||"";
-  if(isStaff()){S.ready=false;$("#app").innerHTML=`<div class="panel"><p class="muted" style="margin:0">Memuat data…</p></div>`;await loadAll();
+  const {data:prof}=await sb.from("profiles").select("*").eq("id",ME.id).maybeSingle();
+  ME.profile=prof||{};ROLE=prof?.role||"pending";ME.name=prof?.full_name||"";
+  if(prof?.prefs?.trainer&&!lsGet("cbta.trainer"))lsSet("cbta.trainer",prof.prefs.trainer);
+  if(prof?.prefs?.aircraft&&!lsGet("cbta.aircraft"))lsSet("cbta.aircraft",prof.prefs.aircraft);
+  if(isStaff()||ROLE==="mekanik"){S.ready=false;$("#app").innerHTML=`<div class="panel"><p class="muted" style="margin:0">Memuat data…</p></div>`;await loadAll();
     channel=sb.channel("cbta").on("postgres_changes",{event:"*",schema:"public",table:"signoffs"},scheduleReload).on("postgres_changes",{event:"*",schema:"public",table:"trainees"},scheduleReload).subscribe();
-    if(ROLE==="admin"&&USERS.some(u=>u.role==="pending"))setTimeout(()=>toast("Ada akun baru yang menunggu persetujuan di tab Pengguna."),600);}
+    if(ROLE==="admin"&&USERS.some(u=>u.role==="pending"))setTimeout(()=>toast("Ada pengajuan akun baru di tab Pengguna."),600);}
   S.ready=true;render();
 }
 let lastUid;
 if(sb){
-  sb.auth.onAuthStateChange((ev,session)=>{const uid=session?.user?.id||null;if(ev!=="INITIAL_SESSION"&&uid===lastUid)return;lastUid=uid;setTimeout(()=>applySession(session),0)});
+  sb.auth.onAuthStateChange((ev,session)=>{
+    if(ev==="PASSWORD_RECOVERY"){RECOVERY=true;lastUid=session?.user?.id;setTimeout(render,0);return}
+    const uid=session?.user?.id||null;if(ev!=="INITIAL_SESSION"&&uid===lastUid)return;lastUid=uid;setTimeout(()=>applySession(session),0)});
 }else{S.ready=true;render()}
 </script>
 </body></html>
