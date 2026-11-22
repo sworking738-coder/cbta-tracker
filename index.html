@@ -354,6 +354,39 @@ body.hasbg::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:no
 .uedit{grid-column:1/-1;display:flex;flex-direction:column;gap:10px;background:var(--surface-2);border-radius:10px;padding:12px}
 .uact{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
 .task .rc{font-size:12px;color:var(--muted)}
+/* round 5: units, guide from the book */
+.guide{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--surface-2)}
+.guide>summary{cursor:pointer;display:flex;flex-direction:column;gap:2px;list-style:none}
+.guide>summary::-webkit-details-marker{display:none}
+.guide>summary b::before{content:"▸ ";color:var(--muted)}
+.guide[open]>summary b::before{content:"▾ "}
+.glist{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:7px}
+.glist li{display:grid;grid-template-columns:92px minmax(0,1fr);gap:10px;font-size:13.5px;align-items:start;line-height:1.4}
+.gk{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;border-radius:6px;padding:3px 6px;text-align:center;margin-top:1px}
+.g-d{background:var(--accent);color:var(--accent-fg)}
+.g-q{background:var(--warn-soft);color:var(--warn)}
+.g-o{background:var(--ok-soft);color:var(--ok)}
+.gcrit{margin-top:10px;font-size:13px;border-top:1px solid var(--line);padding-top:8px}
+.gcrit summary{cursor:pointer;color:var(--muted);font-weight:600}
+.gcrit ul{margin:6px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:3px}
+.unitbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.unitbar select,.psort{width:auto;min-height:38px;max-width:100%}
+.ugrp{display:flex;flex-direction:column;gap:8px}
+.ugrp+.ugrp{margin-top:6px;padding-top:10px;border-top:1px solid var(--line)}
+.ugh{display:flex;gap:8px;justify-content:space-between;align-items:baseline;flex-wrap:wrap;font-size:13px}
+.ugh b{font-family:var(--display);font-size:16px;letter-spacing:.02em}
+.ulist2{display:flex;flex-direction:column;gap:10px}
+.ulist2 h3{display:flex;justify-content:space-between;gap:8px;align-items:baseline;font-size:17px}
+.utable{width:100%;border-collapse:collapse;font-size:13.5px}
+.utable th,.utable td{padding:7px 8px;border-top:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
+.utable th:first-child,.utable td:first-child{text-align:left}
+.utable thead th{border-top:0;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.utable tbody tr{cursor:pointer}
+.utable tbody tr:hover{background:var(--surface-2)}
+.utable .mini{display:inline-block;width:70px;height:8px;border-radius:99px;background:var(--surface-2);vertical-align:middle;margin-right:6px;overflow:hidden}
+.utable .mini span{display:block;height:100%;background:var(--accent)}
+.uwrap{overflow-x:auto}
+.unrows{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px}
 </style>
 </head><body>
 <header class="top"><div class="in">
@@ -401,6 +434,18 @@ const SECTIONS=[
 const TASKS=[];const TASK={};
 SECTIONS.forEach(([sid,sname,list])=>list.forEach((name,i)=>{const id=sid+"-"+(i+1);const t={id,sid,sname,name};TASKS.push(t);TASK[id]=t;}));
 const TOTAL=TASKS.length;
+const GUIDE={"gse-1":["Demonstrates how or where to get equipment.","Demonstrates where to place equipment around the airplane and how to operate (power on/off)","Knows who to contact if equipment does not work.","Demonstrates where to or who to contact to return equipment."],"gse-2":["Demonstrates how or where to get equipment.","Demonstrates where to place equipment around the airplane and how to operate (power on/off)","Knows who to contact if equipment does not work.","Demonstrates where to or who to contact to return equipment."],"gse-3":["Demonstrates how or where to get equipment.","Demonstrates where to place equipment around the airplane and how to operate (power on/off)","Knows who to contact if equipment does not work.","Demonstrates where to or who to contact to return equipment."],"gse-4":["Demonstrates where to or who to contact to get equipment.","Demonstrates how to use and where to place equipment on and around the airplane.","Demonstrates what to do or who to contact if equipment is unserviceable.","Demonstrates where to or who to contact to return equipment."],"svc-1":["Knows how/where to get equipment.","Knows how to operate servicing equipment.","Demonstrate that equipment is properly serviced and in workable condition.","Knows who to contact if equipment does not work.","Knows where to/who to contact to return equipment."],"svc-2":["Knows how/where to get equipment.","Knows how to operate servicing equipment.","Demonstrate that equipment is properly serviced and in workable condition.","Knows who to contact if equipment does not work.","Knows where to/who to contact to return equipment."],"svc-3":["Knows how/where to get equipment.","Knows how to operate servicing equipment.","Demonstrate that equipment is properly serviced and in workable condition.","Knows who to contact if equipment does not work.","Knows where to/who to contact to return equipment."],"svc-4":["Knows how/where to get equipment.","Knows how to operate servicing equipment.","Demonstrate that equipment is properly serviced and in workable condition.","Knows who to contact if equipment does not work.","Knows where to/who to contact to return equipment."],"svc-5":["Knows how/where to get equipment.","Knows how to operate servicing equipment.","Demonstrate that equipment is properly serviced and in workable condition.","Knows who to contact if equipment does not work.","Knows where to/who to contact to return equipment."],"svc-6":["Knows how/where to get equipment.","Knows how to operate servicing equipment.","Demonstrate that equipment is properly serviced and in workable condition.","Knows who to contact if equipment does not work.","Knows where to/who to contact to return equipment."],"svc-7":["Knows who to contact for servicing."],"svc-8":["Knows who to contact for servicing."],"svc-9":["Knows who to contact for servicing."],"mov-1":["Demonstrates the proper marshalling techniques for airplane movement.","Understands the roles and responsibilities of each team member for this operation.","Communicates effectively with others during this operation."],"mov-2":["Knows how to identify operating engine status of the airplane.","Knows the proper entry/exit corridors of an operating engine.","Understands the roles and responsibilities of each team member for this operation.","Communicates effectively with others during this operation."],"mov-3":["Demonstrates towing procedures to include connecting and disconnecting towing equipment.","Understands roles and responsibilities of each team member for this operation.","Communicates effectively with others during this operation."],"mov-4":["Understands the roles and responsibilities of each team member for this operation.","Communicates effectively with others during this operation."],"mov-5":["Demonstrates how to communicate with flight compartment using headset equipment.","Demonstrates how to communicate with flight compartment using appropriate hand signals."],"mov-6":["Understands proper procedures for airplane door operations.","Demonstrates and identifies open door area fall protection procedures."],"mov-7":["Understands the roles and responsibilities of each team member for this operation.","Demonstrates proper procedures to apply Lockout/Tagout.","Demonstrates proper procedures to remove Lockout/Tagout."],"mov-8":["Knows the procedure to identify hazardous energy status of the airplane.","Demonstrates the procedure to annunciate hazardous energy status of the airplane.","Communicates with others in the area, about the changing hazardous energy state of the airplane."],"haz-1":["Is familiar with company SMS program.","Demonstrates how to report safety concerns to the SMS.","Knows where to report safety concerns."],"haz-2":["Demonstrates general situational awareness needed for working in the line or hangar environment.","Recognizes and addresses trip hazards.","Recognizes and addresses bump hazards.","Recognizes and understands requirements for fall hazards.","Recognizes hazards associated with vehicle area traffic.","Recognizes hazards associated with airplane hazardous energy status."],"haz-3":["Recognizes and practices FOD awareness and control protocol.","Cleans work area at the end of job."],"haz-4":["Knows where to obtain PPE.","Demonstrates the proper use of PPE."],"haz-5":["Recognizes and understands fall hazards and when fall protection is required.","Knows where to obtain and how to properly store fall protection equipment.","Demonstrates the inspection and the use of fall protection equipment.","Is familiar with procedures and requirements for a rescue plan."],"haz-6":["Demonstrate Fuel Tank Entry Safety procedures."],"haz-7":["Demonstrate NGS-Low Oxygen Safety procedures."],"haz-8":["Demonstrate Confined Space Safety procedures."],"haz-9":["Knows location of facility.","Understands how to use facility."],"haz-10":["Knows where kit and AED are located.","Familiar with how to restock/refill First Aid Kit."],"haz-11":["Knows who to call for security, fire or medical assistance."],"doc-1":["Knows how to make a correct logbook entry.","Knows how to sign off a logbook entry."],"doc-2":["Knows how to verify a serviceable part.","Knows how to return an unserviceable part."],"doc-3":["Has access to maintenance documents (i.e. AMM, FIM, IPC).","Identifies the correct process and procedure associated with a specific task.","Knows how to navigate and use the maintenance documents.","Knows the access location of DDG/MEL.","Knows and demonstrates the use of DDG/MEL."],"doc-4":["Has access to company policy manuals.","Is familiar with company standard practices."],"tool-1":["Demonstrates the proper practices and use of common tools.","Demonstrates accountability practices when using common tools.","Demonstrates the practice and procedure of finding lost tools."],"tool-2":["Demonstrates an understanding of tool check out process.","Demonstrates an understanding of tool return process.","Demonstrates an understanding of special tool/Calibration requirements and checks when using the tool."],"tool-3":["Demonstrates the practice and procedure of finding lost tools.","Demonstrates an understanding of tool check out process.","Demonstrates an understanding of tool return process.","Knows how/where to report an ATC error.","Knows who to contact if ATC error.","Demonstrates the correct procedure when damaged tools are found."],"env-1":["Understands the limitations while working in extreme cold weather."],"env-2":["Understands the limitations while working in extreme hot weather."],"env-3":["Understands the limitations while working with lightning in the area.","Understands limitations of equipment usage when lightning is in the area."],"env-4":["Understands the limitations while working in high wind conditions.","Understands limitations of equipment usage during high wind conditions."],"env-5":["Understands the limitations with working in hazardous storm activity (tornado, hurricane, typhoon)."],"env-6":["Understands night/dark operations and limitations."],"env-7":["Understands dusk/dawn operations and limitations."],"env-8":["Understands the local area concerns for what may arise due to wildlife, animals and insect issues."],"env-9":["Demonstrates the procedures for containing, clean-up and reporting of hazardous waste material spill."],"env-10":["Demonstrates the proper disposal of hazardous waste materials (fuel, oil, hydraulic fluid, liquid cooling)"],"env-11":["Demonstrates the procedures for containing, clean-up, disposal and reporting of biological hazardous waste material spill."]};
+/* Standard Practices tasks in the book have no bullet list, only this instruction. */
+const GUIDE_SP=["Reference Airplane AMM Chapter 20 to perform or demonstrate this standard practice."];
+/* Book page 4: general guidance for when a task can be signed off. */
+const SIGNOFF_CRIT=["Finds the applicable procedure for the task.","Understands and follows the procedure of the task.","Communicates with others and demonstrates teamwork needed to accomplish the task.","Makes proper decisions while performing the task and solves problems associated with the task.","Manages risks that have impact on the task.","Maintains situational awareness of surroundings.","Sufficiently manages the work area, tools and equipment used for the task.","Is aware of the impact the task has to the maintenance ecosystem.","Completes the job."];
+function guideKind(b){return /^(Demonstrat|Cleans|Reference Airplane)/i.test(b)?["d","Demonstrasi"]:/^Communicates/i.test(b)?["o","Amati"]:["q","Tanyakan"]}
+function guideHtml(taskId){const g=GUIDE[taskId]||(taskId.startsWith("sp-")?GUIDE_SP:[]);if(!g.length)return "";
+  const n={d:0,q:0,o:0};g.forEach(b=>n[guideKind(b)[0]]++);
+  const sum=[n.d&&n.d+" demonstrasi",n.q&&n.q+" pertanyaan",n.o&&n.o+" pengamatan"].filter(Boolean).join(" · ");
+  return `<details class="guide" ${isAssessor()?"open":""}><summary><b>Yang perlu didemonstrasikan dan ditanyakan</b><span class="muted" style="font-size:12.5px">${sum} · sesuai buku BT-RRF-079</span></summary>
+    <ul class="glist">${g.map(b=>{const [k,l]=guideKind(b);return `<li><span class="gk g-${k}">${l}</span><span>${esc(b)}</span></li>`}).join("")}</ul>
+    <details class="gcrit"><summary>Kriteria umum sign-off (berlaku untuk semua tugas)</summary><ul>${SIGNOFF_CRIT.map(c=>`<li>${esc(c)}</li>`).join("")}</ul></details></details>`}
 
 const S={db:null,ready:false,offline:false,trainees:[],signoffs:[],refs:[],writable:true};
 const ROLES={admin:"Admin",assessor:"Assessor",pembina:"Pembina",pending:"Menunggu persetujuan",mekanik:"Mekanik",rejected:"Ditolak"};
@@ -409,7 +454,7 @@ const ME={id:null,name:"",email:"",profile:null};
 const isAssessor=()=>ROLE==="assessor"||ROLE==="admin";
 const isStaff=()=>ROLE==="assessor"||ROLE==="admin"||ROLE==="pembina";
 const sb=window.supabase?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
-const fromTrainee=r=>({id:r.id,name:r.name,empNo:r.emp_no,company:r.company,location:r.location,issued:r.issued,selfRegistered:r.self_registered});
+const fromTrainee=r=>{if(!("unit" in r))HAS_UNIT=false;return {id:r.id,name:r.name,empNo:r.emp_no,company:r.company,location:r.location,unit:r.unit||"",issued:r.issued,selfRegistered:r.self_registered}};
 const fromSignoff=r=>({id:r.id,traineeId:r.trainee_id,taskId:r.task_id,date:r.date,mode:r.mode,aircraft:r.aircraft,reference:r.reference,trainer:r.trainer,comps:r.comps||[],beh:r.beh||[],notes:r.notes,complete:r.complete,assessorId:r.assessor_id,createdAt:Date.parse(r.created_at)||0});
 const $=s=>document.querySelector(s);
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -424,8 +469,9 @@ function applyBrand(){
 function setBrand(rows){BRAND.icon="";BRAND.bg=null;(rows||[]).forEach(r=>{const v=r.value||{};if(r.key==="brand_icon"&&typeof v.src==="string"&&v.src.startsWith("data:image/"))BRAND.icon=v.src;
   if(r.key==="brand_bg"&&(v.type==="color"||(v.type==="image"&&typeof v.src==="string"&&v.src.startsWith("data:image/"))))BRAND.bg=v});
   try{localStorage.setItem("cbta.brand",JSON.stringify(BRAND))}catch(e){}applyBrand()}
-async function loadBrand(){if(!sb)return;const {data,error}=await sb.from("app_settings").select("key,value").in("key",["brand_icon","brand_bg"]);
-  if(!error){const had=JSON.stringify(BRAND);setBrand(data);if(had!==JSON.stringify(BRAND)&&ROLE==="anon"&&typeof render==="function")render()}}
+async function loadBrand(){if(!sb)return;const {data,error}=await sb.from("app_settings").select("key,value").in("key",["brand_icon","brand_bg","units"]);
+  if(!error){const had=JSON.stringify(BRAND)+UNITS.join("|");setBrand(data.filter(r=>r.key!=="units"));const u=data.find(r=>r.key==="units");if(u)setUnits(u.value);
+    if(had!==JSON.stringify(BRAND)+UNITS.join("|")&&ROLE==="anon"&&typeof render==="function"&&!(document.querySelector("#fSign input:not([type=radio])")?.value))render()}}
 try{const c=JSON.parse(localStorage.getItem("cbta.brand")||"null");if(c){BRAND.icon=c.icon||"";BRAND.bg=c.bg||null}}catch(e){}
 applyBrand();
 /* shrink an uploaded picture in the browser so it fits in the settings table */
@@ -436,6 +482,19 @@ function shrinkImage(file,max,type,q){return new Promise((res,rej)=>{if(!file||!
   im.onerror=()=>{URL.revokeObjectURL(url);rej(new Error("decode"))};im.src=url})}
 const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
 const fmtDate=s=>{if(!s)return"–";const [y,m,d]=s.split("-");const M=["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];return `${+d} ${M[+m-1]} ${y}`};
+/* ---------- units (admin edits the list) ---------- */
+const DEFAULT_UNITS=Array.from({length:27},(_,i)=>"LINE "+(i+1)).concat(["EAM Boeing Fleet","EAM ATR Fleet","EAM Airbus Fleet"]);
+let UNITS=DEFAULT_UNITS.slice();
+try{const c=JSON.parse(localStorage.getItem("cbta.units")||"null");if(Array.isArray(c)&&c.length)UNITS=c}catch(e){}
+function cleanUnits(v){if(!Array.isArray(v))return null;const seen=new Set();
+  return v.map(x=>String(x||"").trim().replace(/\s+/g," ").slice(0,60)).filter(x=>x&&!seen.has(x.toUpperCase())&&seen.add(x.toUpperCase())).slice(0,200)}
+function setUnits(v){const u=cleanUnits(v);if(u&&u.length){UNITS=u;try{localStorage.setItem("cbta.units",JSON.stringify(u))}catch(e){}}}
+function canonUnit(u){u=String(u||"").trim().replace(/\s+/g," ");const k=u.toUpperCase();return UNITS.find(x=>x.toUpperCase()===k)||u}
+function unitRank(u){const i=UNITS.indexOf(u);return i<0?(u?1000:2000):i}
+const tUnit=t=>canonUnit(t&&t.unit);
+function unitOptions(cur,blank){const c=canonUnit(cur);const list=UNITS.slice();if(c&&!list.includes(c))list.push(c);
+  return (blank?`<option value="" ${c?"":"selected"}>${esc(blank)}</option>`:"")+list.map(u=>`<option value="${esc(u)}" ${u===c?"selected":""}>${esc(u)}</option>`).join("")}
+let HAS_UNIT=true; /* false until migration 005 adds trainees.unit */
 const MEM={};
 const lsGet=k=>{try{return localStorage.getItem(k)||MEM[k]||""}catch(e){return MEM[k]||""}};
 const lsSet=(k,v)=>{MEM[k]=v;try{localStorage.setItem(k,v)}catch(e){}};
@@ -488,25 +547,29 @@ function render(){
   if(r.view==="trainee"){const t=S.trainees.find(x=>x.id===r.id);if(t){app.innerHTML=banner+traineeView(t);bindTrainee(t);return}}
   if(r.view==="new"){app.innerHTML=banner+traineeForm();bindTraineeForm(null);return}
   if(r.view==="dash"){app.innerHTML=banner+dashView();bindDash();return}
-  app.innerHTML=banner+homeView();
+  app.innerHTML=banner+homeView();bindUnitBar();
   app.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>location.hash="t-"+b.dataset.open);
   const add=$("#btnAdd");if(add)add.onclick=()=>location.hash="baru";
 }
 
 function homeView(){
-  const ts=[...S.trainees].sort((a,b)=>(a.name||"").localeCompare(b.name||""));
-  const rows=ts.map(t=>{const st=statsFor(t.id);const p=Math.round(st.done.size/TOTAL*100);
+  const ts=scoped();const per=ts.map(t=>{const st=statsFor(t.id);return {t,st,pct:st.done.size/TOTAL}});
+  const row=p=>{const {t,st}=p;const pc=Math.round(p.pct*100);
     return `<button class="row" type="button" data-open="${esc(t.id)}">
       <span class="name">${esc(t.name)}${t.example?' <span class="pill none">contoh</span>':""}</span>
       <span class="pct">${st.done.size}/${TOTAL}</span>
-      <span class="bar"><span style="width:${p}%"></span></span>
-      <span class="meta">${esc([t.empNo,t.company,t.location].filter(Boolean).join(" · ")||"–")} · Terakhir dinilai: ${fmtDate(st.last)}</span>
-    </button>`}).join("");
+      <span class="bar"><span style="width:${pc}%"></span></span>
+      <span class="meta">${esc([t.empNo,tUnit(t),t.location].filter(Boolean).join(" · ")||"–")} · Terakhir dinilai: ${fmtDate(st.last)}</span>
+    </button>`};
+  const g={};per.forEach(p=>{const u=tUnit(p.t);(g[u]=g[u]||[]).push(p)});const keys=Object.keys(g).sort((a,b)=>unitRank(a)-unitRank(b)||a.localeCompare(b));
+  const body=keys.length<2?`<div class="list">${per.sort(SORTS[PSORT]).map(row).join("")}</div>`
+    :`<div class="ulist2">${keys.map(u=>{const l=g[u].sort(SORTS[PSORT]);const avg=Math.round(l.reduce((a,p)=>a+p.pct,0)/l.length*100);return `<section><h3><span>${esc(u||"Tanpa unit")}</span><span class="muted mono" style="font-size:12.5px;font-family:var(--mono)">${l.length} mekanik · ${avg}%</span></h3><div class="list" style="margin-top:6px">${l.map(row).join("")}</div></section>`}).join("")}</div>`;
   return `<div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
       <div style="flex:1;min-width:0"><div class="label">Trainee</div><h1>Mekanik yang dinilai</h1></div>
       ${isAssessor()?`<button id="btnAdd" class="primary" type="button" ${S.writable?"":"disabled"}>+ Tambah mekanik</button>`:""}
     </div>
-    ${ts.length?`<div class="list">${rows}</div>`:`<div class="panel empty"><h2>Belum ada mekanik</h2><p class="muted" style="margin:0;max-width:40ch">Tambahkan mekanik pertama, lalu catat setiap tugas OJT yang Anda amati. Progres ${TOTAL} tugas dan 11 kompetensi akan terhitung otomatis.</p></div>`}`;
+    ${S.trainees.length?`<div class="unitbar">${unitBar().replace(/^<div class="unitbar">|<\/div>$/g,"")}<select id="pSort" class="psort" aria-label="Urutkan"><option value="low" ${PSORT==="low"?"selected":""}>Progres terendah dulu</option><option value="high" ${PSORT==="high"?"selected":""}>Progres tertinggi dulu</option><option value="name" ${PSORT==="name"?"selected":""}>Nama A–Z</option></select></div>`:""}
+    ${ts.length?body:S.trainees.length?`<div class="panel empty"><h2>Belum ada mekanik di ${esc(viewUnit()||"tanpa unit")}</h2><p class="muted" style="margin:0;max-width:40ch">Tambahkan mekanik baru, atau pilih unit lain di atas.</p></div>`:`<div class="panel empty"><h2>Belum ada mekanik</h2><p class="muted" style="margin:0;max-width:40ch">Tambahkan mekanik pertama, lalu catat setiap tugas OJT yang Anda amati. Progres ${TOTAL} tugas dan 11 kompetensi akan terhitung otomatis.</p></div>`}`;
 }
 
 function traineeForm(t,self){
@@ -516,7 +579,8 @@ function traineeForm(t,self){
     <label class="f full">Nama trainee<input id="tn" required value="${esc(t.name)}"></label>
     <label class="f">No. pegawai (ID)<input id="te" required value="${esc(t.empNo)}"></label>
     <label class="f">Perusahaan<input id="tc" value="${esc(t.company)}"></label>
-    <label class="f">Lokasi<input id="tl" value="${esc(t.location)}"></label>
+    <label class="f">Unit<select id="tu">${unitOptions(t.id?t.unit:(t.unit||(viewUnit()!=="*"?viewUnit():canonUnit(ME.profile?.unit))),"— Pilih unit —")}</select></label>
+    <label class="f">Lokasi<input id="tl" value="${esc(t.location)}" placeholder="mis. Hangar B Batam"></label>
     <label class="f">Tanggal form diterbitkan<input id="ti" type="date" value="${esc(t.issued||today())}"></label>
   </div>
   <div class="actions"><button type="button" id="tCancel">Batal</button><button class="primary" type="submit">Simpan</button></div></form></div>`;
@@ -524,14 +588,14 @@ function traineeForm(t,self){
 function bindTraineeForm(t,self){
   $("#tCancel").onclick=()=>{if(t)render();else location.hash=self?"":"mekanik"};
   $("#fTrainee").onsubmit=async e=>{e.preventDefault();
-    const body={name:$("#tn").value.trim(),empNo:$("#te").value.trim(),company:$("#tc").value.trim(),location:$("#tl").value.trim(),issued:$("#ti").value};
+    const body={name:$("#tn").value.trim(),empNo:$("#te").value.trim(),company:$("#tc").value.trim(),location:$("#tl").value.trim(),unit:$("#tu")?$("#tu").value:"",issued:$("#ti").value};
     if(!body.name)return;
     if(self){if(!body.empNo)return;
       try{const {data,error}=await sb.rpc("register_mechanic",{p_name:body.name,p_emp_no:body.empNo,p_company:body.company,p_location:body.location,p_issued:body.issued||null});if(error)throw error;
         if(data==="exists"){toast("ID ini sudah terdaftar.");return}if(data!=="ok"){toast("Data belum lengkap atau terlalu panjang.");return}
         lsSet("cbta.myid",body.empNo);toast("Data Anda tersimpan");location.hash="";}catch(err){writeError(err)}return}
     try{
-      const row={name:body.name,emp_no:body.empNo,company:body.company,location:body.location,issued:body.issued||null};
+      const row={name:body.name,emp_no:body.empNo,company:body.company,location:body.location,issued:body.issued||null};if(HAS_UNIT)row.unit=body.unit;
       if(t){const {error}=await sb.from("trainees").update(row).eq("id",t.id);if(error)throw error;toast("Data mekanik disimpan");await loadAll();render();}
       else{const {data,error}=await sb.from("trainees").insert(row).select().single();if(error)throw error;S.trainees.push(fromTrainee(data));toast("Mekanik ditambahkan");location.hash="t-"+data.id;}
     }catch(err){writeError(err)}
@@ -559,7 +623,7 @@ function traineeView(t){
   <div class="panel">
     <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap"><div style="flex:1;min-width:0"><div class="label">Trainee</div><h1>${esc(t.name)}</h1></div>
       ${isAssessor()?`<button type="button" id="edit" ${S.writable?"":"disabled"}>Ubah</button>`:""}</div>
-    <div class="ident"><span>No. pegawai <b>${esc(t.empNo||"–")}</b></span><span>Perusahaan <b>${esc(t.company||"–")}</b></span><span>Lokasi <b>${esc(t.location||"–")}</b></span><span>Diterbitkan <b>${fmtDate(t.issued)}</b></span></div>
+    <div class="ident"><span>No. pegawai <b>${esc(t.empNo||"–")}</b></span><span>Unit <b>${esc(tUnit(t)||"–")}</b></span><span>Perusahaan <b>${esc(t.company||"–")}</b></span><span>Lokasi <b>${esc(t.location||"–")}</b></span><span>Diterbitkan <b>${fmtDate(t.issued)}</b></span></div>
     <div class="stats">
       <div class="stat"><div class="v">${p}%</div><div class="k">${st.done.size} dari ${TOTAL} tugas selesai</div></div>
       <div class="stat"><div class="v">${inprog}</div><div class="k">tugas sedang berjalan</div></div>
@@ -602,6 +666,7 @@ function drawSheet(){
   const lastAc=lsGet("cbta.aircraft"),trainer=lsGet("cbta.trainer")||ME.name;
   $("#sheetRoot").innerHTML=`<div class="overlay" id="ov"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="shT">
     <div class="hd"><div><div class="label">${esc(task.sname)}</div><h2 id="shT">${esc(task.name)}</h2><div style="margin-top:6px"><span class="pill ${cls}" id="shPill">${lab}</span> <span class="muted" style="font-size:13px">${esc(t.name)}</span></div></div><button type="button" class="ghost" id="shX" aria-label="Tutup">✕</button></div>
+    ${guideHtml(taskId)}
     <div class="timeline" id="shHist">${hist}</div>
     <div id="shRefs"></div><datalist id="refSug">${refSuggest(taskId).map(r=>`<option value="${esc(r)}">`).join("")}</datalist>
     ${!isAssessor()?`<div class="actions"><button type="button" id="eCancel">Tutup</button></div>`:`<form id="fEntry"><h3>Catat penilaian baru</h3>
@@ -720,25 +785,50 @@ function refsList(tr){
 function bindRefs(){const q=$("#refQ");q.oninput=()=>{REFQ=q.value;$("#refList").innerHTML=refsList()};
   $("#refAll").onchange=e=>{REFALL=e.target.checked;$("#refList").innerHTML=refsList()}}
 
+/* ---------- unit scope: assessors start on their own unit ---------- */
+let VIEWUNIT=null,PSORT="low";
+const vuKey=()=>"cbta.viewunit."+(ME.id||"");
+function viewUnit(){if(VIEWUNIT===null){let v=null;try{v=sessionStorage.getItem(vuKey())}catch(e){}
+  const own=canonUnit(ME.profile?.unit);VIEWUNIT=v!==null?v:(ROLE==="assessor"&&own?own:"*")}return VIEWUNIT}
+function setViewUnit(v){VIEWUNIT=v;try{sessionStorage.setItem(vuKey(),v)}catch(e){}}
+function scoped(){const v=viewUnit();return v==="*"?S.trainees:S.trainees.filter(t=>tUnit(t)===v)}
+function unitBar(){const v=viewUnit();const cnt={};S.trainees.forEach(t=>{const u=tUnit(t);cnt[u]=(cnt[u]||0)+1});const own=canonUnit(ME.profile?.unit);
+  const list=[...new Set(UNITS.concat(Object.keys(cnt).filter(Boolean)))].filter(u=>cnt[u]||u===v||u===own);
+  const opts=`<option value="*" ${v==="*"?"selected":""}>Semua unit (${S.trainees.length})</option>`+list.map(u=>`<option value="${esc(u)}" ${u===v?"selected":""}>${esc(u)}${u===own?" · unit saya":""} (${cnt[u]||0})</option>`).join("")+(cnt[""]?`<option value="" ${v===""?"selected":""}>Tanpa unit (${cnt[""]})</option>`:"");
+  return `<div class="unitbar"><select id="unitPick" aria-label="Tampilkan unit">${opts}</select>${v!=="*"&&ROLE!=="mekanik"?`<span class="muted" style="font-size:12.5px">Hanya mekanik di ${v?esc(v):"tanpa unit"}. Pilih "Semua unit" untuk melihat semuanya.</span>`:""}</div>`}
+function bindUnitBar(){const u=$("#unitPick");if(u)u.onchange=()=>{setViewUnit(u.value);render()};const p=$("#pSort");if(p)p.onchange=()=>{PSORT=p.value;render()}}
+const byName=(a,b)=>(a.t.name||"").localeCompare(b.t.name||"");
+const SORTS={low:(a,b)=>a.pct-b.pct||byName(a,b),high:(a,b)=>b.pct-a.pct||byName(a,b),name:byName};
+/* group rows by unit (in the admin's unit order) when several units are shown */
+function groupByUnit(per,rowFn){const g={};per.forEach(p=>{const u=tUnit(p.t);(g[u]=g[u]||[]).push(p)});const keys=Object.keys(g).sort((a,b)=>unitRank(a)-unitRank(b)||a.localeCompare(b));
+  if(keys.length<2)return [...per].sort(SORTS[PSORT]).map(rowFn).join("");
+  return keys.map(u=>{const l=g[u].sort(SORTS[PSORT]);const avg=Math.round(l.reduce((a,p)=>a+p.pct,0)/l.length*100);
+    return `<div class="ugrp"><div class="ugh"><b>${esc(u||"Tanpa unit")}</b><span class="muted">${l.length} mekanik · rata-rata ${avg}%</span></div>${l.map(rowFn).join("")}</div>`}).join("")}
+function unitSummary(per){const g={};per.forEach(p=>{const u=tUnit(p.t);(g[u]=g[u]||[]).push(p)});const keys=Object.keys(g).sort((a,b)=>unitRank(a)-unitRank(b)||a.localeCompare(b));
+  if(keys.length<2)return "";
+  const rows=keys.map(u=>{const l=g[u];const avg=Math.round(l.reduce((a,p)=>a+p.pct,0)/l.length*100);
+    return `<tr data-unit="${esc(u)}" tabindex="0"><td><b>${esc(u||"Tanpa unit")}</b></td><td>${l.length}</td><td><span class="mini"><span style="width:${avg}%"></span></span>${avg}%</td>${MILESTONES.map(m=>`<td>${l.filter(p=>p.st.done.size>=tasksFor(m.pct)).length}</td>`).join("")}<td>${l.filter(p=>p.stale).length||"–"}</td></tr>`}).join("");
+  return `<div class="panel"><h2>Ringkasan per unit</h2><p class="muted" style="margin:0;font-size:13px">Ketuk baris untuk melihat dashboard unit itu saja.</p><div class="uwrap"><table class="utable"><thead><tr><th>Unit</th><th>Mekanik</th><th>Rata-rata</th>${MILESTONES.map(m=>`<th title="${esc(m.label)}">≥${m.pct}%</th>`).join("")}<th>Tidak aktif</th></tr></thead><tbody>${rows}</tbody></table></div></div>`}
+
 /* ---------- dashboard ---------- */
 let STALE_DAYS=30;
 function daysSince(d){if(!d)return Infinity;return Math.floor((new Date(today())-new Date(d))/864e5)}
 function weekStart(d){const x=new Date(d+"T00:00:00");const k=(x.getDay()+6)%7;x.setDate(x.getDate()-k);return x}
 function dashView(){
-  const ts=S.trainees;
+  const ts=scoped();const tids=new Set(ts.map(t=>t.id));const SO=S.signoffs.filter(x=>tids.has(x.traineeId));
+  if(S.trainees.length&&!ts.length)return `<div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;justify-content:space-between"><div><div class="label">Ringkasan</div><h1>Dashboard CBTA</h1></div>${unitBar()}</div><div class="panel empty"><h2>Belum ada mekanik di ${esc(viewUnit()||"tanpa unit")}</h2><p class="muted" style="margin:0;max-width:44ch">Tambahkan mekanik di tab Mekanik dengan unit ini, atau pilih unit lain di atas.</p></div>`;
   if(!ts.length)return `<div class="panel empty"><h2>Dashboard masih kosong</h2><p class="muted" style="margin:0;max-width:42ch">Tambahkan mekanik di tab Mekanik dan catat penilaian pertama. Ringkasan semua mekanik akan muncul di sini.</p><button class="primary" type="button" onclick="location.hash='baru'">+ Tambah mekanik</button></div>`;
   const per=ts.map(t=>{const st=statsFor(t.id);return {t,st,pct:st.done.size/TOTAL,stale:daysSince(st.last)>STALE_DAYS}});
   const avg=Math.round(per.reduce((a,p)=>a+p.pct,0)/per.length*100);
   const doneAll=per.reduce((a,p)=>a+p.st.done.size,0);
-  const last30=S.signoffs.filter(s=>daysSince(s.date)<=30).length;
+  const last30=SO.filter(s=>daysSince(s.date)<=30).length;
   const staleN=per.filter(p=>p.stale).length;
   // progress per trainee, lowest first
-  const sorted=[...per].sort((a,b)=>a.pct-b.pct||(a.t.name||"").localeCompare(b.t.name||""));
-  const pbars=sorted.map(p=>{const pc=Math.round(p.pct*100);
+  const pbars=groupByUnit(per,p=>{const pc=Math.round(p.pct*100);
     const tip=`${p.t.name}: ${p.st.done.size}/${TOTAL} tugas selesai (${pc}%). Terakhir dinilai ${fmtDate(p.st.last)}.`;
-    return `<button type="button" class="hb" data-open="${esc(p.t.id)}" data-tip="${esc(tip)}"><span class="nm">${esc(p.t.name)}${p.stale?`<span class="flag">⚠ ${p.st.last?">"+STALE_DAYS+" hari":"belum dinilai"}</span>`:""}</span><span class="track"><span class="fill" style="width:${pc}%"></span></span><span class="val">${pc}%</span></button>`}).join("");
+    return `<button type="button" class="hb" data-open="${esc(p.t.id)}" data-tip="${esc(tip)}"><span class="nm">${esc(p.t.name)}${p.stale?`<span class="flag">⚠ ${p.st.last?">"+STALE_DAYS+" hari":"belum dinilai"}</span>`:""}</span><span class="track"><span class="fill" style="width:${pc}%"></span></span><span class="val">${pc}%</span></button>`});
   // competencies across all
-  const cAll={};COMPS.forEach(([c])=>cAll[c]=0);S.signoffs.forEach(s=>(s.comps||[]).forEach(c=>{if(c in cAll)cAll[c]++}));
+  const cAll={};COMPS.forEach(([c])=>cAll[c]=0);SO.forEach(s=>(s.comps||[]).forEach(c=>{if(c in cAll)cAll[c]++}));
   const cmax=Math.max(1,...Object.values(cAll));
   const cbars=[...COMPS].sort((a,b)=>cAll[a[0]]-cAll[b[0]]).map(([c,n])=>`<div class="hb" data-tip="${esc(`${c} · ${n}: teramati ${cAll[c]} kali`)}"><span class="nm"><b style="font-family:var(--display);font-size:15px">${c}</b> <span class="muted">${esc(n)}</span></span><span class="track"><span class="fill" style="width:${cAll[c]/cmax*100}%"></span></span><span class="val">${cAll[c]}×</span></div>`).join("");
   // section average
@@ -750,14 +840,14 @@ function dashView(){
     return `<tr><th class="rn" scope="row"><a href="#t-${esc(p.t.id)}" style="color:inherit">${esc(p.t.name)}</a></th>${COMPS.map(([c,n])=>{const v=p.st.comp[c];const l=v===0?0:Math.min(4,Math.ceil(v/m*4));return `<td class="h${l}" data-tip="${esc(`${p.t.name} · ${c} (${n}): ${v} kali`)}">${v||"·"}</td>`}).join("")}</tr>`}).join("");
   // weekly activity, 12 weeks
   const ws=weekStart(today());const weeks=[];for(let i=11;i>=0;i--){const d=new Date(ws);d.setDate(d.getDate()-7*i);weeks.push(d)}
-  const wc=weeks.map(()=>0);S.signoffs.forEach(s=>{if(!s.date)return;const w=weekStart(s.date).getTime();const i=weeks.findIndex(d=>d.getTime()===w);if(i>=0)wc[i]++});
+  const wc=weeks.map(()=>0);SO.forEach(s=>{if(!s.date)return;const w=weekStart(s.date).getTime();const i=weeks.findIndex(d=>d.getTime()===w);if(i>=0)wc[i]++});
   const wmax=Math.max(1,...wc);const M=["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
   const cols=wc.map((v,i)=>`<div class="col" data-tip="${esc(`Minggu ${weeks[i].getDate()} ${M[weeks[i].getMonth()]}: ${v} catatan`)}">${v?`<span class="n">${v}</span>`:""}<div class="b" style="height:${v?Math.max(3,v/wmax*85):0}%"></div></div>`).join("");
   const xax=weeks.map((d,i)=>`<span>${i%2===1?"":d.getDate()+" "+M[d.getMonth()]}</span>`).join("");
   const tmap=Object.fromEntries(ts.map(t=>[t.id,t]));
-  const recent=[...S.signoffs].sort((a,b)=>(b.date||"").localeCompare(a.date||"")||(b.createdAt||0)-(a.createdAt||0)).slice(0,6)
+  const recent=[...SO].sort((a,b)=>(b.date||"").localeCompare(a.date||"")||(b.createdAt||0)-(a.createdAt||0)).slice(0,6)
     .map(e=>entryHtml(e).replace('<div class="h">',`<div class="h"><span class="muted" style="font-size:13px">${esc(tmap[e.traineeId]?.name||"–")}</span>`)).join("")||`<p class="muted" style="margin:0">Belum ada catatan.</p>`;
-  return `<div><div class="label">Ringkasan semua trainee</div><h1>Dashboard CBTA</h1></div>
+  return `<div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;justify-content:space-between"><div><div class="label">${viewUnit()==="*"?"Ringkasan semua unit":"Ringkasan "+esc(viewUnit()||"tanpa unit")}</div><h1>Dashboard CBTA</h1></div>${unitBar()}</div>
   <div class="kpis">
     <div class="kpi"><div class="v">${ts.length}</div><div class="k">mekanik dinilai</div></div>
     <div class="kpi"><div class="v">${avg}%</div><div class="k">rata-rata progres (${TOTAL} tugas)</div></div>
@@ -767,9 +857,10 @@ function dashView(){
   ${MILESTONES.length?`<div class="panel"><h2>Milestone</h2><p class="muted" style="margin:0;font-size:13px">Mekanik yang sudah mencapai tiap milestone. Batasnya diatur admin di Pengaturan.</p><div class="msgrid">${MILESTONES.map(m=>{const need=tasksFor(m.pct);
       const who=per.filter(p=>p.st.done.size>=need).sort((a,b)=>(a.t.name||"").localeCompare(b.t.name||""));const near=per.filter(p=>p.st.done.size<need&&need-p.st.done.size<=5).length;
       return `<div class="msbox"><div class="msh"><b>${m.pct}%</b><span style="flex:1;min-width:0;font-weight:600">${esc(m.label)}</span><span class="pill ${who.length?"done":"none"}">${who.length} mekanik</span></div>${who.length?`<div class="mslist">${who.map(p=>`<a href="#t-${esc(p.t.id)}">${esc(p.t.name)}</a>`).join("")}</div>`:`<span class="muted" style="font-size:13px">Belum ada yang mencapai ${need} tugas.</span>`}${near?`<span class="muted" style="font-size:12.5px">${near} mekanik tinggal ≤5 tugas lagi.</span>`:""}</div>`}).join("")}</div></div>`:""}
+  ${viewUnit()==="*"?unitSummary(per):""}
   ${staleN?`<div class="notice">⚠ ${staleN} mekanik belum dinilai lebih dari ${STALE_DAYS} hari. Mereka ditandai di grafik progres.</div>`:""}
   <div class="dgrid">
-    <div class="panel"><h2>Progres per mekanik</h2><p class="muted" style="margin:0;font-size:13px">Diurutkan dari yang paling tertinggal. Ketuk nama untuk membuka detail.</p><div class="hbars">${pbars}</div></div>
+    <div class="panel"><div style="display:flex;gap:8px;justify-content:space-between;align-items:center;flex-wrap:wrap"><h2>Progres per mekanik</h2><select id="pSort" class="psort" aria-label="Urutkan"><option value="low" ${PSORT==="low"?"selected":""}>Progres terendah dulu</option><option value="high" ${PSORT==="high"?"selected":""}>Progres tertinggi dulu</option><option value="name" ${PSORT==="name"?"selected":""}>Nama A–Z</option></select></div><p class="muted" style="margin:0;font-size:13px">${viewUnit()==="*"?"Dikelompokkan per unit. ":""}Ketuk nama untuk membuka detail.</p><div class="hbars">${pbars}</div></div>
     <div class="panel"><h2>Kompetensi teramati</h2><p class="muted" style="margin:0;font-size:13px">Jumlah dari semua mekanik, paling jarang di atas.</p><div class="hbars">${cbars}</div></div>
   </div>
   <div class="panel"><h2>Peta kompetensi per mekanik</h2><p class="muted" style="margin:0;font-size:13px">Berapa kali tiap kompetensi teramati. Makin gelap makin sering untuk mekanik itu; titik berarti belum pernah.</p>
@@ -780,7 +871,8 @@ function dashView(){
   </div>
   <div class="panel"><h2>Aktivitas terbaru</h2><div class="timeline">${recent}</div></div>`;
 }
-function bindDash(){document.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>location.hash="t-"+b.dataset.open)}
+function bindDash(){document.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>location.hash="t-"+b.dataset.open);bindUnitBar();
+  document.querySelectorAll("[data-unit]").forEach(r=>{const go=()=>{setViewUnit(r.dataset.unit);render();window.scrollTo(0,0)};r.onclick=go;r.onkeydown=e=>{if(e.key==="Enter")go()}})}
 (function tips(){const tip=document.getElementById("tip");let cur=null;
   const show=(el,x,y)=>{cur=el;tip.textContent=el.dataset.tip;tip.hidden=false;const r=tip.getBoundingClientRect();
     let L=Math.min(window.innerWidth-r.width-8,Math.max(8,x+12)),T=y-r.height-12;if(T<8)T=y+16;tip.style.left=L+"px";tip.style.top=T+"px"};
@@ -928,7 +1020,7 @@ function settingsView(){
       <label class="f full">Nama lengkap<input id="pName" required maxlength="120" value="${esc(p.full_name)}"></label>
       <label class="f">No. pegawai<input id="pEmp" maxlength="40" value="${esc(p.emp_no)}" ${ROLE==="mekanik"?'disabled title="Hubungi admin untuk mengubah no. pegawai"':""}></label>
       ${isAssessor()||p.requested_role==="assessor"?`<label class="f">No. otorisasi assessor<input id="pAuth" maxlength="60" value="${esc(p.auth_no)}"></label>`:""}
-      <label class="f">Unit / lokasi<input id="pUnit" maxlength="120" value="${esc(p.unit)}"></label>
+      <label class="f">Unit<select id="pUnit" ${ROLE==="mekanik"?'disabled title="Hubungi admin untuk pindah unit"':""}>${unitOptions(p.unit,"— Tidak ada —")}</select></label>
       <label class="f">Telepon / WhatsApp<input id="pPhone" type="tel" maxlength="40" value="${esc(p.phone)}"></label>
     </div><div class="actions"><button class="primary" type="submit">Simpan profil</button></div></form>
   </section>
@@ -959,6 +1051,11 @@ function settingsView(){
       <label class="f">Observasi untuk stat kompetensi penuh<input id="aStat" type="number" min="1" max="100" required value="${STAT_MAX}"></label>
     </div><div class="actions"><button type="submit">Simpan pengaturan aplikasi</button></div></form>
     <p class="muted" style="margin:0;font-size:13px">Persetujuan akun baru ada di tab <a href="#pengguna">Pengguna</a>.</p></section>
+  <section class="panel"><h2>Daftar unit (admin)</h2>
+    <p class="muted" style="margin:0;font-size:13.5px">Pilihan unit di form pendaftaran, profil, dan data mekanik. Mengganti nama unit ikut memperbarui pengguna dan mekanik yang memakai nama lama. Unit yang dihapus tetap tercatat pada pengguna lama sampai diubah.</p>
+    <form id="fUnits"><div id="unRows" class="unrows">${UNITS.map(unitRow).join("")}</div>
+      <button type="button" class="ghost addref" id="unAdd">+ Tambah unit</button>
+      <div class="actions"><button type="submit">Simpan daftar unit</button></div></form></section>
   <section class="panel"><h2>Milestone progres (admin)</h2>
     <p class="muted" style="margin:0;font-size:13.5px">Ditampilkan di kartu status setiap mekanik dan di Dashboard. Persen dihitung dari ${TOTAL} tugas, mis. 85% = ${tasksFor(85)} tugas selesai.</p>
     <form id="fMs"><div id="msRows" style="display:flex;flex-direction:column;gap:6px">${MILESTONES.map(msRow).join("")}</div>
@@ -978,12 +1075,13 @@ function settingsView(){
     </div></section>`:""}
   </div>`;
 }
+function unitRow(u){return `<div class="refrow unrow"><input class="unName" maxlength="60" required value="${esc(u||"")}" data-orig="${esc(u||"")}" aria-label="Nama unit" placeholder="Nama unit baru"><button type="button" class="ghost" data-undel aria-label="Hapus unit ${esc(u||"")}">✕</button></div>`}
 function msRow(m){return `<div class="refrow msrow"><input type="number" class="msPct" min="1" max="100" step="1" required value="${m?m.pct:""}" aria-label="Persen progres" style="max-width:84px"><span class="muted">%</span><input class="msLab" maxlength="80" required value="${esc(m?.label||"")}" placeholder="mis. Dapat diajukan rating" aria-label="Keterangan milestone"><button type="button" class="ghost" data-msdel aria-label="Hapus milestone">✕</button></div>`}
 function bindSettings(){
-  $("#fProf").onsubmit=async e=>{e.preventDefault();const upd={full_name:$("#pName").value.trim(),unit:$("#pUnit").value.trim(),phone:$("#pPhone").value.trim()};
+  $("#fProf").onsubmit=async e=>{e.preventDefault();const upd={full_name:$("#pName").value.trim(),phone:$("#pPhone").value.trim()};if(ROLE!=="mekanik")upd.unit=$("#pUnit").value;const oldUnit=canonUnit(ME.profile.unit);
     if(ROLE!=="mekanik")upd.emp_no=$("#pEmp").value.trim();const a=$("#pAuth");if(a)upd.auth_no=a.value.trim();
     const {error}=await sb.from("profiles").update(upd).eq("id",ME.id);if(error){toast(error.code==="23505"?"No. pegawai ini sudah dipakai akun lain.":"Profil gagal disimpan.");return}
-    Object.assign(ME.profile,upd);ME.name=upd.full_name;toast("Profil disimpan");render()};
+    Object.assign(ME.profile,upd);ME.name=upd.full_name;if(upd.unit!==undefined&&VIEWUNIT===oldUnit&&upd.unit)setViewUnit(upd.unit);toast("Profil disimpan");render()};
   $("#fPass").onsubmit=async e=>{e.preventDefault();const a=$("#np1").value,b=$("#np2").value;if(a!==b){toast("Kedua kata sandi tidak sama.");return}
     const {error}=await sb.auth.updateUser({password:a});if(error){toast(/different/i.test(error.message)?"Kata sandi baru harus berbeda dari yang lama.":"Gagal mengganti kata sandi.");return}
     e.target.reset();toast("Kata sandi diganti")};
@@ -1000,6 +1098,20 @@ function bindSettings(){
     const {error}=await q;if(error){toast("Gagal menyimpan. Coba gambar yang lebih kecil.");return}
     const rows=[];if(BRAND.icon)rows.push({key:"brand_icon",value:{src:BRAND.icon}});if(BRAND.bg)rows.push({key:"brand_bg",value:BRAND.bg});
     const next=rows.filter(r=>r.key!==key);if(value!==null)next.push({key,value});setBrand(next);toast(msg);render()};
+  const fu=$("#fUnits");if(fu){const rows=$("#unRows");
+    rows.onclick=e=>{const b=e.target.closest("[data-undel]");if(b)b.closest(".unrow").remove()};
+    $("#unAdd").onclick=()=>{rows.insertAdjacentHTML("beforeend",unitRow(""));rows.lastElementChild.querySelector("input").focus()};
+    fu.onsubmit=async e=>{e.preventDefault();const items=[...rows.querySelectorAll(".unName")].map(i=>({orig:i.dataset.orig,name:i.value.trim().replace(/\s+/g," ")}));
+      const names=items.map(x=>x.name.toUpperCase());if(new Set(names).size!==names.length){toast("Ada nama unit yang sama.");return}
+      const list=cleanUnits(items.map(x=>x.name));if(!list.length){toast("Daftar unit tidak boleh kosong.");return}
+      const btn=fu.querySelector("[type=submit]");btn.disabled=true;
+      const {error}=await sb.from("app_settings").upsert({key:"units",value:list,updated_at:new Date().toISOString()});
+      if(error){btn.disabled=false;toast("Gagal menyimpan daftar unit.");return}
+      const ren=items.filter(x=>x.orig&&x.name&&x.orig!==x.name);let moved=0;
+      for(const r of ren){const a=await sb.from("profiles").update({unit:r.name}).eq("unit",r.orig).select("id");moved+=(a.data||[]).length;
+        if(HAS_UNIT){const b=await sb.from("trainees").update({unit:r.name}).eq("unit",r.orig).select("id");moved+=(b.data||[]).length}
+        if(VIEWUNIT===r.orig)setViewUnit(r.name)}
+      setUnits(list);toast(ren.length?`Daftar unit disimpan. ${moved} data ikut diperbarui.`:"Daftar unit disimpan");await loadAll();render()}}
   const fm=$("#fMs");if(fm){const rows=$("#msRows");
     rows.onclick=e=>{const b=e.target.closest("[data-msdel]");if(b)b.closest(".msrow").remove()};
     $("#msAdd").onclick=()=>{if(rows.children.length>=8){toast("Maksimal 8 milestone.");return}rows.insertAdjacentHTML("beforeend",msRow(null));rows.lastElementChild.querySelector("input").focus()};
@@ -1019,16 +1131,16 @@ function csvCell(v){v=String(v??"");return /[",\n;]/.test(v)?'"'+v.replace(/"/g,
 function download(name,rows){const csv="﻿"+rows.map(r=>r.map(csvCell).join(",")).join("\r\n");
   const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));const a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);toast("File "+name+" diunduh")}
 function exportEntries(only){
-  const rows=[["Trainee","No. pegawai","Bagian","Tugas","Tanggal","P/D","Airplane ID & Type","Reference","Kompetensi teramati","Perilaku teramati","Trainer","Sign-off","Catatan"]];
+  const rows=[["Trainee","No. pegawai","Unit","Bagian","Tugas","Tanggal","P/D","Airplane ID & Type","Reference","Kompetensi teramati","Perilaku teramati","Trainer","Sign-off","Catatan"]];
   const tmap=Object.fromEntries(S.trainees.map(t=>[t.id,t]));
   [...S.signoffs].filter(s=>!only||s.traineeId===only).sort((a,b)=>((tmap[a.traineeId]?.name||"").localeCompare(tmap[b.traineeId]?.name||""))||(a.date||"").localeCompare(b.date||""))
-   .forEach(s=>{const t=tmap[s.traineeId]||{};const k=TASK[s.taskId]||{};rows.push([t.name,t.empNo,k.sname,k.name,s.date,s.mode,s.aircraft,s.reference,(s.comps||[]).join("-"),(s.beh||[]).map(b=>{const [c,i]=b.split("-");return c+": "+(BEH[c]?.[+i]||"")}).join(" | "),s.trainer,s.complete?"Ya":"",s.notes])});
+   .forEach(s=>{const t=tmap[s.traineeId]||{};const k=TASK[s.taskId]||{};rows.push([t.name,t.empNo,tUnit(t),k.sname,k.name,s.date,s.mode,s.aircraft,s.reference,(s.comps||[]).join("-"),(s.beh||[]).map(b=>{const [c,i]=b.split("-");return c+": "+(BEH[c]?.[+i]||"")}).join(" | "),s.trainer,s.complete?"Ya":"",s.notes])});
   download(only?`CBTA_${(tmap[only]?.name||"trainee").replace(/[^\w-]+/g,"_")}_${today()}.csv`:`CBTA_semua_penilaian_${today()}.csv`,rows);
 }
 function exportSummary(){
-  const rows=[["Trainee","No. pegawai","Perusahaan","Lokasi","Tugas selesai","% selesai","Pangkat","Terakhir dinilai",...SECTIONS.map(s=>s[1]),...COMPS.map(c=>c[0])]];
+  const rows=[["Trainee","No. pegawai","Unit","Perusahaan","Lokasi","Tugas selesai","% selesai","Pangkat","Terakhir dinilai",...SECTIONS.map(s=>s[1]),...COMPS.map(c=>c[0])]];
   [...S.trainees].sort((a,b)=>(a.name||"").localeCompare(b.name||"")).forEach(t=>{const g=gameFor(t);const st=g.st;
-    rows.push([t.name,t.empNo,t.company,t.location,st.done.size,Math.round(st.done.size/TOTAL*100),g.rank,st.last,
+    rows.push([t.name,t.empNo,tUnit(t),t.company,t.location,st.done.size,Math.round(st.done.size/TOTAL*100),g.rank,st.last,
       ...SECTIONS.map(([sid,_,list])=>list.filter((_,i)=>st.done.has(sid+"-"+(i+1))).length+"/"+list.length),...COMPS.map(([c])=>st.comp[c])])});
   download(`CBTA_ringkasan_${today()}.csv`,rows);
 }
@@ -1053,7 +1165,7 @@ function signupView(){return authShell("Buat akun","Pengajuan akun",`
       <label class="f full">Nama lengkap<input id="sName" required maxlength="120" autocomplete="name"></label>
       <label class="f">No. pegawai<input id="sEmp" required maxlength="40"></label>
       <label class="f" id="authWrap" hidden>No. otorisasi assessor<input id="sAuth" maxlength="60"></label>
-      <label class="f">Unit / lokasi<input id="sUnit" maxlength="120" placeholder="mis. Hangar 3 Batam"></label>
+      <label class="f">Unit<select id="sUnit" required>${unitOptions("","— Pilih unit —")}</select></label>
       <label class="f">Telepon / WhatsApp<input id="sPhone" type="tel" maxlength="40"></label>
       <label class="f full">Email<input id="sEmail" type="email" required autocomplete="email"></label>
       <label class="f">Kata sandi<input id="sPass" type="password" minlength="8" required autocomplete="new-password"></label>
@@ -1076,7 +1188,7 @@ function bindAuth(view){
   const busy=(f,on)=>{const b=f.querySelector("[type=submit]");if(b)b.disabled=on};
   if(view==="login"){const pwt=$(".pwt");pwt.onclick=()=>{const i=$("#aPass");i.type=i.type==="password"?"text":"password";pwt.textContent=i.type==="password"?"Lihat":"Sembunyikan"};
     $("#fLogin").onsubmit=async e=>{e.preventDefault();busy(e.target,true);const {error}=await sb.auth.signInWithPassword({email:$("#aEmail").value.trim(),password:$("#aPass").value});busy(e.target,false);if(error){toast(authErr(error.message));return}location.hash=""}}
-  if(view==="signup"){const sync=()=>{const v=document.querySelector('input[name="rr"]:checked').value;$("#authWrap").hidden=v!=="assessor"};document.querySelectorAll('input[name="rr"]').forEach(r=>r.onchange=sync);sync();
+  if(view==="signup"){const sync=()=>{const v=document.querySelector('input[name="rr"]:checked').value;$("#authWrap").hidden=v!=="assessor";$("#sUnit").required=v!=="pembina";$("#sUnit").options[0].textContent=v==="pembina"?"— Semua unit / tidak ada —":"— Pilih unit —"};document.querySelectorAll('input[name="rr"]').forEach(r=>r.onchange=sync);sync();
     $("#fSign").onsubmit=async e=>{e.preventDefault();if($("#sPass").value!==$("#sPass2").value){toast("Kedua kata sandi tidak sama.");return}busy(e.target,true);
       const rr=document.querySelector('input[name="rr"]:checked').value;
       const emp=$("#sEmp").value.trim();
@@ -1102,7 +1214,7 @@ function pendingView(){const p=ME.profile||{};const rej=ROLE==="rejected";
 
 /* ---------- admin: users ---------- */
 let USERS=[];
-async function loadUsers(){const {data,error}=await sb.from("profiles").select("id,full_name,email,role,requested_role,emp_no,auth_no,unit,phone,created_at,approved_at").order("created_at");if(!error)USERS=data||[]}
+async function loadUsers(){const {data,error}=await sb.from("profiles").select("id,full_name,email,role,requested_role,emp_no,auth_no,unit,phone,created_at,approved_at,trainee_id").order("created_at");if(!error)USERS=data||[]}
 function usersView(){
   const pend=USERS.filter(u=>u.role==="pending");
   const rest=USERS.filter(u=>u.role!=="pending").sort((a,b)=>(a.role||"").localeCompare(b.role||"")||(a.full_name||"").localeCompare(b.full_name||""));
@@ -1127,7 +1239,7 @@ function userEditForm(u){const self=u.id===ME.id;
     <label class="f full">Nama lengkap<input id="uName" required maxlength="120" value="${esc(u.full_name)}"></label>
     <label class="f">No. pegawai<input id="uEmp" maxlength="40" value="${esc(u.emp_no)}"></label>
     <label class="f">No. otorisasi<input id="uAuth" maxlength="60" value="${esc(u.auth_no)}"></label>
-    <label class="f">Unit / lokasi<input id="uUnit" maxlength="120" value="${esc(u.unit)}"></label>
+    <label class="f">Unit<select id="uUnit">${unitOptions(u.unit,"— Tidak ada —")}</select></label>
     <label class="f">Telepon<input id="uPhone" type="tel" maxlength="40" value="${esc(u.phone)}"></label>
     ${self?"":`<label class="f full">Peran<select id="uRole">${["pending","mekanik","assessor","pembina","admin","rejected"].map(r=>`<option value="${r}" ${u.role===r?"selected":""}>${ROLE_DESC[r]}</option>`).join("")}</select></label>`}
   </div>
@@ -1142,33 +1254,35 @@ function bindUsers(){
     if(error||data!=="ok"){const b=$("#uDel");if(b)b.disabled=false;toast(error?"Gagal menghapus. Pastikan pembaruan database terbaru sudah dijalankan.":data==="self"?"Anda tidak bisa menghapus akun sendiri.":"Gagal: "+data);return}
     EDITUID=null;toast("Akun dihapus");await loadUsers();render()});
   f.onsubmit=async e=>{e.preventDefault();const btn=f.querySelector("[type=submit]");btn.disabled=true;
-    const upd={full_name:$("#uName").value.trim(),emp_no:$("#uEmp").value.trim(),auth_no:$("#uAuth").value.trim(),unit:$("#uUnit").value.trim(),phone:$("#uPhone").value.trim()};
+    const upd={full_name:$("#uName").value.trim(),emp_no:$("#uEmp").value.trim(),auth_no:$("#uAuth").value.trim(),unit:$("#uUnit").value,phone:$("#uPhone").value.trim()};
     const {error}=await sb.from("profiles").update(upd).eq("id",u.id);
     if(error){btn.disabled=false;toast(error.code==="23505"?"No. pegawai ini sudah dipakai akun lain.":"Gagal menyimpan.");return}
     const nr=$("#uRole")?$("#uRole").value:u.role;const empChanged=upd.emp_no.toLowerCase()!==String(u.emp_no||"").trim().toLowerCase();
     if(nr!==u.role||(nr==="mekanik"&&empChanged)){const {data,error:e2}=await sb.rpc("approve_user",{p_user:u.id,p_role:nr});
       if(e2||data!=="ok"){btn.disabled=false;toast(e2?(e2.code==="23505"?"No. pegawai ini sudah dipakai akun lain.":"Data disimpan, tetapi peran gagal diubah."):(APPROVE_MSG[data]||"Gagal: "+data));await loadUsers();return}}
     if(u.id===ME.id){Object.assign(ME.profile,upd);ME.name=upd.full_name}
-    EDITUID=null;toast("Data pengguna disimpan");await loadUsers();if(nr==="mekanik")await loadAll();render()};
+    await loadUsers();const u2=USERS.find(x=>x.id===u.id);
+    if(HAS_UNIT&&u2&&u2.role==="mekanik"&&u2.trainee_id&&upd.unit){await sb.from("trainees").update({unit:upd.unit}).eq("id",u2.trainee_id)}
+    EDITUID=null;toast("Data pengguna disimpan");if(nr==="mekanik")await loadAll();render()};
 }
 
 /* ---------- data ---------- */
 async function fetchAll(table,map){const out=[];for(let from=0;;from+=1000){const {data,error}=await sb.from(table).select("*").order("created_at").range(from,from+999);if(error)throw error;out.push(...data.map(map));if(data.length<1000)break}return out}
 async function loadAll(){
   try{const [t,s2,cfg]=await Promise.all([fetchAll("trainees",fromTrainee),fetchAll("signoffs",fromSignoff),sb.from("app_settings").select("key,value")]);S.trainees=t;S.signoffs=s2;S.offline=false;
-    (cfg.data||[]).forEach(r=>{if(r.key==="milestones"){const m=cleanMilestones(r.value);if(m)MILESTONES=m}if(r.key==="stale_days"&&+r.value>0)STALE_DAYS=+r.value;if(r.key==="stat_max"&&+r.value>0)STAT_MAX=+r.value});setBrand((cfg.data||[]).filter(r=>r.key.startsWith("brand_")))}
+    (cfg.data||[]).forEach(r=>{if(r.key==="units")setUnits(r.value);if(r.key==="milestones"){const m=cleanMilestones(r.value);if(m)MILESTONES=m}if(r.key==="stale_days"&&+r.value>0)STALE_DAYS=+r.value;if(r.key==="stat_max"&&+r.value>0)STAT_MAX=+r.value});setBrand((cfg.data||[]).filter(r=>r.key.startsWith("brand_")))}
   catch(e){S.offline=true}
   try{S.refs=await fetchAll("task_refs",fromRef)}catch(e){S.refs=[]} /* table appears after migration 004 */
   if(ROLE==="admin")await loadUsers();
 }
 let reloadTimer=null,channel=null;
 function scheduleReload(){clearTimeout(reloadTimer);reloadTimer=setTimeout(async()=>{await loadAll();
-  if(document.querySelector("#fTrainee,#fProf,#fApp,#fUser,#fMs")||($("#rNew")&&$("#rNew").value)||document.activeElement?.id==="refQ")return; /* don't wipe a form being typed */
+  if(document.querySelector("#fTrainee,#fProf,#fApp,#fUser,#fMs,#fUnits")||($("#rNew")&&$("#rNew").value)||document.activeElement?.id==="refQ")return; /* don't wipe a form being typed */
   render();refreshSheet()},800)}
 async function applySession(session){
   if(channel){sb.removeChannel(channel);channel=null}
   if(!session){ROLE="anon";ME.id=null;ME.name="";ME.email="";ME.profile=null;S.trainees=[];S.signoffs=[];S.ready=true;render();return}
-  ME.id=session.user.id;ME.email=session.user.email||"";
+  ME.id=session.user.id;ME.email=session.user.email||"";VIEWUNIT=null;
   const {data:prof}=await sb.from("profiles").select("*").eq("id",ME.id).maybeSingle();
   ME.profile=prof||{};ROLE=prof?.role||"pending";ME.name=prof?.full_name||"";
   if(prof?.prefs?.trainer&&!lsGet("cbta.trainer"))lsSet("cbta.trainer",prof.prefs.trainer);
