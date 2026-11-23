@@ -395,12 +395,12 @@ body.hasbg::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:no
 .xsheet{position:relative;background:#fff;color:#000;font:10pt Arial,sans-serif;text-align:left;line-height:normal}
 .xsheet table{border-collapse:collapse;table-layout:fixed;margin:0}
 .xsheet td{padding:0 2px;overflow:visible;white-space:pre;line-height:1.1;position:relative;border:0;background:transparent;color:inherit}
-.xsheet .xc{overflow:visible}
+.xsheet .xc{overflow-x:visible;overflow-y:clip}
 .xsheet img{position:absolute;max-width:none}
 .xsheet .xsig{position:absolute;display:flex;align-items:center;justify-content:center;pointer-events:none}
 .xsheet .xsig img{position:static;max-width:100%;max-height:100%;object-fit:contain}
 .xsheet td.xcirc .xc::after{content:"";position:absolute;inset:-1px 4px;border:1.6px solid #000;border-radius:50%}
-.xsheet [data-tpl]{outline:1px dashed rgba(95,122,31,.55);cursor:text;min-width:8px;display:inline-block}
+.xsheet [data-tpl]{outline:1px dashed rgba(95,122,31,.55);cursor:text}
 .xsheet [data-tpl]:focus{outline:2px solid #5f7a1f;background:#f4f8e8}
 .fform{display:flex;flex-direction:column;gap:12px}
 .fh{margin:6px 0 0;font-size:15px}
@@ -1338,11 +1338,12 @@ function sheetHtml(key,T,fill,extra){
   const byRow={};T.cells.forEach(c=>{(byRow[c[0]]=byRow[c[0]]||[]).push(c)});
   const W=T.cols.reduce((a,b)=>a+b,0),H=T.rows.reduce((a,b)=>a+b,0);const cov=T._cov||(T._cov=xCover(T));
   let h=`<style>${T.styles.map((st,i)=>`.xs-${key} .s${i}{${st}}`).join("")}</style><div class="xsheet xs-${key}" style="width:${W}px;height:${H}px"><table style="width:${W}px"><colgroup>${T.cols.map(w=>`<col style="width:${w}px">`).join("")}</colgroup><tbody>`;
+  const ys=[0];T.rows.forEach(v=>ys.push(ys[ys.length-1]+v));
   for(let r=1;r<=T.rows.length;r++){h+=`<tr style="height:${T.rows[r-1]}px">`;const cells=byRow[r]||[];
     for(let c=1;c<=T.cols.length;c++){if(cov.has(r+":"+c))continue;const cell=cells.find(x=>x[1]===c)||null;const o=fill?fill(xcol(c)+r,cell):null;
       if(!cell&&!o){h+="<td></td>";continue}
       const inner=o&&o.html!==undefined?o.html:esc(cell?cell[5]:"");
-      h+=`<td class="${cell?"s"+cell[4]:""}${o&&o.cls?" "+o.cls:""}"${cell&&cell[2]>1?` rowspan="${cell[2]}"`:""}${cell&&cell[3]>1?` colspan="${cell[3]}"`:""}${o&&o.style?` style="${o.style}"`:""}><div class="xc">${inner}</div></td>`}
+      h+=`<td class="${cell?"s"+cell[4]:""}${o&&o.cls?" "+o.cls:""}"${cell&&cell[2]>1?` rowspan="${cell[2]}"`:""}${cell&&cell[3]>1?` colspan="${cell[3]}"`:""}${o&&o.style?` style="${o.style}"`:""}><div class="xc" style="max-height:${Math.max(1,Math.floor(ys[Math.min(T.rows.length,r-1+(cell?cell[2]:1))]-ys[r-1]))}px">${inner}</div></td>`}
     h+="</tr>"}
   return h+`</tbody></table>${T.imgs.map(i=>`<img src="${XT._imgs[i.i]}" alt="" style="left:${i.x}px;top:${i.y}px;width:${i.w}px;height:${i.h}px">`).join("")}${extra||""}</div>`}
 /* Excel clips text in merged cells; shrink such text so it stays inside its box. */
@@ -1402,7 +1403,8 @@ function formFill(f){const kind=f.kind,m=fmodel(kind),d=f.data||{},sg=f.sigs||{}
     const a=pqrAvg(f);if(a!==null)by[m.avgRef]={html:a.toFixed(1)};
     if(d.PF==="pass")by.Q49={cls:"xcirc"};if(d.PF==="fail")by.S49={cls:"xcirc"};
     if(d.NOTE){const base=(ftext(kind,m.noteRef)||"NOTE:").split("\n");const nl=String(d.NOTE).split("\n").length;by[m.noteRef]={html:esc(base[0]+" "+d.NOTE+"\n".repeat(Math.max(0,base.length-nl)))}}
-  }else{m.groups.forEach(g=>{const n=fScore(d[g.val]);if(n!==null)by[g.val]={html:esc(String(n))}});if(m.placeRef&&d[m.placeRef])by[m.placeRef]={html:esc(d[m.placeRef])}}
+  }else{m.groups.forEach(g=>{const n=fScore(d[g.val]);if(n!==null)by[g.val]={html:esc(String(n))}});if(m.placeRef){if(d[m.placeRef])by[m.placeRef]={html:esc(d[m.placeRef])};else{const ds=m.slots.map(x=>sg[x.key]&&sg[x.key].at).filter(Boolean).sort().pop();
+      if(ds){const dt=new Date(ds);by[m.placeRef]={html:esc("…...................., "+dt.toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"}))}}}}}
   m.slots.forEach(s=>{const v=sg[s.key];if(v)by[s.nameRef]={html:esc(kind==="pqr"?`( ${v.name} )`:`( ${v.name}${v.title?" / "+v.title:""} )`)}});
   const xst=XSTYLE[kind]||{};
   return (ref,cell)=>{const st=xst[ref];let o=by[ref];
@@ -1420,10 +1422,10 @@ function drawPrev(f){const box=$("#xprev");if(!box)return;box.innerHTML=`<div cl
 
 /* Print: the sheet alone, on one page, with the sheet's own orientation and margins. */
 function printSheet(kind){const src=$("#xprev .xsheet");if(!src)return;const T=XT[kind],m=fmodel(kind);const land=T.orient==="landscape";
-  const [mt,mr,mb,ml]=T.margins.map(v=>+v||0.5);const aw=((land?297:210)/25.4-ml-mr)*96,ah=((land?210:297)/25.4-mt-mb)*96;const k=Math.min(1,aw/m.W,ah/m.H)*0.985;
+  const [mt,mr,mb,ml]=T.margins.map(v=>+v||0.5);const aw=((land?297:210)/25.4-ml-mr)*96,ah=((land?210:297)/25.4-mt-mb)*96;const H=Math.max(m.H,src.scrollHeight,src.querySelector("table").offsetHeight);const k=Math.min(1,aw/m.W,ah/H)*0.985;
   let pa=$("#printArea");if(!pa){pa=document.createElement("div");pa.id="printArea";document.body.appendChild(pa)}
-  const css=$("#xprev style")?.outerHTML||"";const clone=src.cloneNode(true);clone.querySelectorAll("[contenteditable]").forEach(e=>e.removeAttribute("contenteditable"));
-  pa.innerHTML=`<style>@page{size:A4 ${land?"landscape":"portrait"};margin:${mt}in ${mr}in ${mb}in ${ml}in}</style>${css}<div style="width:${m.W*k}px;height:${m.H*k}px;overflow:hidden;${T.hcenter||land?"margin:0 auto":""}"><div style="transform:scale(${k});transform-origin:0 0;width:${m.W}px">${clone.outerHTML}</div></div>`;
+  const css=$("#xprev style")?.outerHTML||"";const clone=src.cloneNode(true);clone.querySelectorAll("[data-tpl]").forEach(e=>{e.removeAttribute("contenteditable");e.removeAttribute("data-tpl")});
+  pa.innerHTML=`<style>@page{size:A4 ${land?"landscape":"portrait"};margin:${mt}in ${mr}in ${mb}in ${ml}in}</style>${css}<div style="width:${m.W*k}px;height:${H*k}px;overflow:hidden;${T.hcenter||land?"margin:0 auto":""}"><div style="transform:scale(${k});transform-origin:0 0;width:${m.W}px">${clone.outerHTML}</div></div>`;
   setTimeout(()=>{window.print()},60)}
 
 /* ---- permissions (the database enforces the same rules) ---- */
@@ -1490,7 +1492,7 @@ function formView(f){const t=S.trainees.find(x=>x.id===f.traineeId);const m=fmod
         ${g.subs.length?`<details class="gsub"><summary>${g.subs.length} poin penilaian</summary><ol>${g.subs.map(s=>`<li>${esc(ftext(f.kind,s.ref)||"")}</li>`).join("")}</ol></details>`:""}</span>
         <span class="gin"><input type="number" inputmode="decimal" min="0" max="100" step="any" placeholder="Value" aria-label="Value ${esc(g.no)}" ${inp(g.val)}><span class="mono" data-fin="${g.val}">${v===null?"–":fmtNum((w||0)*v,"#,##0.00")}</span></span></div>`}).join("")}</div>
       <div class="fsum">Total final: <b id="fTot">${fmtNum(fTotal(f),"#,##0.00")}</b></div>
-      ${m.placeRef?`<label class="f">Tempat, tanggal<input ${inp(m.placeRef,'maxlength="80" placeholder="Batam, '+new Date().toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"})+'"')}></label>`:""}`;
+      ${m.placeRef?`<label class="f">Tempat, tanggal<input ${inp(m.placeRef,'maxlength="80" placeholder="Contoh: Batam, '+new Date().toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"})+'"')}></label><button type="button" class="ghost" id="fToday" ${fCanEdit(f,m.placeRef)?"":"disabled"} style="align-self:flex-start;padding-left:0">Isi tanggal hari ini</button>`:""}`;
   }
   const canSave=staff||fOwn(f);
   return `<div><button type="button" class="ghost" id="fBack" style="padding-left:0">← Daftar form</button></div>
@@ -1513,6 +1515,8 @@ function bindFormView(f){drawPrev(f);
   $("#fBack").onclick=()=>{location.hash=ROLE==="mekanik"?"formulir":"formulir"};
   $("#fPrint").onclick=$("#fPrint2").onclick=()=>printSheet(f.kind);
   const fm=$("#fForm");let tmr;
+  const td=$("#fToday");if(td)td.onclick=()=>{const m=fmodel(f.kind);const el=fm.querySelector(`[data-k="${m.placeRef}"]`);const today=new Date().toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"});
+    const place=(el.value.split(",")[0]||"").trim()||(S.trainees.find(x=>x.id===f.traineeId)?.location||"");el.value=(place?place+", ":"")+today;el.dispatchEvent(new Event("input"))};
   const refresh=()=>{clearTimeout(tmr);tmr=setTimeout(()=>{drawPrev(f);const m=fmodel(f.kind);
     if(f.kind==="pqr"){const a=pqrAvg(f);$("#fAvg").textContent=a===null?"–":a.toFixed(1);m.items.forEach(it=>{const n=fScore(f.data[it.key]);const p=fm.querySelector(`[data-cat="${it.key}"]`);p.textContent=n===null?"–":pqrCat(n)[1];p.className="pill "+(n===null?"none":n<71?"prog":"done")})}
     else{$("#fTot").textContent=fmtNum(fTotal(f),"#,##0.00");m.groups.forEach(g=>{const v=fScore(f.data[g.val]);fm.querySelector(`[data-fin="${g.val}"]`).textContent=v===null?"–":fmtNum((fnum(f.kind,f,g.weight)||0)*v,"#,##0.00")})}},120)};
