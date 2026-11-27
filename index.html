@@ -5,7 +5,7 @@
 <link rel="icon" id="favicon" href="data:,">
 <meta name="theme-color" content="#0f1820">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap">
 <style>
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body{margin:0}
@@ -37,6 +37,20 @@ body{margin:0}
   --seq1:#2b3519; --seq2:#45561f; --seq3:#6f8a2f; --seqfg:#eef4dc;
   --warn:#e6a446; --warn-soft:#3a2c14; --ok:#6cc58c; --ok-soft:#173222; --danger:#ef7b6e;
   color-scheme:dark}
+
+/* design presets (admin picks one for everyone) */
+:root[data-preset="navy"]{--bg:#f2f5f9;--surface:#ffffff;--surface-2:#e6ebf2;--line:#d0d8e4;--fg:#0f1c2e;--muted:#56657a;--accent:#1f4e8c;--accent-fg:#ffffff;--accent-soft:#dde7f4;--seq1:#d6e2f2;--seq2:#9db8de;--seq3:#4a76b3;--seqfg:#ffffff;--display:"Inter",system-ui,sans-serif;--body:"Inter",system-ui,sans-serif}
+@media (prefers-color-scheme: dark){:root[data-preset="navy"]:not([data-theme="light"]){--bg:#0b1220;--surface:#121b2c;--surface-2:#1b2639;--line:#2a3850;--fg:#e6ecf5;--muted:#93a2b8;--accent:#7fa8e6;--accent-fg:#0b1220;--accent-soft:#1c2c47;--seq1:#1a2a44;--seq2:#2b4a7a;--seq3:#4f7cc2;--seqfg:#eef3fb}}
+:root[data-preset="navy"][data-theme="dark"]{--bg:#0b1220;--surface:#121b2c;--surface-2:#1b2639;--line:#2a3850;--fg:#e6ecf5;--muted:#93a2b8;--accent:#7fa8e6;--accent-fg:#0b1220;--accent-soft:#1c2c47;--seq1:#1a2a44;--seq2:#2b4a7a;--seq3:#4f7cc2;--seqfg:#eef3fb}
+:root[data-preset="slate"]{--bg:#f4f4f5;--surface:#ffffff;--surface-2:#e9e9ec;--line:#d4d4d8;--fg:#18181b;--muted:#5f5f69;--accent:#0f766e;--accent-fg:#ffffff;--accent-soft:#d5ece9;--seq1:#d5ece9;--seq2:#8cc9c1;--seq3:#2a9d8f;--seqfg:#ffffff;--display:"Inter",system-ui,sans-serif;--body:"Inter",system-ui,sans-serif}
+@media (prefers-color-scheme: dark){:root[data-preset="slate"]:not([data-theme="light"]){--bg:#0f1113;--surface:#17191c;--surface-2:#202327;--line:#30343a;--fg:#e8e9eb;--muted:#9a9fa6;--accent:#4fd1c5;--accent-fg:#06201d;--accent-soft:#133a36;--seq1:#133a36;--seq2:#1f6b63;--seq3:#2fa596;--seqfg:#eafffb}}
+:root[data-preset="slate"][data-theme="dark"]{--bg:#0f1113;--surface:#17191c;--surface-2:#202327;--line:#30343a;--fg:#e8e9eb;--muted:#9a9fa6;--accent:#4fd1c5;--accent-fg:#06201d;--accent-soft:#133a36;--seq1:#133a36;--seq2:#1f6b63;--seq3:#2fa596;--seqfg:#eafffb}
+:root[data-preset="red"]{--bg:#f5f3f2;--surface:#ffffff;--surface-2:#ebe7e5;--line:#d9d2cf;--fg:#1f1716;--muted:#6a5d5a;--accent:#b4231f;--accent-fg:#ffffff;--accent-soft:#f6dedc;--seq1:#f3d6d3;--seq2:#e09a94;--seq3:#c2453e;--seqfg:#ffffff}
+@media (prefers-color-scheme: dark){:root[data-preset="red"]:not([data-theme="light"]){--bg:#141010;--surface:#1d1717;--surface-2:#282020;--line:#3a2f2e;--fg:#f0e9e8;--muted:#a89997;--accent:#f07a72;--accent-fg:#2a0a08;--accent-soft:#3d1d1b;--seq1:#3a1c1a;--seq2:#6e2f2b;--seq3:#b04a43;--seqfg:#fff1f0}}
+:root[data-preset="red"][data-theme="dark"]{--bg:#141010;--surface:#1d1717;--surface-2:#282020;--line:#3a2f2e;--fg:#f0e9e8;--muted:#a89997;--accent:#f07a72;--accent-fg:#2a0a08;--accent-soft:#3d1d1b;--seq1:#3a1c1a;--seq2:#6e2f2b;--seq3:#b04a43;--seqfg:#fff1f0}
+:root[data-preset="navy"] h1,:root[data-preset="navy"] h2,:root[data-preset="navy"] h3,:root[data-preset="slate"] h1,:root[data-preset="slate"] h2,:root[data-preset="slate"] h3{letter-spacing:-.01em;font-weight:700}
+:root[data-preset="navy"] h1,:root[data-preset="slate"] h1{font-size:26px}
+.presets{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}.preset{display:flex;flex-direction:column;gap:6px;align-items:flex-start;text-align:left;padding:10px;font-weight:600}.preset.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}.preset .sw{display:flex;gap:4px}.preset .sw i{width:22px;height:22px;border-radius:6px;border:1px solid rgba(0,0,0,.12)}.preset small{font-weight:400;color:var(--muted);font-size:12px}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
@@ -513,20 +527,22 @@ const fromSignoff=r=>({id:r.id,traineeId:r.trainee_id,taskId:r.task_id,date:r.da
 const $=s=>document.querySelector(s);
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 /* ---------- branding (admin sets icon + background for every account) ---------- */
-const BRAND={icon:"",bg:null};
+const BRAND={icon:"",bg:null,preset:""};
+const PRESETS=[["","Hangar Hijau","Bawaan, hijau primer",["#5f7a1f","#eef1f3","#16212b"]],["navy","Aviation Navy","Biru korporat, tenang",["#1f4e8c","#f2f5f9","#0f1c2e"]],["slate","Executive Slate","Netral, aksen teal",["#0f766e","#f4f4f5","#18181b"]],["red","Corporate Red","Senada logo Lion/BAT",["#b4231f","#f5f3f2","#1f1716"]]];
 function applyBrand(){
   const ic=$("#brandIcon");if(ic){ic.hidden=!BRAND.icon;if(BRAND.icon)ic.src=BRAND.icon;else ic.removeAttribute("src")}
   const fav=$("#favicon");if(fav)fav.href=BRAND.icon||"data:,";
+  if(PRESETS.some(p=>p[0]&&p[0]===BRAND.preset))document.documentElement.dataset.preset=BRAND.preset;else delete document.documentElement.dataset.preset;
   const b=BRAND.bg;const val=b&&b.type==="image"&&b.src?`url("${b.src}")`:b&&b.type==="color"&&/^#[0-9a-f]{6}$/i.test(b.value||"")?b.value:"";
   document.body.classList.toggle("hasbg",!!val);if(val)document.body.style.setProperty("--brand-bg",val);else document.body.style.removeProperty("--brand-bg");
 }
-function setBrand(rows){BRAND.icon="";BRAND.bg=null;(rows||[]).forEach(r=>{const v=r.value||{};if(r.key==="brand_icon"&&typeof v.src==="string"&&v.src.startsWith("data:image/"))BRAND.icon=v.src;
+function setBrand(rows,keepPreset){BRAND.icon="";BRAND.bg=null;if(!keepPreset)BRAND.preset="";(rows||[]).forEach(r=>{const v=r.value||{};if(r.key==="brand_preset"&&typeof v.id==="string")BRAND.preset=v.id;if(r.key==="brand_icon"&&typeof v.src==="string"&&v.src.startsWith("data:image/"))BRAND.icon=v.src;
   if(r.key==="brand_bg"&&(v.type==="color"||(v.type==="image"&&typeof v.src==="string"&&v.src.startsWith("data:image/"))))BRAND.bg=v});
   try{localStorage.setItem("cbta.brand",JSON.stringify(BRAND))}catch(e){}applyBrand()}
 async function loadBrand(){if(!sb)return;const {data,error}=await sb.from("app_settings").select("key,value").in("key",["brand_icon","brand_bg","units"]);
-  if(!error){const had=JSON.stringify(BRAND)+UNITS.join("|");setBrand(data.filter(r=>r.key!=="units"));const u=data.find(r=>r.key==="units");if(u)setUnits(u.value);
+  if(!error){const had=JSON.stringify(BRAND)+UNITS.join("|");setBrand(data.filter(r=>r.key!=="units"),true);const u=data.find(r=>r.key==="units");if(u)setUnits(u.value);
     if(had!==JSON.stringify(BRAND)+UNITS.join("|")&&ROLE==="anon"&&typeof render==="function"&&!(document.querySelector("#fSign input:not([type=radio])")?.value))render()}}
-try{const c=JSON.parse(localStorage.getItem("cbta.brand")||"null");if(c){BRAND.icon=c.icon||"";BRAND.bg=c.bg||null}}catch(e){}
+try{const c=JSON.parse(localStorage.getItem("cbta.brand")||"null");if(c){BRAND.icon=c.icon||"";BRAND.bg=c.bg||null;BRAND.preset=c.preset||""}}catch(e){}
 applyBrand();
 /* shrink an uploaded picture in the browser so it fits in the settings table */
 function shrinkImage(file,max,type,q){return new Promise((res,rej)=>{if(!file||!/^image\//.test(file.type)){rej(new Error("type"));return}
@@ -1125,6 +1141,8 @@ function settingsView(){
     <form id="fMs"><div id="msRows" style="display:flex;flex-direction:column;gap:6px">${MILESTONES.map(msRow).join("")}</div>
       <button type="button" class="ghost addref" id="msAdd">+ Tambah milestone</button>
       <div class="actions"><button type="submit">Simpan milestone</button></div></form></section>
+  <section class="panel"><h2>Gaya tampilan (admin)</h2><p class="muted" style="margin:0;font-size:13.5px">Berlaku untuk semua akun. Mode terang/gelap tetap dipilih masing-masing pengguna.</p>
+    <div class="presets">${PRESETS.map(([id,n,d,c])=>`<button type="button" class="preset ${(BRAND.preset||"")===id?"on":""}" data-preset="${id}"><span class="sw">${c.map(x=>`<i style="background:${x}"></i>`).join("")}</span>${esc(n)}<small>${esc(d)}</small></button>`).join("")}</div></section>
   <section class="panel"><h2>Ikon & latar aplikasi (admin)</h2>
     <p class="muted" style="margin:0;font-size:13.5px">Berlaku untuk semua akun, termasuk halaman Masuk. Pengguna lain melihat perubahan saat membuka atau memuat ulang aplikasi.</p>
     <div class="brandset">
@@ -1161,7 +1179,7 @@ function bindSettings(){
     if(error){toast("Gagal menyimpan pengaturan aplikasi.");return}STALE_DAYS=sd;STAT_MAX=sm;toast("Pengaturan aplikasi disimpan")};
   const saveBrand=async(key,value,msg)=>{const q=value===null?sb.from("app_settings").delete().eq("key",key):sb.from("app_settings").upsert({key,value,updated_at:new Date().toISOString()});
     const {error}=await q;if(error){toast("Gagal menyimpan. Coba gambar yang lebih kecil.");return}
-    const rows=[];if(BRAND.icon)rows.push({key:"brand_icon",value:{src:BRAND.icon}});if(BRAND.bg)rows.push({key:"brand_bg",value:BRAND.bg});
+    const rows=[];if(BRAND.icon)rows.push({key:"brand_icon",value:{src:BRAND.icon}});if(BRAND.bg)rows.push({key:"brand_bg",value:BRAND.bg});if(BRAND.preset)rows.push({key:"brand_preset",value:{id:BRAND.preset}});
     const next=rows.filter(r=>r.key!==key);if(value!==null)next.push({key,value});setBrand(next);toast(msg);render()};
   const fu=$("#fUnits");if(fu){const rows=$("#unRows");
     rows.onclick=e=>{const b=e.target.closest("[data-undel]");if(b)b.closest(".unrow").remove()};
@@ -1186,6 +1204,7 @@ function bindSettings(){
       if(error){toast("Gagal menyimpan milestone.");return}MILESTONES=ms;toast("Milestone disimpan");render()}}
   const bi=$("#bIcon");if(bi)bi.onchange=async()=>{const f=bi.files[0];if(!f)return;try{const src=await shrinkImage(f,256,"image/png");await saveBrand("brand_icon",{src},"Ikon diperbarui")}catch(e){toast("File ini bukan gambar yang bisa dibaca.")}};
   const bid=$("#bIconDel");if(bid)bid.onclick=()=>saveBrand("brand_icon",null,"Ikon dihapus");
+  document.querySelectorAll("button.preset").forEach(b=>b.onclick=()=>{const id=b.dataset.preset;BRAND.preset=id;applyBrand();saveBrand("brand_preset",id?{id}:null,"Gaya tampilan diterapkan untuk semua akun")});
   const bb=$("#bBgImg");if(bb)bb.onchange=async()=>{const f=bb.files[0];if(!f)return;try{const src=await shrinkImage(f,1600,"image/jpeg",0.78);await saveBrand("brand_bg",{type:"image",src},"Latar diperbarui")}catch(e){toast("File ini bukan gambar yang bisa dibaca.")}};
   const bc=$("#bBgColSave");if(bc)bc.onclick=()=>saveBrand("brand_bg",{type:"color",value:$("#bBgCol").value},"Warna latar diperbarui");
   const bd=$("#bBgDel");if(bd)bd.onclick=()=>saveBrand("brand_bg",null,"Latar dikembalikan ke bawaan");
